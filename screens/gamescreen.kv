@@ -6,7 +6,9 @@
         bottom_board.add_starting_pieces()
     BoxLayout:
         orientation: 'vertical'
-        Widget:
+        GridLayout:
+            id: captured_black_pieces
+            rows: 1
         FloatLayout:
             size_hint: 1, None
             height: self.width
@@ -31,5 +33,6 @@
                 size_hint: 1, .46
                 pos_hint: {"top": .46}
                 player_color: "red"
-
-        Widget:
+        GridLayout:
+            id: captured_red_pieces
+            rows: 1
