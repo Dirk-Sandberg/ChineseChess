@@ -22,6 +22,60 @@ from kivy.app import App
 NUM_COLS = 9
 NUM_ROWS = 10
 
+def highlight_pawn_moves(row, col, player):
+    app = App.get_running_app()
+    if player == 'black':
+        # Pawn can move down but not up
+        if row != NUM_ROWS-1:
+            piece = app.board_helper.get_widget_at(row+1, col)
+            piece.indicator_opacity = 1
+            if piece.piece_type != 'blank':
+                if piece.player == player:
+                    piece.indicator_opacity = 0
+
+        # If pawn is past river, can move left and right
+        if row > 4:
+            if col != 0:
+                piece = app.board_helper.get_widget_at(row, col-1)
+                piece.indicator_opacity = 1
+                if piece.piece_type != 'blank':
+                    if piece.player == player:
+                        piece.indicator_opacity = 0
+            if col != NUM_COLS-1:
+                piece = app.board_helper.get_widget_at(row, col+1)
+                piece.indicator_opacity = 1
+                if piece.piece_type != 'blank':
+                    if piece.player == player:
+                        piece.indicator_opacity = 0
+
+
+    else:
+        # Pawn can move up but not down
+        if row != 0:
+            piece = app.board_helper.get_widget_at(row-1, col)
+            piece.indicator_opacity = 1
+            if piece.piece_type != 'blank':
+                if piece.player == player:
+                    piece.indicator_opacity = 0
+
+
+        # If pawn is past river, can move left and right
+        if row < 5:
+            if col != 0:
+                piece = app.board_helper.get_widget_at(row, col-1)
+                piece.indicator_opacity = 1
+                if piece.piece_type != 'blank':
+                    if piece.player == player:
+                        piece.indicator_opacity = 0
+            if col != NUM_COLS-1:
+                piece = app.board_helper.get_widget_at(row, col+1)
+                piece.indicator_opacity = 1
+                if piece.piece_type != 'blank':
+                    if piece.player == player:
+                        piece.indicator_opacity = 0
+
+
+
 def highlight_rook_moves(row, col, player):
     app = App.get_running_app()
     # Find Available moves down
@@ -73,7 +127,4 @@ def highlight_rook_moves(row, col, player):
                     piece.indicator_opacity = 0
 
 
-
-def get_piece_from_global_index(local_col, local_row, half):
-    pass
 
