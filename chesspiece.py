@@ -21,9 +21,9 @@ class ChessPiece(ButtonBehavior, Image):
         if self.indicator_opacity == 1:
             if self.piece_type != 'blank':
                 if self.player == 'black':
-                    red_captured_pieces_grid.add_widget(Image(source=self.source))
+                    red_captured_pieces_grid.add_widget(Image(source=self.source, color=self.color))
                 else:
-                    black_captured_pieces_grid.add_widget(Image(source=self.source))
+                    black_captured_pieces_grid.add_widget(Image(source=self.source, color=self.color))
 
             # The piece has been captured if it wasn't blank!
             self.piece_type = app.highlighted_piece.piece_type
