@@ -22,6 +22,65 @@ from kivy.app import App
 NUM_COLS = 9
 NUM_ROWS = 10
 
+def highlight_king_moves(row, col, player):
+    app = App.get_running_app()
+    possible_moves = [(row+1, col), (row-1, col), (row, col+1), (row, col-1)]
+    for move in possible_moves:
+        # Make sure the move is inside the palace
+        if move[1] > 5:
+            # Trying to move to the right of the palace
+            continue
+        if move[1] < 3:
+            # Trying to move to the left of the palace
+            continue
+        if move[0] < 7 and player == 'red':
+            # Trying to move up from palace
+            continue
+        if move[0] > 2 and player == 'black':
+            # Trying to move up from palace
+            continue
+        piece = app.board_helper.get_widget_at(*move)
+        if piece:
+            piece.indicator_opacity = 1
+            if piece.piece_type != 'blank':
+                if piece.player == player:
+                    piece.indicator_opacity = 0
+
+
+
+def highlight_knight_moves(row, col, player):
+    pass
+
+def highlight_elephant_moves(row, col, player):
+    pass
+
+def highlight_guard_moves(row, col, player):
+    app = App.get_running_app()
+    possible_moves = [(row+1, col+1), (row-1, col-1), (row-1, col+1), (row+1, col-1)]
+    for move in possible_moves:
+        # Make sure the move is inside the palace
+        if move[1] > 5:
+            # Trying to move to the right of the palace
+            continue
+        if move[1] < 3:
+            # Trying to move to the left of the palace
+            continue
+        if move[0] < 7 and player == 'red':
+            continue
+        if move[0] > 2 and player == 'black':
+            continue
+
+        piece = app.board_helper.get_widget_at(*move)
+        if piece:
+            piece.indicator_opacity = 1
+            if piece.piece_type != 'blank':
+                if piece.player == player:
+                    piece.indicator_opacity = 0
+
+
+def highlight_cannon_moves(row, col, player):
+    pass
+
 def highlight_pawn_moves(row, col, player):
     app = App.get_running_app()
     if player == 'black':
@@ -35,14 +94,14 @@ def highlight_pawn_moves(row, col, player):
 
         # If pawn is past river, can move left and right
         if row > 4:
-            if col != 0:
-                piece = app.board_helper.get_widget_at(row, col-1)
+            piece = app.board_helper.get_widget_at(row, col-1)
+            if piece:
                 piece.indicator_opacity = 1
                 if piece.piece_type != 'blank':
                     if piece.player == player:
                         piece.indicator_opacity = 0
-            if col != NUM_COLS-1:
-                piece = app.board_helper.get_widget_at(row, col+1)
+            piece = app.board_helper.get_widget_at(row, col+1)
+            if piece:
                 piece.indicator_opacity = 1
                 if piece.piece_type != 'blank':
                     if piece.player == player:
@@ -61,19 +120,19 @@ def highlight_pawn_moves(row, col, player):
 
         # If pawn is past river, can move left and right
         if row < 5:
-            if col != 0:
-                piece = app.board_helper.get_widget_at(row, col-1)
-                piece.indicator_opacity = 1
-                if piece.piece_type != 'blank':
-                    if piece.player == player:
-                        piece.indicator_opacity = 0
-            if col != NUM_COLS-1:
-                piece = app.board_helper.get_widget_at(row, col+1)
+            piece = app.board_helper.get_widget_at(row, col-1)
+            if piece:
                 piece.indicator_opacity = 1
                 if piece.piece_type != 'blank':
                     if piece.player == player:
                         piece.indicator_opacity = 0
 
+            piece = app.board_helper.get_widget_at(row, col+1)
+            if piece:
+                piece.indicator_opacity = 1
+                if piece.piece_type != 'blank':
+                    if piece.player == player:
+                        piece.indicator_opacity = 0
 
 
 def highlight_rook_moves(row, col, player):

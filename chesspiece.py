@@ -2,7 +2,7 @@ from kivy.uix.button import ButtonBehavior
 from kivy.uix.image import Image
 from kivy.app import App
 from kivy.properties import OptionProperty, StringProperty
-from movehelper import highlight_rook_moves, highlight_pawn_moves
+from movehelper import highlight_rook_moves, highlight_pawn_moves, highlight_king_moves, highlight_guard_moves
 from availablemoveindicator import AvailableMoveIndicator
 from kivy.core.window import Window
 
@@ -47,4 +47,8 @@ class ChessPiece(ButtonBehavior, Image):
             highlight_rook_moves(self.row, self.col, self.player)
         if self.piece_type == "pawn":
             highlight_pawn_moves(self.row, self.col, self.player)
+        if self.piece_type == 'guard':
+            highlight_guard_moves(self.row, self.col, self.player)
+        if self.piece_type == 'king':
+            highlight_king_moves(self.row, self.col, self.player)
 
