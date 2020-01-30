@@ -1,8 +1,9 @@
 #:import Clock kivy.clock.Clock
 
 <GameScreen>:
-    #on_enter:
-    #    Clock.schedule_once(top_halfboard.foo, 3)
+    on_enter:
+        top_board.add_starting_pieces()
+        bottom_board.add_starting_pieces()
     BoxLayout:
         orientation: 'vertical'
         Widget:
@@ -16,7 +17,7 @@
                 Image:
                     keep_ratio: False
                     allow_stretch: True
-                    source: "chess_cropped.png"
+                    source: "images/chess_cropped.png"
             HalfBoard:
                 id: top_board
                 # Top board
@@ -24,14 +25,10 @@
                 pos_hint: {"top": 1}
             HalfBoard:
                 # Bottom board
+                half: "bottom"
                 id: bottom_board
                 size_hint: 1, .46
                 pos_hint: {"top": .46}
+                player_color: "red"
 
         Widget:
-            canvas.before:
-                Color:
-                    rgba: 1,0,0,.2
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
