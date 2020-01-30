@@ -3,10 +3,10 @@ from kivy.animation import Animation
 from kivy.properties import ColorProperty
 
 class AvailableMoveIndicator(Widget):
-    color = ColorProperty([1,0,0,1])
+    color = ColorProperty([0,1,0,1])
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.start_animation()
+        #self.start_animation()
 
     def start_animation(self, *args):
         anim = Animation(color = [0,1,0,1])

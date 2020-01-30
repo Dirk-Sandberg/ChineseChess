@@ -2,21 +2,15 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.properties import NumericProperty
 from chesspiece import ChessPiece
 from kivy.uix.widget import Widget
+from kivy.app import App
 from kivy.animation import Animation
 
 class HalfBoard(GridLayout):
     rows = NumericProperty(5)
     cols = NumericProperty(9)
-    widgets_by_row_and_column = {}
-    row_and_column_by_widget = {}  # Is this useful?
-
-    def get_widget_at(self, row, column):
-        return self.widgets_by_row_and_column[(row, column)]
-
-    def get_widget_indices(self, widget):
-        return self.row_and_column_by_widget[widget]
 
     def add_starting_pieces(self):
+        board_helper = App.get_running_app().board_helper
         if self.half == "top":
             back_row = 0
             pawn_row = 3
@@ -50,9 +44,13 @@ class HalfBoard(GridLayout):
                 if not c:
                     c = ChessPiece(piece_type="blank")
                 c.opacity = 0
+                c.row, c.col = board_helper.convert_to_global_indices(row, col, self.half)
+                #c.col = col
+                c.board_half = self.half
                 self.add_widget(c)
-                self.widgets_by_row_and_column[(row, col)] = c
-                self.row_and_column_by_widget[c] = (row, col)
+
+                board_helper.widgets_by_row_and_column[(c.row, c.col)] = c
+                board_helper.row_and_column_by_widget[c] = (c.row, c.col)
 
         # Animate all the pieces into view
         anim = Animation(opacity=1)
