@@ -51,26 +51,27 @@ def highlight_rook_moves(row, col, player):
     # Find Available moves left
     # left means decreasing column
     has_collided = False
-    for _row in range(0, row):
+    for _col in range(0, col)[::-1]:
         if not has_collided:
-            piece = app.board_helper.get_widget_at(_row, col)
+            piece = app.board_helper.get_widget_at(row, _col)
             piece.indicator_opacity = 1
             if piece.piece_type != 'blank':
                 has_collided = True
-            if piece.player == player:
-                piece.indicator_opacity = 0
+                if piece.player == player:
+                    piece.indicator_opacity = 0
 
     # Find Available moves right
     # right means increasing column
+    has_collided = False
+    for _col in range(col+1, NUM_COLS):
+        if not has_collided:
+            piece = app.board_helper.get_widget_at(row, _col)
+            piece.indicator_opacity = 1
+            if piece.piece_type != 'blank':
+                has_collided = True
+                if piece.player == player:
+                    piece.indicator_opacity = 0
 
-
-    #HIGHLIGHT EVERYTHING
-    #for _col in range(NUM_COLS):
-    #    widget = app.board_helper.get_widget_at(row, _col)
-    #    widget.indicator_opacity = 1
-    #for _row in range(NUM_ROWS):
-    #    widget = app.board_helper.get_widget_at(_row, col)
-    #    widget.indicator_opacity = 1
 
 
 def get_piece_from_global_index(local_col, local_row, half):
