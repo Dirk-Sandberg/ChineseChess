@@ -1,0 +1,12 @@
+<HomeScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        MDRaisedButton:
+            text: "Host Match"
+        MDRaisedButton:
+            text: "Join Match"
+        MDRaisedButton:
+            text: "Local Game"
+            on_release:
+                root.start_local_game()
+
