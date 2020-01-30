@@ -52,7 +52,35 @@ def highlight_knight_moves(row, col, player):
     pass
 
 def highlight_elephant_moves(row, col, player):
-    pass
+    app = App.get_running_app()
+    possible_moves = [(row+2, col+2), (row-2, col-2), (row-2, col+2), (row+2, col-2)]
+    for move in possible_moves:
+        row_offset = 1 if move[0] > row else -1
+        col_offset = 1 if move[1] > col else -1
+
+        diagonal_position = (row + row_offset, col + col_offset)
+        piece = app.board_helper.get_widget_at(*diagonal_position)
+        if piece:
+            if piece.piece_type != 'blank':
+                # There is a piece blocking the elephant's path
+                continue
+
+        # Make sure the move is on the proper side of the river
+        if move[0] < 5 and player == 'red':
+            # Trying to move up from river
+            continue
+        if move[0] > 4 and player == 'black':
+            # Trying to move down from river
+            continue
+
+        piece = app.board_helper.get_widget_at(*move)
+        if piece:
+            piece.indicator_opacity = 1
+            if piece.piece_type != 'blank':
+                if piece.player == player:
+                    piece.indicator_opacity = 0
+
+
 
 def highlight_guard_moves(row, col, player):
     app = App.get_running_app()
