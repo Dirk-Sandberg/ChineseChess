@@ -52,8 +52,6 @@ class ChessPiece(ButtonBehavior, Image):
         app.highlighted_piece.piece_type = 'blank'
         app.is_animating = False
 
-
-
     def highlight_moves(self):
         app = App.get_running_app()
         if app.is_animating:

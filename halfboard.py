@@ -50,7 +50,7 @@ class HalfBoard(GridLayout):
                 self.add_widget(c)
 
                 board_helper.widgets_by_row_and_column[(c.row, c.col)] = c
-                board_helper.row_and_column_by_widget[c] = (c.row, c.col)
+                board_helper.row_and_column_by_widget["%s:%s"%(c.player,c.piece_type)] = (c.row, c.col)
 
         # Animate all the pieces into view
         anim = Animation(opacity=1)

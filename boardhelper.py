@@ -19,6 +19,6 @@ class BoardHelper:
             return None
         return self.widgets_by_row_and_column[(row, col)]
 
-    def get_widget_indices(self, widget):
-        return self.row_and_column_by_widget[widget]
+    def get_widget_indices(self, player_color, piece_type):
+        return self.row_and_column_by_widget["%s:%s"%(player_color,piece_type)]
 
