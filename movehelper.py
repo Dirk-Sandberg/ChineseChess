@@ -49,7 +49,27 @@ def highlight_king_moves(row, col, player):
 
 
 def highlight_knight_moves(row, col, player):
-    pass
+    app = App.get_running_app()
+    possible_moves = [(row+1, col+2), (row+1, col-2), (row+2, col+1), (row+2, col-1), (row-1, col+2), (row-1, col-2), (row-2, col+1), (row-2, col-1)]
+    for move in possible_moves:
+        row_offset = 0 if abs(move[0]-row) < 2 else int((move[0]-row)/2)
+        col_offset = 0 if abs(move[1]-col) < 2 else int((move[1]-col)/2)
+        blocking_position = (row + row_offset, col + col_offset)
+        piece = app.board_helper.get_widget_at(*blocking_position)
+        print(move, blocking_position)
+        if piece:
+            if piece.piece_type != 'blank':
+                # There is a piece blocking the knight's path
+                continue
+
+        piece = app.board_helper.get_widget_at(*move)
+        if piece:
+            piece.indicator_opacity = 1
+            if piece.piece_type != 'blank':
+                if piece.player == player:
+                    piece.indicator_opacity = 0
+
+
 
 def highlight_elephant_moves(row, col, player):
     app = App.get_running_app()
@@ -58,8 +78,8 @@ def highlight_elephant_moves(row, col, player):
         row_offset = 1 if move[0] > row else -1
         col_offset = 1 if move[1] > col else -1
 
-        diagonal_position = (row + row_offset, col + col_offset)
-        piece = app.board_helper.get_widget_at(*diagonal_position)
+        blocking_position = (row + row_offset, col + col_offset)
+        piece = app.board_helper.get_widget_at(*blocking_position)
         if piece:
             if piece.piece_type != 'blank':
                 # There is a piece blocking the elephant's path
@@ -107,7 +127,75 @@ def highlight_guard_moves(row, col, player):
 
 
 def highlight_cannon_moves(row, col, player):
-    pass
+    app = App.get_running_app()
+    # Find Available moves down
+    # down means increasing row
+    collides = 0
+    for _row in range(row+1, NUM_ROWS):
+        piece = app.board_helper.get_widget_at(_row, col)
+        if collides == 0:
+            if piece.piece_type == 'blank':
+                piece.indicator_opacity = 1
+            else:
+                piece.indicator_opacity = 0
+                collides += 1
+        elif collides == 1:
+            if piece.piece_type != 'blank':
+                collides += 1
+                if piece.player != player:
+                    piece.indicator_opacity = 1
+
+    # Find Available moves up
+    # up means decreasing row
+    collides = 0
+    for _row in range(0, row)[::-1]:
+        piece = app.board_helper.get_widget_at(_row, col)
+        if collides == 0:
+            if piece.piece_type == 'blank':
+                piece.indicator_opacity = 1
+            else:
+                piece.indicator_opacity = 0
+                collides += 1
+        elif collides == 1:
+            if piece.piece_type != 'blank':
+                collides += 1
+                if piece.player != player:
+                    piece.indicator_opacity = 1
+
+    # Find Available moves left
+    # left means decreasing column
+    collides = 0
+    for _col in range(0, col)[::-1]:
+        piece = app.board_helper.get_widget_at(row, _col)
+        if collides == 0:
+            if piece.piece_type == 'blank':
+                piece.indicator_opacity = 1
+            else:
+                piece.indicator_opacity = 0
+                collides += 1
+        elif collides == 1:
+            if piece.piece_type != 'blank':
+                collides += 1
+                if piece.player != player:
+                    piece.indicator_opacity = 1
+
+    # Find Available moves right
+    # right means increasing column
+    collides = 0
+    for _col in range(col+1, NUM_COLS):
+        piece = app.board_helper.get_widget_at(row, _col)
+        if collides == 0:
+            if piece.piece_type == 'blank':
+                piece.indicator_opacity = 1
+            else:
+                piece.indicator_opacity = 0
+                collides += 1
+        elif collides == 1:
+            if piece.piece_type != 'blank':
+                collides += 1
+                if piece.player != player:
+                    piece.indicator_opacity = 1
+
 
 def highlight_pawn_moves(row, col, player):
     app = App.get_running_app()
