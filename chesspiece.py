@@ -78,13 +78,25 @@ class ChessPiece(ButtonBehavior, Image):
             self.move_piece()
             self.clear_indicators()
         else:
+            self.clear_indicators()
             self.highlight_moves()
 
     def highlight_moves(self):
+        print("%s doesn't account for flying king yet"%self.piece_type)
+        app = App.get_running_app()
+        app.highlighted_piece = self
+        attacked, not_attacked = self.get_attacked_squares()
+        for square in attacked:
+            self.highlight_legal_move(square)
+        for square in not_attacked:
+            self.highlight_illegal_move(square)
+
+    def get_attacked_squares(self):
         """
-        To be overridden by subclasses
+        TO BE OVERRIDDEN BY SUBCLASSED PIECES
         :return:
         """
+        return [], []
 
     def highlight_legal_move(self, square):
         app = App.get_running_app()

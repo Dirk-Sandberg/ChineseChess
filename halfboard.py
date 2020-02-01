@@ -5,6 +5,12 @@ from kivy.uix.widget import Widget
 from kivy.app import App
 from kivy.animation import Animation
 from rookpiece import RookPiece
+from guardpiece import GuardPiece
+from elephantpiece import ElephantPiece
+from knightpiece import KnightPiece
+from pawnpiece import PawnPiece
+from kingpiece import KingPiece
+from cannonpiece import CannonPiece
 
 class HalfBoard(GridLayout):
     rows = NumericProperty(5)
@@ -27,21 +33,21 @@ class HalfBoard(GridLayout):
                     if col == 0 or col == (self.cols-1):
                         c = RookPiece(player=self.player_color)
                     elif col == 1 or col == (self.cols-2):
-                        c = ChessPiece(piece_type="knight", player=self.player_color)
+                        c = KnightPiece(player=self.player_color)
                     elif col == 2 or col == (self.cols - 3):
-                        c = ChessPiece(piece_type="elephant", player=self.player_color)
+                        c = ElephantPiece(player=self.player_color)
                     elif col == 3 or col == (self.cols-4):
-                        c = ChessPiece(piece_type="guard", player=self.player_color)
+                        c = GuardPiece(player=self.player_color)
                     elif col == 4:
-                        c = ChessPiece(piece_type="king", player=self.player_color)
+                        c = KingPiece(player=self.player_color)
                 elif row == 2:
                     # Add cannons
                     if col == 1 or col == (self.cols-2):
-                        c = ChessPiece(piece_type="cannon", player=self.player_color)
+                        c = CannonPiece(player=self.player_color)
                 elif row == pawn_row:
                     # Add pawns
                     if col in [0, 2, 4, 6, 8]:
-                        c = ChessPiece(piece_type="pawn", player=self.player_color)
+                        c = PawnPiece(player=self.player_color)
                 if not c:
                     c = ChessPiece(piece_type="blank")
                 c.opacity = 0
