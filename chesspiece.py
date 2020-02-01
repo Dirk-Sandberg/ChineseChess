@@ -11,6 +11,9 @@ class ChessPiece(ButtonBehavior, Image):
     piece_type = OptionProperty("blank", options=["blank", "rook", "cannon","pawn", "king", "knight", "guard", "elephant"])
     player = StringProperty("black")
 
+    def id(self):
+        return "%s %s at (%s, %s)"%(self.player, self.piece_type, self.row, self.col)
+
     def move_piece(self):
         app = App.get_running_app()
 
@@ -63,14 +66,12 @@ class ChessPiece(ButtonBehavior, Image):
 
         animated_object.parent.remove_widget(animated_object)
         # The piece has been captured if it wasn't blank!
-        app.highlighted_piece.row = self.row
-        app.highlighted_piece.col = self.col
-        app.highlighted_piece.piece_type = 'blank'
         app.is_animating = False
 
 
     def handle_touch(self):
         app = App.get_running_app()
+        #print("Touched", self.id())
         if app.is_animating:
             return
         if self.indicator_opacity == 1:
