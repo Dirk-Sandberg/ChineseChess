@@ -3,15 +3,12 @@ from kivy.uix.image import Image
 from kivy.animation import Animation
 from kivy.app import App
 from kivy.properties import OptionProperty, StringProperty
-from movehelper import highlight_rook_moves, highlight_pawn_moves, \
-    highlight_king_moves, highlight_guard_moves, highlight_elephant_moves, \
-    highlight_cannon_moves, highlight_knight_moves
 
 from availablemoveindicator import AvailableMoveIndicator
 from kivy.core.window import Window
 
 class ChessPiece(ButtonBehavior, Image):
-    piece_type = OptionProperty("pawn", options=["blank", "rook", "cannon","pawn", "king", "knight", "guard", "elephant"])
+    piece_type = OptionProperty("blank", options=["blank", "rook", "cannon","pawn", "king", "knight", "guard", "elephant"])
     player = StringProperty("black")
 
     def move_piece(self):
@@ -19,14 +16,14 @@ class ChessPiece(ButtonBehavior, Image):
 
         # Animate the motion
         animation_widget = Image(source=app.highlighted_piece.source,
-                                 color = app.highlighted_piece.color,
-                                 keep_ratio=False,allow_stretch=True)
+                                 color=app.highlighted_piece.color,
+                                 keep_ratio=False, allow_stretch=True)
         animation_widget.size_hint = (None, None)
         animation_widget.size = app.highlighted_piece.size
         animation_widget.pos = self.to_window(*app.highlighted_piece.pos)
         Window.add_widget(animation_widget)
         new_pos = self.to_window(*self.pos)
-        app.highlighted_piece.source = 'images/blankpiece.png'
+        app.highlighted_piece.opacity = 0
         app.is_animating = True
         anim = Animation(pos=new_pos)
         anim.bind(on_complete=self.finish_piece_movement)
@@ -34,6 +31,7 @@ class ChessPiece(ButtonBehavior, Image):
 
     def finish_piece_movement(self, animation, animated_object):
         app = App.get_running_app()
+        app.highlighted_piece.opacity = 1
 
         black_captured_pieces_grid = app.root.ids.game_screen.ids.captured_black_pieces
         red_captured_pieces_grid = app.root.ids.game_screen.ids.captured_red_pieces
@@ -45,49 +43,71 @@ class ChessPiece(ButtonBehavior, Image):
                 black_captured_pieces_grid.add_widget(
                     Image(source=self.source, color=self.color))
 
+
+
+        # Place a blank piece in place of the one that just moved
+        app.root.ids.game_screen.move_pieces(self, app.highlighted_piece)
+
+
+        # Remove the captured piece from the list of black/red pieces
+        # Only works if the piece hasn't moved because i'm not actually moving
+        # chess pieces around, im just changing the image of the board
+        widget_to_remove = self
+        if widget_to_remove in app.board_helper.black_pieces:
+            app.board_helper.black_pieces.remove(widget_to_remove)
+            print("Removing me", widget_to_remove.player, widget_to_remove.piece_type)
+        if widget_to_remove in app.board_helper.red_pieces:
+            app.board_helper.red_pieces.remove(widget_to_remove)
+            print("Removing me", widget_to_remove.player, widget_to_remove.piece_type)
+
+
         animated_object.parent.remove_widget(animated_object)
         # The piece has been captured if it wasn't blank!
-        self.piece_type = app.highlighted_piece.piece_type
-        self.player = app.highlighted_piece.player
+        app.highlighted_piece.row = self.row
+        app.highlighted_piece.col = self.col
         app.highlighted_piece.piece_type = 'blank'
         app.is_animating = False
 
-    def highlight_moves(self):
+
+    def handle_touch(self):
         app = App.get_running_app()
         if app.is_animating:
             return
+        if self.indicator_opacity == 1:
+            # Game needs to move the highlighted widget
+            self.move_piece()
+            self.clear_indicators()
+        else:
+            self.highlight_moves()
+
+    def highlight_moves(self):
+        """
+        To be overridden by subclasses
+        :return:
+        """
+
+    def highlight_legal_move(self, square):
+        app = App.get_running_app()
+        app.root.ids.game_screen.check_for_check()
+        piece = app.board_helper.get_widget_at(square[0], square[1])
+        if piece:
+            piece.indicator_opacity = 1
+
+    def highlight_illegal_move(self, square):
+        app = App.get_running_app()
+        piece = app.board_helper.get_widget_at(square[0], square[1])
+        if piece:
+            piece.indicator_opacity = .5
+
+
+    def clear_indicators(self):
+        app = App.get_running_app()
         board1 = app.root.ids.game_screen.ids.top_board
         board2 = app.root.ids.game_screen.ids.bottom_board
-
-        # If they clicked on a highlighted spot, move their piece
-        if self.indicator_opacity == 1:
-            self.move_piece()
-            # Clear all indicators
-            for child in board1.walk():
-                child.indicator_opacity = 0
-            for child in board2.walk():
-                child.indicator_opacity = 0
-            return
-        else:
-            app.highlighted_piece = self
         # Clear all indicators
         for child in board1.walk():
             child.indicator_opacity = 0
         for child in board2.walk():
             child.indicator_opacity = 0
 
-        if self.piece_type == "rook":
-            highlight_rook_moves(self.row, self.col, self.player)
-        if self.piece_type == "pawn":
-            highlight_pawn_moves(self.row, self.col, self.player)
-        if self.piece_type == 'guard':
-            highlight_guard_moves(self.row, self.col, self.player)
-        if self.piece_type == 'king':
-            highlight_king_moves(self.row, self.col, self.player)
-        if self.piece_type == 'elephant':
-            highlight_elephant_moves(self.row, self.col, self.player)
-        if self.piece_type == 'cannon':
-            highlight_cannon_moves(self.row, self.col, self.player)
-        if self.piece_type == 'knight':
-            highlight_knight_moves(self.row, self.col, self.player)
 

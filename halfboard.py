@@ -4,6 +4,7 @@ from chesspiece import ChessPiece
 from kivy.uix.widget import Widget
 from kivy.app import App
 from kivy.animation import Animation
+from rookpiece import RookPiece
 
 class HalfBoard(GridLayout):
     rows = NumericProperty(5)
@@ -24,7 +25,7 @@ class HalfBoard(GridLayout):
                 if row == back_row:
                     # Set back row pieces
                     if col == 0 or col == (self.cols-1):
-                        c = ChessPiece(piece_type="rook", player=self.player_color)
+                        c = RookPiece(player=self.player_color)
                     elif col == 1 or col == (self.cols-2):
                         c = ChessPiece(piece_type="knight", player=self.player_color)
                     elif col == 2 or col == (self.cols - 3):
@@ -49,6 +50,11 @@ class HalfBoard(GridLayout):
                 c.board_half = self.half
                 self.add_widget(c)
 
+                if c.piece_type != 'blank':
+                    if self.player_color == 'black':
+                        board_helper.black_pieces.append(c)
+                    else:
+                        board_helper.red_pieces.append(c)
                 board_helper.widgets_by_row_and_column[(c.row, c.col)] = c
                 board_helper.row_and_column_by_widget["%s:%s"%(c.player,c.piece_type)] = (c.row, c.col)
 

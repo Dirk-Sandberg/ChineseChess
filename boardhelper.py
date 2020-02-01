@@ -9,6 +9,8 @@ class BoardHelper:
 
     widgets_by_row_and_column = {}
     row_and_column_by_widget = {}  # Is this useful?
+    black_pieces = []
+    red_pieces = []
 
     def get_widget_at(self, row, col):
         if row >= NUM_ROWS:
