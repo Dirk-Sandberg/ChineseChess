@@ -5,6 +5,7 @@
         top_board.add_starting_pieces()
         bottom_board.add_starting_pieces()
     BoxLayout:
+        padding: [dp(5),]
         orientation: 'vertical'
         GridLayout:
             id: captured_black_pieces
@@ -19,19 +20,19 @@
                 Image:
                     keep_ratio: False
                     allow_stretch: True
-                    source: "images/chess_cropped.png"
+                    source: "images/chess_cropped_transparent.png"
             HalfBoard:
                 id: top_board
                 # Top board
                 size_hint: 1, .46
-                pos_hint: {"top": 1}
+                pos_hint: {"top": 1, "center_x": .5}
                 half: "top"
             HalfBoard:
                 # Bottom board
                 half: "bottom"
                 id: bottom_board
                 size_hint: 1, .46
-                pos_hint: {"top": .46}
+                pos_hint: {"top": .46, "center_x": .5}
                 player_color: "red"
         GridLayout:
             id: captured_red_pieces

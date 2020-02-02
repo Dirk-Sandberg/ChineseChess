@@ -14,6 +14,8 @@ class MainApp(MDApp):
     board_helper = BoardHelper()
     highlighted_piece = None
     is_animating = BooleanProperty(False)
+    def on_start(self):
+        self.theme_cls.theme_style = 'Dark'
     pass
 
 

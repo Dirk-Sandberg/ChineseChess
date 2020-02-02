@@ -28,9 +28,12 @@ class KingPiece(ChessPiece):
                 # Trying to move up from palace
                 continue
             # Check for the flying king rule
+            # Get column for both kings
+            # If the column from move[1] is the same as the enemy_king.col
+                # if no other units in that column with row between king cols
+                    # Rule violated
             pieces_in_same_column = []
             for _row in range(NUM_ROWS):
-                #print("This flying king check doesn't work exactly")
                 piece = app.board_helper.get_widget_at(_row, move[1])
                 if piece.piece_type != 'blank':
                     pieces_in_same_column.append(piece)
