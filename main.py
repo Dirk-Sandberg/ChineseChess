@@ -1,3 +1,7 @@
+import sys
+# Fix path on iOS, otherwise can't find relative imports
+sys.path.append("/".join(x for x in __file__.split("/")[:-1]))
+
 from kivymd.app import MDApp
 from screens.gamescreen import GameScreen
 from screens.homescreen import HomeScreen
