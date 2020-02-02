@@ -30,7 +30,7 @@ class KingPiece(ChessPiece):
             # Check for the flying king rule
             pieces_in_same_column = []
             for _row in range(NUM_ROWS):
-                print("This flying king check doesn't work exactly")
+                #print("This flying king check doesn't work exactly")
                 piece = app.board_helper.get_widget_at(_row, move[1])
                 if piece.piece_type != 'blank':
                     pieces_in_same_column.append(piece)

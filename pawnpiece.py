@@ -18,7 +18,7 @@ class PawnPiece(ChessPiece):
                 if piece.piece_type != 'blank' and piece.player == player:
                     piece.indicator_opacity = 0
                 else:
-                    attacked_squares.append([row + 1, col])
+                    attacked_squares.append((row + 1, col))
 
             # If pawn is past river, can move left and right
             if row > 4:
@@ -27,13 +27,13 @@ class PawnPiece(ChessPiece):
                     if piece.piece_type != 'blank' and piece.player == player:
                         piece.indicator_opacity = 0
                     else:
-                        attacked_squares.append([row, col - 1])
+                        attacked_squares.append((row, col - 1))
                 piece = app.board_helper.get_widget_at(row, col + 1)
                 if piece:
                     if piece.piece_type != 'blank' and piece.player == player:
                         piece.indicator_opacity = 0
                     else:
-                        attacked_squares.append([row, col + 1])
+                        attacked_squares.append((row, col + 1))
 
 
         else:
@@ -43,7 +43,7 @@ class PawnPiece(ChessPiece):
                 if piece.piece_type != 'blank' and piece.player == player:
                     piece.indicator_opacity = 0
                 else:
-                    attacked_squares.append([row - 1, col])
+                    attacked_squares.append((row - 1, col))
 
             # If pawn is past river, can move left and right
             if row < 5:
@@ -52,12 +52,12 @@ class PawnPiece(ChessPiece):
                     if piece.piece_type != 'blank' and piece.player == player:
                         piece.indicator_opacity = 0
                     else:
-                        attacked_squares.append([row, col - 1])
+                        attacked_squares.append((row, col - 1))
 
                 piece = app.board_helper.get_widget_at(row, col + 1)
                 if piece:
                     if piece.piece_type != 'blank' and piece.player == player:
                         piece.indicator_opacity = 0
                     else:
-                        attacked_squares.append([row, col + 1])
+                        attacked_squares.append((row, col + 1))
         return attacked_squares, not_attacked_squares

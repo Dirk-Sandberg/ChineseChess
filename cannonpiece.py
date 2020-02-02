@@ -18,7 +18,7 @@ class CannonPiece(ChessPiece):
             piece = app.board_helper.get_widget_at(_row, col)
             if collides == 0:
                 if piece.piece_type == 'blank':
-                    attacked_squares.append([_row, col])
+                    attacked_squares.append((_row, col))
                 else:
                     piece.indicator_opacity = 0
                     collides += 1
@@ -26,7 +26,7 @@ class CannonPiece(ChessPiece):
                 if piece.piece_type != 'blank':
                     collides += 1
                     if piece.player != player:
-                        attacked_squares.append([_row, col])
+                        attacked_squares.append((_row, col))
 
         # Find Available moves up
         # up means decreasing row
@@ -35,7 +35,7 @@ class CannonPiece(ChessPiece):
             piece = app.board_helper.get_widget_at(_row, col)
             if collides == 0:
                 if piece.piece_type == 'blank':
-                    attacked_squares.append([_row, col])
+                    attacked_squares.append((_row, col))
                 else:
                     piece.indicator_opacity = 0
                     collides += 1
@@ -43,7 +43,7 @@ class CannonPiece(ChessPiece):
                 if piece.piece_type != 'blank':
                     collides += 1
                     if piece.player != player:
-                        attacked_squares.append([_row, col])
+                        attacked_squares.append((_row, col))
 
         # Find Available moves left
         # left means decreasing column
@@ -52,7 +52,7 @@ class CannonPiece(ChessPiece):
             piece = app.board_helper.get_widget_at(row, _col)
             if collides == 0:
                 if piece.piece_type == 'blank':
-                    attacked_squares.append([row, _col])
+                    attacked_squares.append((row, _col))
                 else:
                     piece.indicator_opacity = 0
                     collides += 1
@@ -60,7 +60,7 @@ class CannonPiece(ChessPiece):
                 if piece.piece_type != 'blank':
                     collides += 1
                     if piece.player != player:
-                        attacked_squares.append([row, _col])
+                        attacked_squares.append((row, _col))
 
         # Find Available moves right
         # right means increasing column
@@ -69,7 +69,7 @@ class CannonPiece(ChessPiece):
             piece = app.board_helper.get_widget_at(row, _col)
             if collides == 0:
                 if piece.piece_type == 'blank':
-                    attacked_squares.append([row, _col])
+                    attacked_squares.append((row, _col))
                 else:
                     piece.indicator_opacity = 0
                     collides += 1
@@ -77,5 +77,5 @@ class CannonPiece(ChessPiece):
                 if piece.piece_type != 'blank':
                     collides += 1
                     if piece.player != player:
-                        attacked_squares.append([row, _col])
+                        attacked_squares.append((row, _col))
         return attacked_squares, not_attacked_squares

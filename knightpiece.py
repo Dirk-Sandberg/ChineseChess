@@ -26,7 +26,6 @@ class KnightPiece(ChessPiece):
                 if blocking_piece.piece_type != 'blank':
                     # There is a piece blocking the knight's path
                     not_attacked_squares.append(move)
-                    print("Knight is being blocked by", blocking_piece)
                     continue
 
             piece = app.board_helper.get_widget_at(*move)

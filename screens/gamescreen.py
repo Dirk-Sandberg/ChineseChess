@@ -24,7 +24,7 @@ class GameScreen(Screen):
         from_parent.remove_widget(piece_moving)
         to_parent.remove_widget(piece_being_entered_upon)
         to_parent.add_widget(piece_moving, moving_to)
-        new_blank_piece = ChessPiece(col=piece_moving.col,row=piece_moving.row)
+        new_blank_piece = ChessPiece(col=piece_moving.col,row=piece_moving.row, source="kingpiece.png")
         from_parent.add_widget(new_blank_piece, moving_from)
         piece_moving.row = piece_being_entered_upon.row
         piece_moving.col = piece_being_entered_upon.col
@@ -38,22 +38,23 @@ class GameScreen(Screen):
 
     def check_for_check(self):
         app = App.get_running_app()
+        print("Checking for check")
 
         # Check for red being in check
         black_pieces = app.board_helper.black_pieces
         attacked_king = app.board_helper.get_widget_indices('red', 'king')
         for piece in black_pieces:
-            attacked_squares, not_attacked_squares = [], []
+            attacked_squares, not_attacked_squares = piece.get_attacked_squares()
             if attacked_king in attacked_squares:
-                print("RED KING IS ATTACKED")
+                print("Red KING IS ATTACKED by", piece.id())
 
         # Check for black king being in check
         red_pieces = app.board_helper.red_pieces
         attacked_king = app.board_helper.get_widget_indices('black', 'king')
         for piece in red_pieces:
-            attacked_squares, not_attacked_squares = [], []
+            attacked_squares, not_attacked_squares = piece.get_attacked_squares()
             if attacked_king in attacked_squares:
-                print("Black KING IS ATTACKED")
+                print("Black KING IS ATTACKED by", piece.id())
 
 
     def move_violates_flying_king_rule(self, row_leaving, row_entering,

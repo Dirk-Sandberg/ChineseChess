@@ -22,7 +22,7 @@ class RookPiece(ChessPiece):
                 if piece.piece_type != 'blank' and piece.player == player:
                     piece.indicator_opacity = 0
                 else:
-                    attacked_squares.append([_row, col])
+                    attacked_squares.append((_row, col))
 
         # Find Available moves up
         # up means decreasing row
@@ -35,7 +35,7 @@ class RookPiece(ChessPiece):
                 if piece.piece_type != 'blank' and piece.player == player:
                     piece.indicator_opacity = 0
                 else:
-                    attacked_squares.append([_row, col])
+                    attacked_squares.append((_row, col))
 
         # Find Available moves left
         # left means decreasing column
@@ -48,7 +48,7 @@ class RookPiece(ChessPiece):
                 if piece.piece_type != 'blank' and piece.player == player:
                     piece.indicator_opacity = 0
                 else:
-                    attacked_squares.append([row, _col])
+                    attacked_squares.append((row, _col))
 
         # Find Available moves right
         # right means increasing column
@@ -61,6 +61,6 @@ class RookPiece(ChessPiece):
                 if piece.piece_type != 'blank' and piece.player == player:
                     piece.indicator_opacity = 0
                 else:
-                    attacked_squares.append([row, _col])
+                    attacked_squares.append((row, _col))
 
         return attacked_squares, not_attacked_squares

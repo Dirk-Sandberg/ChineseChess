@@ -9,12 +9,13 @@ from kivy.core.window import Window
 
 class ChessPiece(ButtonBehavior, Image):
     piece_type = OptionProperty("blank", options=["blank", "rook", "cannon","pawn", "king", "knight", "guard", "elephant"])
-    player = StringProperty("black")
+    player = StringProperty("")
 
     def id(self):
         return "%s %s at (%s, %s)"%(self.player, self.piece_type, self.row, self.col)
 
     def move_piece(self):
+        #print("Moving piece", self.id())
         app = App.get_running_app()
 
         # Animate the motion
@@ -68,6 +69,9 @@ class ChessPiece(ButtonBehavior, Image):
         # The piece has been captured if it wasn't blank!
         app.is_animating = False
 
+        ## Check for check
+        app.root.ids.game_screen.check_for_check()
+
 
     def handle_touch(self):
         app = App.get_running_app()
@@ -83,7 +87,7 @@ class ChessPiece(ButtonBehavior, Image):
             self.highlight_moves()
 
     def highlight_moves(self):
-        print("%s doesn't account for flying king yet"%self.piece_type)
+        #print("%s doesn't account for flying king yet"%self.piece_type)
         app = App.get_running_app()
         app.highlighted_piece = self
         attacked, not_attacked = self.get_attacked_squares()
@@ -101,7 +105,9 @@ class ChessPiece(ButtonBehavior, Image):
 
     def highlight_legal_move(self, square):
         app = App.get_running_app()
-        app.root.ids.game_screen.check_for_check()
+        #app.root.ids.game_screen.check_for_check()
+        # Checking for check here screws up the highlighted moves for some reason
+        # Probably because it sets indicator opacity to 0 for some reason
         piece = app.board_helper.get_widget_at(square[0], square[1])
         if piece:
             piece.indicator_opacity = 1
