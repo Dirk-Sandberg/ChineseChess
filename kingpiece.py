@@ -65,4 +65,28 @@ class KingPiece(ChessPiece):
                 else:
                     attacked_squares.append(move)
 
+
+        # Add an attacked move for the flying king rule
+        # Get all pieces in the column that the king is trying to move to
+        pieces_in_same_column = []
+        for _row in range(NUM_ROWS):
+            piece = app.board_helper.get_widget_at(_row, self.col)
+            if piece.piece_type != 'blank':
+                pieces_in_same_column.append(piece)
+        enemy_color = 'red' if player == 'black' else 'black'
+        enemy_king = app.board_helper.get_widget_by_color_and_type(enemy_color, 'king')
+        if self.col == enemy_king.col:
+            # King is moving to same column as enemy king
+            min_row = min([self.row, enemy_king.row])
+            max_row = max([self.row, enemy_king.row])
+            piece_is_between_kings = False
+            # See if any pieces are between the two kings
+            for piece in pieces_in_same_column:
+                if piece.row < max_row and piece.row > min_row:
+                    piece_is_between_kings = True
+            # If there was no piece blocking the kings, rule violated
+            if not piece_is_between_kings:
+                # King could theoretically attack the other king
+                attacked_squares.append((enemy_king.row, enemy_king.col))
+
         return attacked_squares, not_attacked_squares

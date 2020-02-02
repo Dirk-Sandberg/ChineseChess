@@ -20,7 +20,8 @@ class RookPiece(ChessPiece):
                 if piece.piece_type != 'blank':
                     has_collided = True
                 if piece.piece_type != 'blank' and piece.player == player:
-                    piece.indicator_opacity = 0
+                    continue
+                    #piece.indicator_opacity = 0
                 else:
                     attacked_squares.append((_row, col))
 
@@ -33,7 +34,8 @@ class RookPiece(ChessPiece):
                 if piece.piece_type != 'blank':
                     has_collided = True
                 if piece.piece_type != 'blank' and piece.player == player:
-                    piece.indicator_opacity = 0
+                    continue
+                    #piece.indicator_opacity = 0
                 else:
                     attacked_squares.append((_row, col))
 
@@ -46,7 +48,8 @@ class RookPiece(ChessPiece):
                 if piece.piece_type != 'blank':
                     has_collided = True
                 if piece.piece_type != 'blank' and piece.player == player:
-                    piece.indicator_opacity = 0
+                    continue
+                    #piece.indicator_opacity = 0
                 else:
                     attacked_squares.append((row, _col))
 
@@ -59,7 +62,8 @@ class RookPiece(ChessPiece):
                 if piece.piece_type != 'blank':
                     has_collided = True
                 if piece.piece_type != 'blank' and piece.player == player:
-                    piece.indicator_opacity = 0
+                    continue
+                    #piece.indicator_opacity = 0
                 else:
                     attacked_squares.append((row, _col))
 

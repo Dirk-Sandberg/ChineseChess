@@ -48,6 +48,7 @@ class GameScreen(Screen):
             attacked_squares, not_attacked_squares = piece.get_attacked_squares()
             if attacked_king in attacked_squares:
                 print("Red KING IS ATTACKED by", piece.id())
+                return True, "red"
 
         # Check for black king being in check
         red_pieces = app.board_helper.red_pieces
@@ -57,23 +58,28 @@ class GameScreen(Screen):
             attacked_squares, not_attacked_squares = piece.get_attacked_squares()
             if attacked_king in attacked_squares:
                 print("Black KING IS ATTACKED by", piece.id())
+                return True, "black"
+        return False, ""
 
-
-    def move_violates_flying_king_rule(self, row_leaving, row_entering,
-                                       col_leaving, col_entering, player):
+    def simulate_board_with_changed_piece_position(self,piece,new_row,new_col):
+        print("This doesn't work yet")
         app = App.get_running_app()
-        king_position = app.board_helper.get_widget_by_color_and_type(player, 'king')
-        king_position = (king_position.row, king_position.col)
-        print(king_position)
-        return False
-        pieces_in_same_column = []
-        for _row in range(NUM_ROWS):
-            piece = app.board_helper.get_widget_at(_row, move[1])
-            if piece.piece_type != 'blank':
-                pieces_in_same_column.append(piece)
-        if len(pieces_in_same_column) == 1 and pieces_in_same_column[
-            0].piece_type == 'king':
-            # Illegal move, can't run into a column facing the enemy king
-            pass
+        # Get references to previous game state
+        board = app.board_helper
+        old_row, old_col = piece.row, piece.col
+        old_widgets_by_row_and_column = board.widgets_by_row_and_column.copy()
+
+        # Simulate new game state and look for check
+        piece.row = new_row
+        piece.col = new_col
+        board.widgets_by_row_and_column[(new_row, new_col)] = piece
+        check_is_in_simulated_game_state, checked_color = self.check_for_check()
+
+        # Change game state back to original state
+        piece.row = old_row
+        piece.col = old_col
+        board.widgets_by_row_and_column = old_widgets_by_row_and_column
+
+        return check_is_in_simulated_game_state
 
 

@@ -2,14 +2,14 @@ from kivy.uix.button import ButtonBehavior
 from kivy.uix.image import Image
 from kivy.animation import Animation
 from kivy.app import App
-from kivy.properties import OptionProperty, StringProperty
+from kivy.properties import OptionProperty
 
 from availablemoveindicator import AvailableMoveIndicator
 from kivy.core.window import Window
 
 class ChessPiece(ButtonBehavior, Image):
     piece_type = OptionProperty("blank", options=["blank", "rook", "cannon","pawn", "king", "knight", "guard", "elephant"])
-    player = StringProperty("")
+    player = OptionProperty("", options=["", "black", "red"])
 
     def id(self):
         return "%s %s at (%s, %s)"%(self.player, self.piece_type, self.row, self.col)
@@ -105,12 +105,15 @@ class ChessPiece(ButtonBehavior, Image):
 
     def highlight_legal_move(self, square):
         app = App.get_running_app()
-        #app.root.ids.game_screen.check_for_check()
         # Checking for check here screws up the highlighted moves for some reason
         # Probably because it sets indicator opacity to 0 for some reason
+        move_is_illegal = app.root.ids.game_screen.simulate_board_with_changed_piece_position(self,square[0], square[1])
+        #########app.root.ids.game_screen.check_for_check()
         piece = app.board_helper.get_widget_at(square[0], square[1])
-        if piece:
+        if piece and not move_is_illegal:
             piece.indicator_opacity = 1
+        else:
+            piece.indicator_opacity = 0.5
 
     def highlight_illegal_move(self, square):
         app = App.get_running_app()
