@@ -19,7 +19,6 @@ class MainApp(MDApp):
 
     def checkmate(self, checkmated_player_color):
         print(checkmated_player_color, " loses")
-    pass
 
 
 if __name__ == "__main__":

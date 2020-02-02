@@ -77,6 +77,7 @@ class ChessPiece(ButtonBehavior, Image):
             CHECKMATE = game_screen.check_for_checkmate(enemy_color)
             if CHECKMATE:
                 app.checkmate(enemy_color)
+        app.highlighted_piece = None
 
 
 

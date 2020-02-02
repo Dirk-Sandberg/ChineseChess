@@ -8,6 +8,22 @@ from chesspiece import ChessPiece
 class GameScreen(Screen):
     online_mode_enabled = BooleanProperty(False)
 
+    def new_game(self):
+        board_helper = App.get_running_app().board_helper
+        board_helper.widgets_by_row_and_column = {}
+        board_helper.widgets_by_color_and_type = {}
+        self.ids.captured_black_pieces.clear_widgets()
+        self.ids.captured_red_pieces.clear_widgets()
+
+        top_board = self.ids.top_board
+        bottom_board = self.ids.bottom_board
+        top_board.clear_widgets()
+        bottom_board.clear_widgets()
+        top_board.add_starting_pieces()
+        bottom_board.add_starting_pieces()
+
+
+
     def move_pieces(self, piece_being_entered_upon, piece_moving):
         # Replace the widget being moved on
         # Place a blank widget where the moving piece left
@@ -63,7 +79,6 @@ class GameScreen(Screen):
                     return True
             return False
         elif (player == "red" and not simulated_move) or (player == "black" and simulated_move):
-            print("Z")
             # Check for black king being in check
             red_pieces = app.board_helper.red_pieces
             attacked_king = app.board_helper.get_widget_by_color_and_type('black', 'king')

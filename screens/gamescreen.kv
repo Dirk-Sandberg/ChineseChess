@@ -2,14 +2,28 @@
 
 <GameScreen>:
     on_enter:
-        top_board.add_starting_pieces()
-        bottom_board.add_starting_pieces()
+        self.new_game()
     BoxLayout:
         padding: [dp(5),]
         orientation: 'vertical'
         GridLayout:
-            id: captured_black_pieces
             rows: 1
+            size_hint_y: None
+            height: leave_game_button.height
+            MDRectangleFlatIconButton:
+                id: leave_game_button
+                text: "Leave Game"
+                icon: 'close'
+            Widget:
+            MDRectangleFlatIconButton:
+                icon: 'replay'
+                text: "Restart"
+                on_release:
+                    root.new_game()
+        GridLayout:
+            id: captured_black_pieces
+            cols: 8
+            rows: 2
         FloatLayout:
             size_hint: 1, None
             height: self.width
@@ -36,4 +50,5 @@
                 player_color: "red"
         GridLayout:
             id: captured_red_pieces
-            rows: 1
+            cols: 8
+            rows: 2
