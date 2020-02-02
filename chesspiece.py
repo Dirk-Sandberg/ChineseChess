@@ -29,7 +29,7 @@ class ChessPiece(ButtonBehavior, Image):
         new_pos = self.to_window(*self.pos)
         app.highlighted_piece.opacity = 0
         app.is_animating = True
-        anim = Animation(pos=new_pos)
+        anim = Animation(pos=new_pos, duration=0)
         anim.bind(on_complete=self.finish_piece_movement)
         anim.start(animation_widget)
 
@@ -59,18 +59,20 @@ class ChessPiece(ButtonBehavior, Image):
         widget_to_remove = self
         if widget_to_remove in app.board_helper.black_pieces:
             app.board_helper.black_pieces.remove(widget_to_remove)
-            print("Removing me", widget_to_remove.player, widget_to_remove.piece_type)
+            #print("Removing me", widget_to_remove.player, widget_to_remove.piece_type)
         if widget_to_remove in app.board_helper.red_pieces:
             app.board_helper.red_pieces.remove(widget_to_remove)
-            print("Removing me", widget_to_remove.player, widget_to_remove.piece_type)
+            #print("Removing me", widget_to_remove.player, widget_to_remove.piece_type)
 
 
         animated_object.parent.remove_widget(animated_object)
         # The piece has been captured if it wasn't blank!
         app.is_animating = False
 
-        ## Check for check
-        app.root.ids.game_screen.check_for_check()
+        # Check if this move put the enemy's king in check
+        enemy_is_in_check = app.root.ids.game_screen.check_for_check(app.highlighted_piece.player, simulated_move=False)
+        if enemy_is_in_check:
+            print("Enemy king is in check!")
 
 
     def handle_touch(self):
@@ -91,6 +93,18 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         app.highlighted_piece = self
         attacked, not_attacked = self.get_attacked_squares()
+        # Check if any squares violate the flying king rule
+        # If there are, remove them from the legal moves and add them to illegal moves
+        moves_to_remove = []
+        for move in attacked:
+            g = app.root.ids.game_screen
+            move_is_illegal = g.simulate_board_with_changed_piece_position(self,move[0], move[1])
+            if move_is_illegal:
+                moves_to_remove.append(move)
+                not_attacked.append(move)
+        for move in moves_to_remove:
+            attacked.remove(move)
+
         for square in attacked:
             self.highlight_legal_move(square)
         for square in not_attacked:
@@ -107,10 +121,10 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         # Checking for check here screws up the highlighted moves for some reason
         # Probably because it sets indicator opacity to 0 for some reason
-        move_is_illegal = app.root.ids.game_screen.simulate_board_with_changed_piece_position(self,square[0], square[1])
+        #move_is_illegal = app.root.ids.game_screen.simulate_board_with_changed_piece_position(self,square[0], square[1])
         #########app.root.ids.game_screen.check_for_check()
         piece = app.board_helper.get_widget_at(square[0], square[1])
-        if piece and not move_is_illegal:
+        if piece:# and not move_is_illegal:
             piece.indicator_opacity = 1
         else:
             piece.indicator_opacity = 0.5

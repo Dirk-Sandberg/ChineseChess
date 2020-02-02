@@ -8,20 +8,19 @@
     indicator_opacity: 0
     col: 0
     row: 0
-    #debug: 0
     on_release:
         self.handle_touch()
     AvailableMoveIndicator:
         center: root.center
         opacity: root.indicator_opacity
-    #Label:
-    #    text: "%s,%s"%(root.row,root.col)
-    #    pos: root.pos
-    #    size: root.size
-    #    color: 0,1,0,1
-    #    canvas.before:
-    #        Color:
-    #            rgba: 0,0,0, root.debug
-    #        Rectangle:
-    #            size: self.size
-    #            pos: self.pos
+    Label:
+        text: "%s,%s"%(root.row,root.col)
+        pos: root.pos
+        size: root.size
+        color: 0,1,0,1
+        canvas.before:
+            Color:
+                rgba: 0,0,0,0
+            Rectangle:
+                size: self.size
+                pos: self.pos
