@@ -27,20 +27,36 @@ class KingPiece(ChessPiece):
             if move[0] > 2 and player == 'black':
                 # Trying to move up from palace
                 continue
+
+
             # Check for the flying king rule
             # Get column for both kings
             # If the column from move[1] is the same as the enemy_king.col
                 # if no other units in that column with row between king cols
                     # Rule violated
+            # Get all pieces in the column that the king is trying to move to
             pieces_in_same_column = []
             for _row in range(NUM_ROWS):
                 piece = app.board_helper.get_widget_at(_row, move[1])
                 if piece.piece_type != 'blank':
                     pieces_in_same_column.append(piece)
-            if len(pieces_in_same_column) == 1 and pieces_in_same_column[
-                0].piece_type == 'king':
-                # Illegal move, can't run into a column facing the enemy king
-                not_attacked_squares.append(move)
+            enemy_color = 'red' if player == 'black' else 'black'
+            enemy_king = app.board_helper.get_widget_by_color_and_type(enemy_color, 'king')
+            if move[1] == enemy_king.col:
+                # King is moving to same column as enemy king
+                min_row = min([self.row, enemy_king.row])
+                max_row = max([self.row, enemy_king.row])
+                piece_is_between_kings = False
+                # See if any pieces are between the two kings
+                for piece in pieces_in_same_column:
+                    if piece.row < max_row and piece.row > min_row:
+                        piece_is_between_kings = True
+                # If there was no piece blocking the kings, rule violated
+                if not piece_is_between_kings:
+                    # Flying king rule was violated. Don't let the king go there
+                    not_attacked_squares.append(move)
+                    # Go to the next move
+                    continue
 
             piece = app.board_helper.get_widget_at(*move)
             if piece:
@@ -48,4 +64,5 @@ class KingPiece(ChessPiece):
                     pass
                 else:
                     attacked_squares.append(move)
+
         return attacked_squares, not_attacked_squares

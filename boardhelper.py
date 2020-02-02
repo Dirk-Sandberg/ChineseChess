@@ -8,7 +8,7 @@ class BoardHelper:
             return row+5, col
 
     widgets_by_row_and_column = {}
-    row_and_column_by_widget = {}  # Is this useful?
+    widgets_by_color_and_type = {}  # Is this useful?
     black_pieces = []
     red_pieces = []
 
@@ -21,6 +21,6 @@ class BoardHelper:
             return None
         return self.widgets_by_row_and_column[(row, col)]
 
-    def get_widget_indices(self, player_color, piece_type):
-        return self.row_and_column_by_widget["%s:%s"%(player_color,piece_type)]
+    def get_widget_by_color_and_type(self, player_color, piece_type):
+        return self.widgets_by_color_and_type["%s:%s"%(player_color,piece_type)]
 

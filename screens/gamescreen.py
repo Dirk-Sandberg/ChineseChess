@@ -42,7 +42,8 @@ class GameScreen(Screen):
 
         # Check for red being in check
         black_pieces = app.board_helper.black_pieces
-        attacked_king = app.board_helper.get_widget_indices('red', 'king')
+        attacked_king = app.board_helper.get_widget_by_color_and_type('red', 'king')
+        attacked_king = (attacked_king.row, attacked_king.col)
         for piece in black_pieces:
             attacked_squares, not_attacked_squares = piece.get_attacked_squares()
             if attacked_king in attacked_squares:
@@ -50,7 +51,8 @@ class GameScreen(Screen):
 
         # Check for black king being in check
         red_pieces = app.board_helper.red_pieces
-        attacked_king = app.board_helper.get_widget_indices('black', 'king')
+        attacked_king = app.board_helper.get_widget_by_color_and_type('black', 'king')
+        attacked_king = (attacked_king.row, attacked_king.col)
         for piece in red_pieces:
             attacked_squares, not_attacked_squares = piece.get_attacked_squares()
             if attacked_king in attacked_squares:
@@ -60,7 +62,8 @@ class GameScreen(Screen):
     def move_violates_flying_king_rule(self, row_leaving, row_entering,
                                        col_leaving, col_entering, player):
         app = App.get_running_app()
-        king_position = app.board_helper.get_widget_indices(player, 'king')
+        king_position = app.board_helper.get_widget_by_color_and_type(player, 'king')
+        king_position = (king_position.row, king_position.col)
         print(king_position)
         return False
         pieces_in_same_column = []
