@@ -77,6 +77,30 @@ class GameScreen(Screen):
             return False
         print("This isn't supposed to get here")
 
+    def check_for_checkmate(self, color_in_check):
+        app = App.get_running_app()
+        if color_in_check == 'black':
+            # Try to move all black pieces
+            # If all moves are illegal, game ends
+            black_pieces = app.board_helper.black_pieces
+            for piece in black_pieces:
+                legal_moves, illegal_moves = piece.get_moves()
+                if legal_moves != []:
+                    # Black can make a move. not checkmate
+                    return False
+        else:
+            # Try to move all red pieces
+            # If all moves are illegal, game ends
+            red_pieces = app.board_helper.red_pieces
+            for piece in red_pieces:
+                legal_moves, illegal_moves = piece.get_moves()
+                if legal_moves != []:
+                    # red can make a move. not checkmate
+                    return False
+
+        return True
+
+
     def simulate_board_with_changed_piece_position(self,piece,new_row,new_col):
         #print("This doesn't work yet")
         app = App.get_running_app()

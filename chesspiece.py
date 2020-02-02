@@ -70,9 +70,15 @@ class ChessPiece(ButtonBehavior, Image):
         app.is_animating = False
 
         # Check if this move put the enemy's king in check
-        enemy_is_in_check = app.root.ids.game_screen.check_for_check(app.highlighted_piece.player, simulated_move=False)
+        game_screen = app.root.ids.game_screen
+        enemy_is_in_check = game_screen.check_for_check(app.highlighted_piece.player, simulated_move=False)
         if enemy_is_in_check:
-            print("Enemy king is in check!")
+            enemy_color = 'red' if app.highlighted_piece.player == 'black' else 'black'
+            CHECKMATE = game_screen.check_for_checkmate(enemy_color)
+            if CHECKMATE:
+                app.checkmate(enemy_color)
+
+
 
 
     def handle_touch(self):
@@ -86,28 +92,34 @@ class ChessPiece(ButtonBehavior, Image):
             self.clear_indicators()
         else:
             self.clear_indicators()
-            self.highlight_moves()
+            legal_moves, illegal_moves = self.get_moves()
+            self.highlight_moves(legal_moves, illegal_moves)
 
-    def highlight_moves(self):
-        #print("%s doesn't account for flying king yet"%self.piece_type)
+    def get_moves(self):
         app = App.get_running_app()
+        # Tell the app that this piece is being interacted with
         app.highlighted_piece = self
-        attacked, not_attacked = self.get_attacked_squares()
+        # Get the moves allowed by this piece's moveset
+        # This only returns illegal moves for the king, which might be able to be removed because of the normal flying king check now
+        # Could probably have get_attacked_squares only return get_possible_moves
+        legal_moves, illegal_moves = self.get_attacked_squares()
         # Check if any squares violate the flying king rule
         # If there are, remove them from the legal moves and add them to illegal moves
         moves_to_remove = []
-        for move in attacked:
+        for move in legal_moves:
             g = app.root.ids.game_screen
-            move_is_illegal = g.simulate_board_with_changed_piece_position(self,move[0], move[1])
+            move_is_illegal = g.simulate_board_with_changed_piece_position(self, move[0], move[1])
             if move_is_illegal:
                 moves_to_remove.append(move)
-                not_attacked.append(move)
+                illegal_moves.append(move)
         for move in moves_to_remove:
-            attacked.remove(move)
+            legal_moves.remove(move)
+        return legal_moves, illegal_moves
 
-        for square in attacked:
+    def highlight_moves(self, legal_moves, illegal_moves):
+        for square in legal_moves:
             self.highlight_legal_move(square)
-        for square in not_attacked:
+        for square in illegal_moves:
             self.highlight_illegal_move(square)
 
     def get_attacked_squares(self):

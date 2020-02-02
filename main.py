@@ -16,6 +16,9 @@ class MainApp(MDApp):
     is_animating = BooleanProperty(False)
     def on_start(self):
         self.theme_cls.theme_style = 'Dark'
+
+    def checkmate(self, checkmated_player_color):
+        print(checkmated_player_color, " loses")
     pass
 
 
