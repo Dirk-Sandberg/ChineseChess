@@ -1,16 +1,15 @@
-from kivy.uix.gridlayout import GridLayout
-from kivy.properties import NumericProperty
-from chesspiece import ChessPiece
-from kivy.uix.widget import Widget
 from kivy.app import App
 from kivy.animation import Animation
-from rookpiece import RookPiece
-from guardpiece import GuardPiece
-from elephantpiece import ElephantPiece
-from knightpiece import KnightPiece
-from pawnpiece import PawnPiece
-from kingpiece import KingPiece
-from cannonpiece import CannonPiece
+from kivy.uix.gridlayout import GridLayout
+from kivy.properties import NumericProperty
+from chesspieces.chesspiece import ChessPiece
+from chesspieces.rookpiece import RookPiece
+from chesspieces.guardpiece import GuardPiece
+from chesspieces.elephantpiece import ElephantPiece
+from chesspieces.knightpiece import KnightPiece
+from chesspieces.pawnpiece import PawnPiece
+from chesspieces.kingpiece import KingPiece
+from chesspieces.cannonpiece import CannonPiece
 
 class HalfBoard(GridLayout):
     rows = NumericProperty(5)

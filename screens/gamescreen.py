@@ -1,9 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from kivy.properties import BooleanProperty
-from movehelper import NUM_ROWS, NUM_COLS
-from rookpiece import RookPiece
-from chesspiece import ChessPiece
+from chesspieces.chesspiece import ChessPiece
 
 class GameScreen(Screen):
     online_mode_enabled = BooleanProperty(False)

@@ -1,4 +1,4 @@
-from chesspiece import ChessPiece
+from chesspieces.chesspiece import ChessPiece
 from kivy.app import App
 from movehelper import NUM_COLS, NUM_ROWS
 

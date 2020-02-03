@@ -4,15 +4,14 @@ sys.path.append("/".join(x for x in __file__.split("/")[:-1]))
 
 from elo import rate_1vs1
 from kivymd.app import MDApp
-from screens.gamescreen import GameScreen
-from screens.homescreen import HomeScreen
-from chesspiece import ChessPiece
 from kivy.properties import BooleanProperty
-from halfboard import HalfBoard
 from boardhelper import BoardHelper
-from communications.client import Client
+from kivy.utils import platform
 from kivy.core.window import Window
 Window.allow_screensaver = False
+from screens.homescreen import HomeScreen
+from screens.gamescreen import GameScreen
+from halfboard import HalfBoard
 
 class MainApp(MDApp):
     board_helper = BoardHelper()
@@ -28,7 +27,8 @@ class MainApp(MDApp):
         HOST = '127.0.0.1'  # Local testing
         HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()
-        self.client = Client(HOST, PORT)
+        print("not connecting to server")
+        #self.client = Client(HOST, PORT)
 
         # Directories on iOS can be screwed up
         if platform == 'ios':
@@ -36,10 +36,11 @@ class MainApp(MDApp):
 
     def read_port_file(self):
         with open("port.txt", "r") as f:
-            return f.read()
+            port = f.read()
+            return int(port)
 
     def read_server_ip_file(self):
-        with open("server_ip", "r") as f:
+        with open("server_ip.txt", "r") as f:
             return f.read()
 
     def on_stop(self):
