@@ -5,22 +5,26 @@
     player: "black"
     color: (1,1,1,1) if self.player == "black" else (1,0,0,1)
     source: "images/%spiece.png"%self.piece_type
-    indicator_opacity: 0
+    #indicator_opacity: 0
+    indicator_source: "blankpiece"
     col: 0
     row: 0
     on_release:
         self.handle_touch()
     AvailableMoveIndicator:
+        source: "images/" + root.indicator_source + ".png"
         center: root.center
-        opacity: root.indicator_opacity
-    Label:
-        text: "%s,%s"%(root.row,root.col)
-        pos: root.pos
-        size: root.size
-        color: 0,1,0,1
-        canvas.before:
-            Color:
-                rgba: 0,0,0,0
-            Rectangle:
-                size: self.size
-                pos: self.pos
+        size_hint: None, None
+        size: root.size[0]*0.75, root.size[1]*.75
+        #opacity: root.indicator_opacity
+    #Label:
+    #    text: "%s,%s"%(root.row,root.col)
+    #    pos: root.pos
+    #    size: root.size
+    #    color: 0,1,0,1
+    #    canvas.before:
+    #        Color:
+    #            rgba: 0,0,0,0
+    #        Rectangle:
+    #            size: self.size
+    #            pos: self.pos

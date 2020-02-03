@@ -77,6 +77,9 @@ class ChessPiece(ButtonBehavior, Image):
             CHECKMATE = game_screen.check_for_checkmate(enemy_color)
             if CHECKMATE:
                 app.checkmate(enemy_color)
+
+        # Stop highlighting the piece
+        app.highlighted_piece.indicator_source = "blankpiece"
         app.highlighted_piece = None
 
 
@@ -87,7 +90,8 @@ class ChessPiece(ButtonBehavior, Image):
         #print("Touched", self.id())
         if app.is_animating:
             return
-        if self.indicator_opacity == 1:
+        print(self.indicator_source)
+        if self.indicator_source == "circular_crosshair":
             # Game needs to move the highlighted widget
             self.move_piece()
             self.clear_indicators()
@@ -100,6 +104,7 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         # Tell the app that this piece is being interacted with
         app.highlighted_piece = self
+        app.highlighted_piece.indicator_source = "rectangular_crosshair"
         # Get the moves allowed by this piece's moveset
         # This only returns illegal moves for the king, which might be able to be removed because of the normal flying king check now
         # Could probably have get_attacked_squares only return get_possible_moves
@@ -132,15 +137,11 @@ class ChessPiece(ButtonBehavior, Image):
 
     def highlight_legal_move(self, square):
         app = App.get_running_app()
-        # Checking for check here screws up the highlighted moves for some reason
-        # Probably because it sets indicator opacity to 0 for some reason
-        #move_is_illegal = app.root.ids.game_screen.simulate_board_with_changed_piece_position(self,square[0], square[1])
-        #########app.root.ids.game_screen.check_for_check()
         piece = app.board_helper.get_widget_at(square[0], square[1])
-        if piece:# and not move_is_illegal:
-            piece.indicator_opacity = 1
+        if piece:
+            piece.indicator_source = "circular_crosshair"
         else:
-            piece.indicator_opacity = 0.5
+            piece.indicator_opacity = "blankpiece"
 
     def highlight_illegal_move(self, square):
         app = App.get_running_app()
@@ -155,8 +156,8 @@ class ChessPiece(ButtonBehavior, Image):
         board2 = app.root.ids.game_screen.ids.bottom_board
         # Clear all indicators
         for child in board1.walk():
-            child.indicator_opacity = 0
+            child.indicator_source = "blankpiece"
         for child in board2.walk():
-            child.indicator_opacity = 0
+            child.indicator_source = "blankpiece"
 
 

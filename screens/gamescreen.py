@@ -8,6 +8,9 @@ from chesspiece import ChessPiece
 class GameScreen(Screen):
     online_mode_enabled = BooleanProperty(False)
 
+    def return_to_home_screen(self):
+        self.manager.current = 'home_screen'
+
     def new_game(self):
         board_helper = App.get_running_app().board_helper
         board_helper.widgets_by_row_and_column = {}

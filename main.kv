@@ -1,10 +1,14 @@
+#:include chesspiece.kv
 #:include availablemoveindicator.kv
 #:include halfboard.kv
 #:include screens/gamescreen.kv
 #:include screens/homescreen.kv
-#:include chesspiece.kv
+#:import FadeTransition kivy.uix.screenmanager.FadeTransition
+#:import get_color_from_hex kivy.utils.get_color_from_hex
 
 ScreenManager:
+    transition: FadeTransition(clearcolor=get_color_from_hex(colors['Dark']['Background']))
+
     HomeScreen:
         id: home_screen
         name: "home_screen"
