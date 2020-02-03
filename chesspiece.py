@@ -91,7 +91,7 @@ class ChessPiece(ButtonBehavior, Image):
         if app.is_animating:
             return
         print(self.indicator_source)
-        if self.indicator_source == "circular_crosshair":
+        if self.indicator_source == "glowing_dot":
             # Game needs to move the highlighted widget
             self.move_piece()
             self.clear_indicators()
@@ -104,7 +104,7 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         # Tell the app that this piece is being interacted with
         app.highlighted_piece = self
-        app.highlighted_piece.indicator_source = "rectangular_crosshair"
+        #app.highlighted_piece.indicator_source = "rectangular_crosshair"
         # Get the moves allowed by this piece's moveset
         # This only returns illegal moves for the king, which might be able to be removed because of the normal flying king check now
         # Could probably have get_attacked_squares only return get_possible_moves
@@ -139,7 +139,7 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         piece = app.board_helper.get_widget_at(square[0], square[1])
         if piece:
-            piece.indicator_source = "circular_crosshair"
+            piece.indicator_source = "glowing_dot"
         else:
             piece.indicator_opacity = "blankpiece"
 
