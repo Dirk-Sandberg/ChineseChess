@@ -43,13 +43,14 @@
                 size_hint: 1, .46
                 pos_hint: {"top": 1, "center_x": .5}
                 half: "top"
+                player_color: "black" if app.player.is_red else "red"
             HalfBoard:
                 # Bottom board
                 half: "bottom"
                 id: bottom_board
                 size_hint: 1, .46
                 pos_hint: {"top": .46, "center_x": .5}
-                player_color: "red"
+                player_color: "red" if app.player.is_red else "black"
         GridLayout:
             id: captured_red_pieces
             cols: 8

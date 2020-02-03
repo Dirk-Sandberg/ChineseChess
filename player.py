@@ -1,9 +1,12 @@
 from kivy.utils import platform
+from kivy.event import EventDispatcher
+from kivy.properties import BooleanProperty
 
-class Player:
+
+class Player(EventDispatcher):
     nickname = ""
     #ip_and_port = ""  # "192.168.1.2:12345
-    is_red = False  # Player is either red or black
+    is_red = BooleanProperty(False)  # Player is either red or black
     game_id = ""  # Could replace the game id in the client code
     saved_nickname_filename = "nickname.txt"
     elo = ""
