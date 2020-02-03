@@ -57,24 +57,31 @@ class Client:
         if command == 'match_hosted':
             # The host is the player who goes first
             self.app.is_turn_owner = True
-            self.app.root.current = 'lobby_screen'
+            self.app.player.is_red = True
+            self.app.change_screen('lobby_screen')
+            game_id = message_dict['game_id']
+            self.app.player.game_id = game_id
 
         elif command == 'player_joined':
             # A new player entered the game room
-            # Get all of the players ip:port combinations
-            all_players = message_dict['players']
             # Get nicknames for each player
-            nicknames = message_dict['nicknames']
+            nicknames = message_dict['players']
             # Valid game joined
+            self.app.change_screen('lobby_screen')
+            self.app.root.ids.lobby_screen.ids.player_one.text = nicknames[0]
+            self.app.root.ids.lobby_screen.ids.player_two.text = nicknames[1]
 
-        elif command == 'start_game':
+        elif command == 'match_started':
             # Someone pressed the start game button from the lobby screen
             # All players will receive this message.
             # Get the current turn owner (in this case it will be the host)
             self.current_player = message_dict['player_who_owns_turn']
             all_players = message_dict['players']
             # Switch to the game screen
-            self.app.root.current = 'game_screen'
+            self.app.change_screen('game_screen')
+        elif command == "list_lobbies":
+            lobbies = message_dict['lobbies']
+            self.app.root.ids.lobby_browser_screen.display_lobbies(lobbies)
 
         elif command == 'invalid_game_id':
             # This player tried to join a game with an invalid game id

@@ -7,13 +7,16 @@ from kivymd.app import MDApp
 from kivy.properties import BooleanProperty
 from boardhelper import BoardHelper
 from kivy.utils import platform
+from kivy.clock import mainthread
 from kivy.core.window import Window
 Window.allow_screensaver = False
 from player import Player
 from communications.client import Client
+from screens.lobbyscreen import LobbyScreen
 from screens.homescreen import HomeScreen
 from screens.gamescreen import GameScreen
 from screens.creategamescreen import CreateGameScreen
+from screens.lobbybrowserscreen import LobbyBrowserScreen
 from halfboard import HalfBoard
 
 class MainApp(MDApp):
@@ -58,6 +61,9 @@ class MainApp(MDApp):
         loser_elo = 800
         new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
 
+    @mainthread
+    def change_screen(self, screen_name):
+        self.root.current = screen_name
 
 
 if __name__ == "__main__":

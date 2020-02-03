@@ -2,6 +2,8 @@
 #:include halfboard.kv
 #:include screens/gamescreen.kv
 #:include screens/homescreen.kv
+#:include screens/lobbyscreen.kv
+#:include screens/lobbybrowserscreen.kv
 #:include screens/creategamescreen.kv
 #:include chesspieces/chesspiece.kv
 #:import FadeTransition kivy.uix.screenmanager.FadeTransition
@@ -19,3 +21,9 @@ ScreenManager:
     CreateGameScreen:
         id: create_game_screen
         name: "create_game_screen"
+    LobbyScreen:
+        id: lobby_screen
+        name: "lobby_screen"
+    LobbyBrowserScreen:
+        id: lobby_browser_screen
+        name: "lobby_browser_screen"

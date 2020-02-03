@@ -1,0 +1,15 @@
+<LobbyScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        MDLabel:
+            id: player_one
+            text: ""
+        MDLabel:
+            id: player_two
+            text: "Waiting for someone to join..."
+
+        MDRaisedButton:
+            text: "Start Match"
+            disabled: True if player_two.text == "Waiting for someone to join..." else False
+            on_release:
+                root.start_match()

@@ -1,0 +1,34 @@
+<LobbyItem>:
+    host_name: ""
+    host_elo: ""
+    time_limit: 0
+    game_id: ""
+
+<LobbyBrowserScreen>:
+    on_pre_enter: self.get_lobbies_from_server()
+    BoxLayout:
+        orientation: 'vertical'
+        MDIconButton:
+            icon: 'chevron-left'
+            on_release:
+                root.manager.current = 'home_screen'
+        ScrollView:
+            id: scroll
+            size_hint_y: None
+
+            canvas:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    #source: '{}dialog_in_fade.png'.format(images_path)
+                    source: '{}transparent.png'.format(images_path)
+
+            MDList:
+                id: list_layout
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(15)
+
+
+
+
