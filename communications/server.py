@@ -48,8 +48,8 @@ class Server:
         Open the server on port xxxxx. This port number must be known by all 
         clients
         """
-        with open("port.txt","r") as f:
-            port = f.read()
+        with open("port.txt", "r") as f:
+            port = int(f.read())
 
         """ 
         Bind the server to an entered IP address and at the specified port
@@ -120,15 +120,19 @@ class Server:
         the other is the list of clients to send to.
         """
         command = message_dict['command']
-        game_id = message_dict['game_id'].upper()  # Fix upper/lowercase issue
         sender = sender_ip + ":" + sender_port
+        if command != 'host_match':
+            # game_id has been assigned
+            game_id = message_dict['from_player']['game_id'].upper()  # Fix upper/lowercase issue
 
-        if command == 'host_game':
+        if command == 'host_match':
             # Someone created a new game room
-            nickname = message_dict['nickname']
+            # Assign a game id to the room
+            game_id = 10
+            nickname = message_dict['from_player']['nickname']
             self.add_client_to_game_room(sender_ip, sender_port, game_id, nickname)
             # Send a message back saying they succeeded in creating the room
-            response_dict = {"command": "game_hosted"}
+            response_dict = {"command": "match_hosted", "game_id": game_id}
             clients_to_notify = [sender]
             return response_dict, clients_to_notify
 

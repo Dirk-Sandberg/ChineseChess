@@ -54,9 +54,10 @@ class Client:
         """
         command = message_dict['command']
 
-        if command == 'game_hosted':
+        if command == 'match_hosted':
             # The host is the player who goes first
             self.app.is_turn_owner = True
+            self.app.root.current = 'lobby_screen'
 
         elif command == 'player_joined':
             # A new player entered the game room
@@ -80,11 +81,13 @@ class Client:
             pass
 
     def send_message(self, message):
-        """Sends a message to the server. All messages should include the game
-        id.
+        """Sends a message to the server. All messages should include info about
+        the player sending the message.
+
         :param message: dictionary format (json data)
         """
-        message['game_id'] = self.game_id
+        #message['game_id'] = self.game_id
+        message['from_player'] = self.app.player.__dict__
         # To send the message over the socket connection, convert the message to
         # a string of bytes
         self.server.send(json.dumps(message).encode())

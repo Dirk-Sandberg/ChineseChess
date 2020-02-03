@@ -9,8 +9,11 @@ from boardhelper import BoardHelper
 from kivy.utils import platform
 from kivy.core.window import Window
 Window.allow_screensaver = False
+from player import Player
+from communications.client import Client
 from screens.homescreen import HomeScreen
 from screens.gamescreen import GameScreen
+from screens.creategamescreen import CreateGameScreen
 from halfboard import HalfBoard
 
 class MainApp(MDApp):
@@ -19,20 +22,19 @@ class MainApp(MDApp):
     is_animating = BooleanProperty(False)
     is_turn_owner = BooleanProperty(False)
 
+    # The player class will have its data updated when playing a game
+    player = Player()
+
     client = None
 
-    saved_nickname_filename = "nickname.txt"
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing
-        HOST = self.read_server_ip_file()  # Remote server ip address
+        #HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()
         print("not connecting to server")
-        #self.client = Client(HOST, PORT)
+        self.client = Client(HOST, PORT)
 
-        # Directories on iOS can be screwed up
-        if platform == 'ios':
-            self.saved_nickname_filename = self.user_data_dir + "/" + self.saved_nickname_filename
 
     def read_port_file(self):
         with open("port.txt", "r") as f:

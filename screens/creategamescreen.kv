@@ -1,0 +1,23 @@
+<CreateGameScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        MDLabel:
+            text: "Time Limit"
+        BoxLayout:
+            MDIconButton:
+                icon: 'chevron-left'
+                on_release:
+                    time_limit_label.time_limit -= 1 if time_limit_label.time_limit > 2 else 2
+            MDLabel:
+                time_limit: 5
+                text: str(self.time_limit) + " min"
+                id: time_limit_label
+            MDIconButton:
+                icon: 'chevron-right'
+                on_release:
+                    time_limit_label.time_limit += 1
+        MDRaisedButton:
+            text: "Host Match"
+            on_release:
+                root.host_match(time_limit_label.time_limit)
+

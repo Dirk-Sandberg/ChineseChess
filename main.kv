@@ -2,6 +2,7 @@
 #:include halfboard.kv
 #:include screens/gamescreen.kv
 #:include screens/homescreen.kv
+#:include screens/creategamescreen.kv
 #:include chesspieces/chesspiece.kv
 #:import FadeTransition kivy.uix.screenmanager.FadeTransition
 #:import get_color_from_hex kivy.utils.get_color_from_hex
@@ -15,3 +16,6 @@ ScreenManager:
     GameScreen:
         id: game_screen
         name: "game_screen"
+    CreateGameScreen:
+        id: create_game_screen
+        name: "create_game_screen"
