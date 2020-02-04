@@ -24,12 +24,10 @@ class ChessPiece(ButtonBehavior, Image):
                    "to_pos": to_pos, "color": app.highlighted_piece.player}
         app.client.send_message(message)
 
-
+    """
     def move_piece_offline(self):
-        """
         UNUSED IN ONLINE VERSION
         :return:
-        """
         #print("Moving piece", self.id())
         app = App.get_running_app()
 
@@ -52,8 +50,6 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         app.highlighted_piece.opacity = 1
 
-        #black_captured_pieces_grid = app.root.ids.game_screen.ids.captured_black_pieces
-        #red_captured_pieces_grid = app.root.ids.game_screen.ids.captured_red_pieces
         top_captured_pieces_grid = app.root.ids.game_screen.ids.top_captured_pieces
         bottom_captured_pieces_grid = app.root.ids.game_screen.ids.bottom_captured_pieces
 
@@ -99,7 +95,7 @@ class ChessPiece(ButtonBehavior, Image):
         # Stop highlighting the piece
         app.highlighted_piece.indicator_source = "blankpiece"
         app.highlighted_piece = None
-
+        """
 
 
     def handle_touch(self):
@@ -107,7 +103,6 @@ class ChessPiece(ButtonBehavior, Image):
         #print("Touched", self.id())
         if app.is_animating:
             return
-        print(self.indicator_source)
         if self.indicator_source == "glowing_dot":
             # Game needs to move the highlighted widget
             self.send_move_piece_command()
@@ -165,7 +160,7 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         piece = app.board_helper.get_widget_at(square[0], square[1])
         if piece:
-            piece.indicator_opacity = .5
+            piece.indicator_source = 'rectangular_crosshair'
 
 
     def clear_indicators(self):

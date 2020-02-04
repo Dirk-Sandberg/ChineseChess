@@ -41,7 +41,7 @@ class Client:
                 # Convert the message to a dict format
                 message = json.loads(message)
 
-                print("received message", message)
+                #print("received message", message)
                 # Read and interpret the json data
                 self.interpret(message)
 

@@ -61,6 +61,10 @@ class MainApp(MDApp):
         winner_elo = 1200
         loser_elo = 800
         new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
+        from kivymd.uix.dialog import MDDialog
+        m = MDDialog(title="CHECKMATE",
+                     text=checkmated_player_color + " IS IN CHECKMATE")
+        m.open()
 
     @mainthread
     def change_screen(self, screen_name):

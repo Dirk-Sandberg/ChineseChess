@@ -9,6 +9,7 @@ class KingPiece(ChessPiece):
     def get_attacked_squares(self):
         app = App.get_running_app()
         row, col, player = self.row, self.col, self.player
+        king_is_this_players = True if player == 'red' and app.player.is_red or player == 'black' and not app.player.is_red else False
         attacked_squares = []
         not_attacked_squares = []
         possible_moves = [(row + 1, col), (row - 1, col), (row, col + 1),
@@ -21,10 +22,10 @@ class KingPiece(ChessPiece):
             if move[1] < 3:
                 # Trying to move to the left of the palace
                 continue
-            if move[0] < 7 and player == 'red':
+            if move[0] < 7 and king_is_this_players:# player == 'red':
                 # Trying to move up from palace
                 continue
-            if move[0] > 2 and player == 'black':
+            if move[0] > 2 and not king_is_this_players:#player == 'black':
                 # Trying to move up from palace
                 continue
 

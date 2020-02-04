@@ -8,6 +8,7 @@ class ElephantPiece(ChessPiece):
     def get_attacked_squares(self):
         row, col, player = self.row, self.col, self.player
         app = App.get_running_app()
+        king_is_this_players = True if player == 'red' and app.player.is_red or player == 'black' and not app.player.is_red else False
         attacked_squares = []
         not_attacked_squares = []
         possible_moves = [(row + 2, col + 2), (row - 2, col - 2),
@@ -25,10 +26,10 @@ class ElephantPiece(ChessPiece):
                     continue
 
             # Make sure the move is on the proper side of the river
-            if move[0] < 5 and player == 'red':
+            if move[0] < 5 and king_is_this_players:# and player == 'red':
                 # Trying to move up from river
                 continue
-            if move[0] > 4 and player == 'black':
+            if move[0] > 4 and not king_is_this_players:# and player == 'black':
                 # Trying to move down from river
                 continue
 

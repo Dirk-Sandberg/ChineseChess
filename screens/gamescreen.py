@@ -50,17 +50,15 @@ class GameScreen(Screen):
             pass
         else:
             # Mirror the movements
-            print("BEFORE", from_row, from_col)
             from_row = self.mirror_row(from_row)
             from_col = self.mirror_col(from_col)
             to_row = self.mirror_row(to_row)
             to_col = self.mirror_col(to_col)
-            print("AFTER", from_row, from_col)
 
         # Get the widget being moved
         moving_piece = app.board_helper.get_widget_at(from_row, from_col)
         piece_being_entered = app.board_helper.get_widget_at(to_row, to_col)
-        print("Moving piece", moving_piece.id())
+        #print("Moving piece", moving_piece.id())
 
 
 
@@ -122,6 +120,9 @@ class GameScreen(Screen):
         enemy_is_in_check = self.check_for_check(moving_piece.player, simulated_move=False)
         if enemy_is_in_check:
             enemy_color = 'red' if moving_piece.player == 'black' else 'black'
+            from kivymd.uix.dialog import MDDialog
+            m = MDDialog(title="Check", text = enemy_color + " is in check")
+            m.open()
             CHECKMATE = self.check_for_checkmate(enemy_color)
             if CHECKMATE:
                 app.checkmate(enemy_color)
@@ -170,8 +171,8 @@ class GameScreen(Screen):
         :return:
         """
         app = App.get_running_app()
-        if not simulated_move:
-            print("Looking for check after move finished")
+        #if not simulated_move:
+        #    print("Looking for check after move finished")
 
         if (player == "black" and not simulated_move) or (player =="red" and simulated_move):
             # Check for black checking red
