@@ -52,14 +52,17 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         app.highlighted_piece.opacity = 1
 
-        black_captured_pieces_grid = app.root.ids.game_screen.ids.captured_black_pieces
-        red_captured_pieces_grid = app.root.ids.game_screen.ids.captured_red_pieces
+        #black_captured_pieces_grid = app.root.ids.game_screen.ids.captured_black_pieces
+        #red_captured_pieces_grid = app.root.ids.game_screen.ids.captured_red_pieces
+        top_captured_pieces_grid = app.root.ids.game_screen.ids.top_captured_pieces
+        bottom_captured_pieces_grid = app.root.ids.game_screen.ids.bottom_captured_pieces
+
         if self.piece_type != 'blank':
-            if self.player == 'black':
-                red_captured_pieces_grid.add_widget(
+            if self.player == 'red' and app.player.is_red or self.player == 'black' and not app.player.is_red:
+                top_captured_pieces_grid.add_widget(
                     Image(source=self.source, color=self.color))
             else:
-                black_captured_pieces_grid.add_widget(
+                bottom_captured_pieces_grid.add_widget(
                     Image(source=self.source, color=self.color))
 
 

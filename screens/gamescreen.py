@@ -19,8 +19,8 @@ class GameScreen(Screen):
         board_helper = App.get_running_app().board_helper
         board_helper.widgets_by_row_and_column = {}
         board_helper.widgets_by_color_and_type = {}
-        self.ids.captured_black_pieces.clear_widgets()
-        self.ids.captured_red_pieces.clear_widgets()
+        self.ids.top_captured_pieces.clear_widgets()
+        self.ids.bottom_captured_pieces.clear_widgets()
 
         top_board = self.ids.top_board
         bottom_board = self.ids.bottom_board
@@ -83,14 +83,17 @@ class GameScreen(Screen):
         app = App.get_running_app()
         moving_piece.opacity = 1
 
-        black_captured_pieces_grid = app.root.ids.game_screen.ids.captured_black_pieces
-        red_captured_pieces_grid = app.root.ids.game_screen.ids.captured_red_pieces
+        #black_captured_pieces_grid = app.root.ids.game_screen.ids.captured_black_pieces
+        #red_captured_pieces_grid = app.root.ids.game_screen.ids.captured_red_pieces
+        top_captured_pieces_grid = app.root.ids.game_screen.ids.top_captured_pieces
+        bottom_captured_pieces_grid = app.root.ids.game_screen.ids.bottom_captured_pieces
+
         if piece_being_entered.piece_type != 'blank':
-            if piece_being_entered.player == 'black':
-                red_captured_pieces_grid.add_widget(
+            if piece_being_entered.player == 'black' and app.player.is_red or piece_being_entered.player == 'red' and not app.player.is_red:
+                bottom_captured_pieces_grid.add_widget(
                     Image(source=piece_being_entered.source, color=piece_being_entered.color))
             else:
-                black_captured_pieces_grid.add_widget(
+                top_captured_pieces_grid.add_widget(
                     Image(source=piece_being_entered.source, color=piece_being_entered.color))
 
 

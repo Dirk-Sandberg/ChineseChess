@@ -23,7 +23,8 @@
                 on_release:
                     root.new_game()
         GridLayout:
-            id: captured_black_pieces
+            #id: captured_black_pieces
+            id: top_captured_pieces
             cols: 8
             rows: 2
         FloatLayout:
@@ -52,6 +53,7 @@
                 pos_hint: {"top": .46, "center_x": .5}
                 player_color: "red" if app.player.is_red else "black"
         GridLayout:
-            id: captured_red_pieces
+            #id: captured_red_pieces
+            id: bottom_captured_pieces
             cols: 8
             rows: 2
