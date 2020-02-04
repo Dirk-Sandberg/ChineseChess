@@ -10,6 +10,7 @@ from kivy.utils import platform
 from kivy.clock import mainthread
 from kivy.core.window import Window
 Window.allow_screensaver = False
+Window.size = (350, 600)
 from player import Player
 from communications.client import Client
 from screens.lobbyscreen import LobbyScreen

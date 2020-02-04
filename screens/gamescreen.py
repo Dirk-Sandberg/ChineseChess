@@ -5,6 +5,7 @@ from chesspieces.chesspiece import ChessPiece
 from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.animation import Animation
+from kivy.clock import mainthread
 from functools import partial
 
 
@@ -29,13 +30,32 @@ class GameScreen(Screen):
         bottom_board.add_starting_pieces()
 
 
+    def mirror_col(self, col):
+        # Find distance from center
+        return int(4 - (col-4))
 
-    def move_piece(self, from_row, from_col, to_row, to_col):
+    def mirror_row(self, row):
+        return int(4.5 - (row-4.5))
+
+    @mainthread
+    def move_piece(self, from_row, from_col, to_row, to_col, moved_piece_color):
         """
         To be called when the client receives a "piece_moved" command
         :return:
         """
         app = App.get_running_app()
+
+        # Need to mirror the rows and columns if the player isn't the client
+        if moved_piece_color == "red" and app.player.is_red or moved_piece_color == 'black' and not app.player.is_red:
+            pass
+        else:
+            # Mirror the movements
+            print("BEFORE", from_row, from_col)
+            from_row = self.mirror_row(from_row)
+            from_col = self.mirror_col(from_col)
+            to_row = self.mirror_row(to_row)
+            to_col = self.mirror_col(to_col)
+            print("AFTER", from_row, from_col)
 
         # Get the widget being moved
         moving_piece = app.board_helper.get_widget_at(from_row, from_col)
@@ -55,7 +75,7 @@ class GameScreen(Screen):
         new_pos = (to_row, to_col)
         moving_piece.opacity = 0
         app.is_animating = True
-        anim = Animation(pos=new_pos, duration=0)
+        anim = Animation(pos=new_pos)#, duration=0)
         anim.bind(on_complete=partial(self.finish_piece_movement, piece_being_entered, moving_piece))
         anim.start(animation_widget)
 

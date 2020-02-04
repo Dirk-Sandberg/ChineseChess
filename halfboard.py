@@ -51,7 +51,6 @@ class HalfBoard(GridLayout):
                     c = ChessPiece(piece_type="blank")
                 c.opacity = 0
                 c.row, c.col = board_helper.convert_to_global_indices(row, col, self.half)
-                #c.col = col
                 c.board_half = self.half
                 self.add_widget(c)
 

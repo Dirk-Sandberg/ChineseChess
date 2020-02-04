@@ -20,7 +20,8 @@ class ChessPiece(ButtonBehavior, Image):
 
         from_pos = (app.highlighted_piece.row, app.highlighted_piece.col)
         to_pos = (self.row, self.col)
-        message = {"command": "move_piece", "from_pos": from_pos, "to_pos": to_pos}
+        message = {"command": "move_piece", "from_pos": from_pos,
+                   "to_pos": to_pos, "color": app.highlighted_piece.player}
         app.client.send_message(message)
 
 

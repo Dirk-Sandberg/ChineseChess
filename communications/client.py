@@ -85,8 +85,9 @@ class Client:
         elif command == 'piece_moved':
             from_pos = message_dict['from_pos']
             to_pos = message_dict['to_pos']
+            piece_color = message_dict['color']
             game_screen = self.app.root.ids.game_screen
-            game_screen.move_piece(*from_pos, *to_pos)
+            game_screen.move_piece(*from_pos, *to_pos, piece_color)
 
         #widget_moved = self.app.board_helper.get_widget_at(*from_pos)
             #widget_moved.move_piece(*to_pos)
