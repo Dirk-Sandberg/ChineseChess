@@ -13,7 +13,8 @@
         self.handle_touch()
     AvailableMoveIndicator:
         source: "images/" + root.indicator_source + ".png"
-        center: root.center
+        #center: root.center
+        pos: root.pos
         size_hint: None, None
         size: root.size[0]*0.75, root.size[1]*.75
         #opacity: root.indicator_opacity

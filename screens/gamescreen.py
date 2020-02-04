@@ -72,7 +72,7 @@ class GameScreen(Screen):
         animation_widget.size = moving_piece.size
         animation_widget.pos = self.to_window(*moving_piece.pos)
         Window.add_widget(animation_widget)
-        new_pos = (to_row, to_col)
+        new_pos = piece_being_entered.pos#(to_row, to_col)
         moving_piece.opacity = 0
         app.is_animating = True
         anim = Animation(pos=new_pos)#, duration=0)
