@@ -14,7 +14,21 @@ class ChessPiece(ButtonBehavior, Image):
     def id(self):
         return "%s %s at (%s, %s)"%(self.player, self.piece_type, self.row, self.col)
 
-    def move_piece(self):
+    def send_move_piece_command(self):
+        # Tell the server that the piece moved.
+        app = App.get_running_app()
+
+        from_pos = (app.highlighted_piece.row, app.highlighted_piece.col)
+        to_pos = (self.row, self.col)
+        message = {"command": "move_piece", "from_pos": from_pos, "to_pos": to_pos}
+        app.client.send_message(message)
+
+
+    def move_piece_offline(self):
+        """
+        UNUSED IN ONLINE VERSION
+        :return:
+        """
         #print("Moving piece", self.id())
         app = App.get_running_app()
 
@@ -33,7 +47,7 @@ class ChessPiece(ButtonBehavior, Image):
         anim.bind(on_complete=self.finish_piece_movement)
         anim.start(animation_widget)
 
-    def finish_piece_movement(self, animation, animated_object):
+    def finish_piece_movement_offline(self, animation, animated_object):
         app = App.get_running_app()
         app.highlighted_piece.opacity = 1
 
@@ -84,7 +98,6 @@ class ChessPiece(ButtonBehavior, Image):
 
 
 
-
     def handle_touch(self):
         app = App.get_running_app()
         #print("Touched", self.id())
@@ -93,7 +106,8 @@ class ChessPiece(ButtonBehavior, Image):
         print(self.indicator_source)
         if self.indicator_source == "glowing_dot":
             # Game needs to move the highlighted widget
-            self.move_piece()
+            self.send_move_piece_command()
+            #self.move_piece()
             self.clear_indicators()
         else:
             self.clear_indicators()

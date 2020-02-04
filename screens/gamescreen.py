@@ -2,6 +2,11 @@ from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from kivy.properties import BooleanProperty
 from chesspieces.chesspiece import ChessPiece
+from kivy.uix.image import Image
+from kivy.core.window import Window
+from kivy.animation import Animation
+from functools import partial
+
 
 class GameScreen(Screen):
     online_mode_enabled = BooleanProperty(False)
@@ -22,6 +27,85 @@ class GameScreen(Screen):
         bottom_board.clear_widgets()
         top_board.add_starting_pieces()
         bottom_board.add_starting_pieces()
+
+
+
+    def move_piece(self, from_row, from_col, to_row, to_col):
+        """
+        To be called when the client receives a "piece_moved" command
+        :return:
+        """
+        app = App.get_running_app()
+
+        # Get the widget being moved
+        moving_piece = app.board_helper.get_widget_at(from_row, from_col)
+        piece_being_entered = app.board_helper.get_widget_at(to_row, to_col)
+        print("Moving piece", moving_piece.id())
+
+
+
+        # Animate the motion
+        animation_widget = Image(source=moving_piece.source,
+                                 color=moving_piece.color,
+                                 keep_ratio=False, allow_stretch=True)
+        animation_widget.size_hint = (None, None)
+        animation_widget.size = moving_piece.size
+        animation_widget.pos = self.to_window(*moving_piece.pos)
+        Window.add_widget(animation_widget)
+        new_pos = (to_row, to_col)
+        moving_piece.opacity = 0
+        app.is_animating = True
+        anim = Animation(pos=new_pos, duration=0)
+        anim.bind(on_complete=partial(self.finish_piece_movement, piece_being_entered, moving_piece))
+        anim.start(animation_widget)
+
+    def finish_piece_movement(self, piece_being_entered, moving_piece, animation, animated_object):
+        app = App.get_running_app()
+        moving_piece.opacity = 1
+
+        black_captured_pieces_grid = app.root.ids.game_screen.ids.captured_black_pieces
+        red_captured_pieces_grid = app.root.ids.game_screen.ids.captured_red_pieces
+        if piece_being_entered.piece_type != 'blank':
+            if piece_being_entered.player == 'black':
+                red_captured_pieces_grid.add_widget(
+                    Image(source=piece_being_entered.source, color=piece_being_entered.color))
+            else:
+                black_captured_pieces_grid.add_widget(
+                    Image(source=piece_being_entered.source, color=piece_being_entered.color))
+
+
+
+        # Place a blank piece in place of the one that just moved
+        self.move_pieces(piece_being_entered, moving_piece)
+
+
+        # Remove the captured piece from the list of black/red pieces
+        # Only works if the piece hasn't moved because i'm not actually moving
+        # chess pieces around, im just changing the image of the board
+        widget_to_remove = piece_being_entered
+        if widget_to_remove in app.board_helper.black_pieces:
+            app.board_helper.black_pieces.remove(widget_to_remove)
+            #print("Removing me", widget_to_remove.player, widget_to_remove.piece_type)
+        if widget_to_remove in app.board_helper.red_pieces:
+            app.board_helper.red_pieces.remove(widget_to_remove)
+            #print("Removing me", widget_to_remove.player, widget_to_remove.piece_type)
+
+
+        animated_object.parent.remove_widget(animated_object)
+        # The piece has been captured if it wasn't blank!
+        app.is_animating = False
+
+        # Check if this move put the enemy's king in check
+        enemy_is_in_check = self.check_for_check(moving_piece.player, simulated_move=False)
+        if enemy_is_in_check:
+            enemy_color = 'red' if moving_piece.player == 'black' else 'black'
+            CHECKMATE = self.check_for_checkmate(enemy_color)
+            if CHECKMATE:
+                app.checkmate(enemy_color)
+
+        # Stop highlighting the piece
+        moving_piece.indicator_source = "blankpiece"
+        app.highlighted_piece = None
 
 
 

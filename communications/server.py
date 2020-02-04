@@ -190,6 +190,11 @@ class Server:
             clients_to_notify = [sender]
             response_dict = {"command": "list_lobbies", "lobbies": self.lobbies}
             return response_dict, clients_to_notify
+        elif command == "move_piece":
+            clients_to_notify = self.clients_by_rooms[game_id]
+            response_dict = message_dict
+            response_dict['command'] = "piece_moved"
+            return response_dict, clients_to_notify
 
 
         elif command == 'disconnect':
