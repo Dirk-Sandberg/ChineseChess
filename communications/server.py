@@ -140,6 +140,8 @@ class Server:
             # Assign a game id to the room
             game_id = 'AA'
             nickname = message_dict['from_player']['nickname']
+            if nickname == "":
+                nickname = "Anonymous"
             elo = message_dict['from_player']['elo']
             time_limit = message_dict['time_limit']
 

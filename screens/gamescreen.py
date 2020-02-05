@@ -164,35 +164,58 @@ class GameScreen(Screen):
     def check_for_check(self, player, simulated_move):
         """
 
-        :param player:
+        :param player: The color of the moving piece
         :param simulated_move: If True, will see if moving the piece puts his
         own king in check. If False, will see if moving the piece has put the
         enemy's king in check.
         :return:
         """
         app = App.get_running_app()
+        black_pieces = app.board_helper.black_pieces
+        red_pieces = app.board_helper.red_pieces
+        # IF SIMULATED MOVE, check if the move makes my OWN king in check
+        # (check for check called BEFORE this player moves -- to find invalid moves)
+        if player == 'red' and simulated_move or not player == 'red' and not simulated_move:
+            print("1", player == 'red' and simulated_move)
+            print("2", not player == 'red' and not simulated_move)
+            attacked_player = 'red'
+            pieces = black_pieces
+        else:
+            print("3")
+            # elif app.player.is_red and not simulated_move or not app.player.is_red and simulated_move:
+            # IF NOT SIMULATED MOVE, check if the move makes ENEMY king in check
+            # (check for check called after this player made a move)
+            attacked_player = 'black'
+            pieces = red_pieces
+
+        attacked_king = app.board_helper.get_widget_by_color_and_type(attacked_player, 'king')
+        attacked_king = (attacked_king.row, attacked_king.col)
+        for piece in pieces:
+            attacked_squares, not_attacked_squares = piece.get_attacked_squares()
+            if attacked_king in attacked_squares:
+                if not simulated_move:
+                    print(attacked_player + " KING IS ATTACKED by", piece.id())
+                if simulated_move:
+                    print("SIMULATION: " + player + " KING IS ATTACKED by", piece.id())
+                return True
+        return False
+
+        """
+        app = App.get_running_app()
+        attacked_player = 'red' if player == 'black' else 'black'
+        piece_is_this_players = 'True' if player == 'red' and app.player.is_red or player == 'black' and not app.player.is_red else False
+
         #if not simulated_move:
         #    print("Looking for check after move finished")
 
-        if (player == "black" and not simulated_move) or (player =="red" and simulated_move):
+        if piece_is_this_players:
             # Check for black checking red
             # Check for red being in check
-            black_pieces = app.board_helper.black_pieces
-            attacked_king = app.board_helper.get_widget_by_color_and_type('red', 'king')
-            attacked_king = (attacked_king.row, attacked_king.col)
-            for piece in black_pieces:
-                attacked_squares, not_attacked_squares = piece.get_attacked_squares()
-                if attacked_king in attacked_squares:
-                    if not simulated_move:
-                        print("Red KING IS ATTACKED by", piece.id())
-                    return True
-            return False
         elif (player == "red" and not simulated_move) or (player == "black" and simulated_move):
             # Check for black king being in check
-            red_pieces = app.board_helper.red_pieces
-            attacked_king = app.board_helper.get_widget_by_color_and_type('black', 'king')
+            attacked_king = app.board_helper.get_widget_by_color_and_type(attacked_player, 'king')
             attacked_king = (attacked_king.row, attacked_king.col)
-            for piece in red_pieces:
+            for piece in pieces_to_save_king:
                 attacked_squares, not_attacked_squares = piece.get_attacked_squares()
                 if attacked_king in attacked_squares:
                     if not simulated_move:
@@ -200,6 +223,7 @@ class GameScreen(Screen):
                     return True
             return False
         print("This isn't supposed to get here")
+        """
 
     def check_for_checkmate(self, color_in_check):
         app = App.get_running_app()
@@ -240,6 +264,7 @@ class GameScreen(Screen):
         piece.col = new_col
 
         board.widgets_by_row_and_column[(new_row, new_col)] = piece
+        print("Simulating", piece.id())
         check_is_in_simulated_game_state = self.check_for_check(piece.player, simulated_move=True)
 
         # Change game state back to original state
