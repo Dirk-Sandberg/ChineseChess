@@ -10,7 +10,7 @@
     col: 0
     row: 0
     on_release:
-        self.handle_touch()
+        if app.is_turn_owner: self.handle_touch()
     AvailableMoveIndicator:
         source: "images/" + root.indicator_source + ".png"
         #center: root.center

@@ -191,10 +191,10 @@ class GameScreen(Screen):
         for piece in pieces:
             attacked_squares, not_attacked_squares = piece.get_attacked_squares()
             if attacked_king in attacked_squares:
-                if not simulated_move:
-                    print(attacked_player + " KING IS ATTACKED by", piece.id())
-                if simulated_move:
-                    print("SIMULATION: " + player + " KING IS ATTACKED by", piece.id())
+                #if not simulated_move:
+                #    print(attacked_player + " KING IS ATTACKED by", piece.id())
+                #if simulated_move:
+                #    print("SIMULATION: " + player + " KING IS ATTACKED by", piece.id())
                 return True
         return False
 

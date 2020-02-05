@@ -83,14 +83,14 @@ class Client:
             lobbies = message_dict['lobbies']
             self.app.root.ids.lobby_browser_screen.display_lobbies(lobbies)
         elif command == 'piece_moved':
+            # Switch whose turn it is to play
+            self.app.is_turn_owner = not self.app.is_turn_owner
+
             from_pos = message_dict['from_pos']
             to_pos = message_dict['to_pos']
             piece_color = message_dict['color']
             game_screen = self.app.root.ids.game_screen
             game_screen.move_piece(*from_pos, *to_pos, piece_color)
-
-        #widget_moved = self.app.board_helper.get_widget_at(*from_pos)
-            #widget_moved.move_piece(*to_pos)
 
         elif command == 'invalid_game_id':
             # This player tried to join a game with an invalid game id

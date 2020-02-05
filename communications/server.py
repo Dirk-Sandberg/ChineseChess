@@ -43,6 +43,8 @@ class Server:
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    next_game_id = '0'
+
     def __init__(self):
         """The first argument AF_INET is the address domain of the
         socket. This is used when we have an Internet Domain with
@@ -138,7 +140,8 @@ class Server:
         if command == 'host_match':
             # Someone created a new game room
             # Assign a game id to the room
-            game_id = 'AA'
+            game_id = self.next_game_id
+            self.next_game_id = str(int(self.next_game_id)+1)
             nickname = message_dict['from_player']['nickname']
             if nickname == "":
                 nickname = "Anonymous"

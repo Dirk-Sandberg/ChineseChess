@@ -106,12 +106,13 @@ class ChessPiece(ButtonBehavior, Image):
         if self.indicator_source == "glowing_dot":
             # Game needs to move the highlighted widget
             self.send_move_piece_command()
-            #self.move_piece()
             self.clear_indicators()
         else:
             self.clear_indicators()
-            legal_moves, illegal_moves = self.get_moves()
-            self.highlight_moves(legal_moves, illegal_moves)
+            # Only let the player move their own colored pieces
+            if self.player == 'red' and app.player.is_red or self.player =='black' and not app.player.is_red:
+                legal_moves, illegal_moves = self.get_moves()
+                self.highlight_moves(legal_moves, illegal_moves)
 
     def get_moves(self):
         app = App.get_running_app()
