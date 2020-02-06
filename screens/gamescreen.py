@@ -21,6 +21,9 @@ class GameScreen(Screen):
         board_helper = App.get_running_app().board_helper
         board_helper.widgets_by_row_and_column = {}
         board_helper.widgets_by_color_and_type = {}
+        board_helper.black_pieces = []
+        board_helper.red_pieces = []
+
         self.ids.top_captured_pieces.clear_widgets()
         self.ids.bottom_captured_pieces.clear_widgets()
 
