@@ -1,10 +1,9 @@
 from kivymd.uix.dialog import MDDialog
 from kivy.properties import NumericProperty
 from kivy.animation import Animation
-from kivy.event import EventDispatcher
-from kivy.clock import mainthread
+from kivy.app import App
 
-class GameOverDialog(MDDialog, EventDispatcher):
+class GameOverDialog(MDDialog):
     player_elo = NumericProperty(0)
     opponent_elo = NumericProperty(0)
     text_button_ok = "Leave Game"
@@ -13,6 +12,8 @@ class GameOverDialog(MDDialog, EventDispatcher):
     def __init__(self, elo1_start, elo1_stop, elo2_start, elo2_stop, *largs, **kwargs):
         super().__init__(*largs, **kwargs)
         self.animate_elos(elo1_start, elo1_stop, elo2_start, elo2_stop)
+        self.size_hint = (.8, .5)
+
 
     def animate_elos(self, elo1_start, elo1_stop, elo2_start, elo2_stop):
         self.player_elo = elo1_start
@@ -21,8 +22,15 @@ class GameOverDialog(MDDialog, EventDispatcher):
         anim.start(self)
 
     def events_callback(self, text_of_selection, dialog):
+        app = App.get_running_app()
         if text_of_selection == 'Rematch':
-            print("Rematch")
+            # Ask the opponent to rematch
+            message = {"command": "rematch_requested"}
+            app.client.send_message(message)
+            # Inform this user that they are waiting
+
         elif text_of_selection == "Leave Game":
-            print("Leave Game")
+            message = {"command": "leave_match"}
+            app.client.send_message(message)
+            app.change_screen("lobby_screen")
 

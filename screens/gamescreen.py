@@ -16,6 +16,7 @@ class GameScreen(Screen):
     def return_to_home_screen(self):
         self.manager.current = 'home_screen'
 
+    @mainthread
     def new_game(self):
         board_helper = App.get_running_app().board_helper
         board_helper.widgets_by_row_and_column = {}
@@ -279,6 +280,15 @@ class GameScreen(Screen):
         message = {"command": "forfeit", "loser_color": loser_color}
         app.client.send_message(message)
 
+    def request_rematch(self):
+        m = MDDialog(events_callback=self.foo, text="Rematch?", size_hint=(.8, .5))
+        m.size_hint = (.8, .5)
+        m.open()
+
+    def foo(self, text, dialog):
+        app = App.get_running_app()
+        message = {"command": "rematch_accepted"}
+        app.client.send_message(message)
 
 
 

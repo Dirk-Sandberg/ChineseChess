@@ -92,6 +92,7 @@ class Client:
             all_players = message_dict['players']
             # Switch to the game screen
             self.app.change_screen('game_screen')
+            self.app.root.ids.game_screen.new_game()
         elif command == "list_lobbies":
             lobbies = message_dict['lobbies']
             self.app.root.ids.lobby_browser_screen.display_lobbies(lobbies)
@@ -112,6 +113,8 @@ class Client:
         elif command == 'forfeit':
             loser_color = message_dict['loser_color']
             self.app.update_elo_after_match_ends(loser_color)
+        elif command == 'rematch_requested':
+            self.app.root.ids.game_screen.request_rematch()
 
 
     def send_message(self, message):

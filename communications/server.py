@@ -209,6 +209,28 @@ class Server:
             clients_to_notify = self.clients_by_rooms[game_id]
             response_dict = message_dict
             return response_dict, clients_to_notify
+        elif command == 'rematch_requested':
+            clients_to_notify = self.clients_by_rooms[game_id].copy()
+            clients_to_notify.remove(sender)
+            response_dict = message_dict
+            return response_dict, clients_to_notify
+        elif command == 'rematch_accepted':
+            # Tell all players in a room that a game has started
+            clients_to_notify = self.clients_by_rooms[game_id]
+            response_dict = {"command": "match_started",
+                             "player_who_owns_turn": clients_to_notify[0],
+                             "players": clients_to_notify}
+            return response_dict, clients_to_notify
+
+        elif command == "leave_match":
+            try:
+                self.clients_by_rooms[game_id].remove(sender)
+                if self.clients_by_rooms[game_id] == []:
+                    # If there are no players remaining, free up the game id
+                    self.clients_by_rooms.pop(game_id)
+            except:
+                # Client wasn't in a room yet.
+                pass
 
         elif command == 'disconnect':
             # Client will be closed automatically when it doesn't receive the
@@ -219,7 +241,7 @@ class Server:
                     # If there are no players remaining, free up the game id
                     self.clients_by_rooms.pop(game_id)
 
-                # Try to remove this players lobby from the open lobbies list
+                # Try to remove this player's lobby from the open lobbies list
                 for lobby in self.lobbies:
                     if lobby['game_id'] == game_id:
                         self.lobbies.remove(lobby)

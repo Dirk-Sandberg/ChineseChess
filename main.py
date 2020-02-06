@@ -63,6 +63,7 @@ class MainApp(MDApp):
         self.client.send_message({"command": "disconnect"})
         self.client.server.close()
 
+    @mainthread
     def update_elo_after_match_ends(self, checkmated_player_color):
         if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
             loser_elo = self.player.elo
