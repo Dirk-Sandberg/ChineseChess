@@ -83,8 +83,8 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         """Overwrite this method to switch to your app's home screen.
         """
         print("Logged in successfully", args)
-        with open(self.refresh_token_file, "w") as f:
-            f.write("")
+        #with open(self.refresh_token_file, "w") as f:
+        #    f.write("")
 
 
     def on_web_api_key(self, *args):
@@ -151,6 +151,7 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         app = App.get_running_app()
         app.player.get_saved_nickname()
         app.player.retrieve_elo_from_firebase()
+        app.change_screen('home_screen')
 
 
     def sign_up_failure(self, urlrequest, failure_data):
@@ -286,6 +287,12 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         self.idToken = loaded_data['id_token']
         self.localId = loaded_data['user_id']
         self.login_success = True
+
+        # Get the users elo and nickname
+        app = App.get_running_app()
+        app.player.get_saved_nickname()
+        app.player.retrieve_elo_from_firebase()
+        app.change_screen('home_screen')
 
     def failed_account_load(self, *args):
         #toast("Failed to load account")

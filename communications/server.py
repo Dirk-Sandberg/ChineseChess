@@ -183,7 +183,12 @@ class Server:
 
         elif command == 'start_match':
             # Since the game started, remove it from the open lobbies list
-            #self.lobbies.remove(lobby)
+            for lobby in self.lobbies:
+                if lobby['game_id'] == game_id:
+                    self.lobbies.remove(lobby)
+                else:
+                    continue
+
             print("Should remove lobby here")
             # Tell all players in a room that a game has started
             clients_to_notify = self.clients_by_rooms[game_id]
