@@ -11,15 +11,10 @@ class Player(EventDispatcher):
     nickname = ""
     is_red = BooleanProperty(False)  # Player is either red or black
     game_id = ""  # Could replace the game id in the client code
-    saved_nickname_filename = "nickname.txt"
     elo = ""
 
-    #def __init__(self):
-    #    #self.elo = self.retrieve_elo_from_firebase()
-    #    self.retrieve_elo_from_firebase()
-
     def retrieve_elo_from_firebase(self):
-        print("Getting saved elo ")
+        print("Trying to get saved elo ")
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId
         UrlRequest(app.firebase_url + local_id + "/elo.json",
@@ -34,6 +29,24 @@ class Player(EventDispatcher):
 
     def failed_to_get_elo_from_firebase(self, *args):
         print("failed_to_get_elo_from_firebase", args)
+        pass
+
+    def set_elo(self, elo):
+        new_count = '{"elo": %s}' %elo
+        app = App.get_running_app()
+        local_id = app.root.ids.firebase_login_screen.localId
+        UrlRequest(App.get_running_app().firebase_url + local_id + ".json",
+                   req_body=new_count, method='PATCH', ca_file=certifi.where(),
+                    on_success=self.updated_elo,
+                    on_failure=self.failed_to_update_elo,
+                    on_error=self.failed_to_update_elo)
+
+    def updated_elo(self, thread, elo_data):
+        print("Successfully updated elo")
+        self.elo = elo_data['elo']
+
+    def failed_to_update_elo(self, *args):
+        print("failed_to_update_elo", *args)
 
     def set_nickname(self, nickname):
         """Overwrites the nickname saved firebase for this player
@@ -51,14 +64,18 @@ class Player(EventDispatcher):
                    on_failure=self.failed_to_update_nickname,
                    on_error=self.failed_to_update_nickname)
 
-    def updated_nickname(self, *args):
+    def updated_nickname(self, thread, nickname_data):
         print("updated_nickname in firebase")
+        app = App.get_running_app()
+        app.root.current = 'home_screen'
+        self.nickname = nickname_data['nickname']
+
 
     def failed_to_update_nickname(self, *args):
         print("failed_to_update_nickname", args)
 
     def get_saved_nickname(self):
-        """Gets the saved nickname from the :self.saved_nickname_filename: file.
+        """Gets the saved nickname from firebase
 
         """
         print("Getting saved nickname now")
@@ -72,6 +89,7 @@ class Player(EventDispatcher):
 
     def got_saved_nickname(self, thread, nickname):
         print("Got the saved nickname: ", nickname)
+        self.nickname = nickname
 
     def failed_to_get_saved_nickname(self, *args):
         print("failed_to_get_saved_nickname", args)

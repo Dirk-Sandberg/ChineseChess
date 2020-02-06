@@ -14,6 +14,7 @@ Window.size = (350, 600)
 from player import Player
 from communications.client import Client
 from screens.lobbyscreen import LobbyScreen
+from screens.setnicknamescreen import SetNicknameScreen
 from screens.homescreen import HomeScreen
 from screens.gamescreen import GameScreen
 from screens.creategamescreen import CreateGameScreen
@@ -34,14 +35,7 @@ class MainApp(MDApp):
     firebase_url = "https://chinese-chess-6543e.firebaseio.com/"
 
     def on_login(self):
-        print("LOGGED IN")
-        self.root.current = 'home_screen'
-        nickname = "king"
-        print("Setting the player's nickname in firebase to: ", nickname)
-        self.player.set_nickname(nickname)
-        self.player.get_saved_nickname()
-        self.player.retrieve_elo_from_firebase()
-
+        pass
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing

@@ -1,0 +1,12 @@
+<SetNicknameScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        MDLabel:
+            text: "Set your username"
+        MDTextField:
+            id: nickname
+            hint_text: "Anonymous"
+        MDRaisedButton:
+            text: "Set Username"
+            on_release:
+                root.set_nickname(nickname.text)

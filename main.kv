@@ -4,6 +4,7 @@
 #:include screens/homescreen.kv
 #:include screens/lobbyscreen.kv
 #:include screens/lobbybrowserscreen.kv
+#:include screens/setnicknamescreen.kv
 #:include screens/creategamescreen.kv
 #:include chesspieces/chesspiece.kv
 #:import FadeTransition kivy.uix.screenmanager.FadeTransition
@@ -34,6 +35,9 @@ ScreenManager:
             app.user_localId = self.localId
             app.user_idToken = self.idToken
             app.on_login()
+    SetNicknameScreen:
+        id: set_nickname_screen
+        name: "set_nickname_screen"
     HomeScreen:
         id: home_screen
         name: "home_screen"

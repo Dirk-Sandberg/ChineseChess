@@ -83,8 +83,8 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         """Overwrite this method to switch to your app's home screen.
         """
         print("Logged in successfully", args)
-        #with open(self.refresh_token_file, "w") as f:
-        #    f.write("")
+        with open(self.refresh_token_file, "w") as f:
+            f.write("")
 
 
     def on_web_api_key(self, *args):
@@ -128,9 +128,12 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         if self.debug:
             print("Successfully signed up a user: ", log_in_data)
 
-        new_count = '{"elo": %s}' %1200
-        UrlRequest(App.get_running_app().firebase_url + self.localId + ".json",
-                   req_body=new_count, method='PATCH', ca_file=certifi.where())
+        # Make the user select a nickname
+        app = App.get_running_app()
+        app.change_screen('set_nickname_screen')
+
+        # Update the user's profile with the default elo
+        app.player.set_elo(1200)
 
     def successful_login(self, urlrequest, log_in_data):
         """Collects info from Firebase upon successfully registering a new user.
@@ -143,6 +146,12 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         self.login_success = True
         if self.debug:
             print("Successfully logged in a user: ", log_in_data)
+
+        # Get the users elo and nickname
+        app = App.get_running_app()
+        app.player.get_saved_nickname()
+        app.player.retrieve_elo_from_firebase()
+
 
     def sign_up_failure(self, urlrequest, failure_data):
         """Displays an error message to the user if their attempt to log in was
