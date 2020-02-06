@@ -8,10 +8,32 @@
 #:include chesspieces/chesspiece.kv
 #:import FadeTransition kivy.uix.screenmanager.FadeTransition
 #:import get_color_from_hex kivy.utils.get_color_from_hex
+#:include FirebaseLoginScreen/firebaseloginscreen.kv
+#:import FirebaseLoginScreen FirebaseLoginScreen.firebaseloginscreen.FirebaseLoginScreen
 
 ScreenManager:
     transition: FadeTransition(clearcolor=get_color_from_hex(colors['Dark']['Background']))
-
+    FirebaseLoginScreen:
+        id: firebase_login_screen
+        name: "firebase_login_screen"
+        #debug: True
+        web_api_key: "AIzaSyB06j5jSIjrZj6oAi0Fkk23bHXLIpEcVC0" # Found in Firebase -> Project Settings -> Web API Key
+        primary_color: get_color_from_hex("#EE682A")
+        secondary_color: get_color_from_hex("#060809")
+        tertiary_color: (.25, .25, .25, 1)
+        canvas.before:
+            Color:
+            Rectangle:
+                size: self.size#[Window.width, Window.height]#app.window_height]
+                pos: self.pos
+                source: 'FirebaseLoginScreen/wallpaper.jpg'
+        on_login_success:
+            # Defining this function lets you program what to do when the
+            # user has logged in (probably you'll want to change screens)!
+            # Get the important user info
+            app.user_localId = self.localId
+            app.user_idToken = self.idToken
+            app.on_login()
     HomeScreen:
         id: home_screen
         name: "home_screen"

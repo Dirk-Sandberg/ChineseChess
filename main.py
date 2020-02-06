@@ -31,6 +31,17 @@ class MainApp(MDApp):
 
     client = None
 
+    firebase_url = "https://chinese-chess-6543e.firebaseio.com/"
+
+    def on_login(self):
+        print("LOGGED IN")
+        self.root.current = 'home_screen'
+        nickname = "king"
+        print("Setting the player's nickname in firebase to: ", nickname)
+        self.player.set_nickname(nickname)
+        self.player.get_saved_nickname()
+        self.player.retrieve_elo_from_firebase()
+
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing
@@ -38,6 +49,7 @@ class MainApp(MDApp):
         PORT = self.read_port_file()
         print("not connecting to server")
         self.client = Client(HOST, PORT)
+
 
 
     def read_port_file(self):

@@ -25,6 +25,6 @@ class LobbyBrowserScreen(Screen):
             time_limit = str(lobby['time_limit'])
             lobby_item = LobbyItem(text=name + ", rating " + elo,
                                          secondary_text="Time Limit: " + time_limit + " minutes")
-            lobby_item.game_id=game_id
+            lobby_item.game_id = game_id
             self.ids.list_layout.add_widget(lobby_item)
 

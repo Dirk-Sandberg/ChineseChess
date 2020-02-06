@@ -12,6 +12,10 @@
             icon: 'chevron-left'
             on_release:
                 root.manager.current = 'home_screen'
+        MDIconButton:
+            icon: 'refresh'
+            on_release:
+                root.get_lobbies_from_server()
         ScrollView:
             id: scroll
             size_hint_y: None
