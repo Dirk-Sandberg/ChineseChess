@@ -4,9 +4,11 @@ sys.path.append("/".join(x for x in __file__.split("/")[:-1]))
 
 from elo import rate_1vs1
 from kivymd.app import MDApp
+from kivymd.uix.dialog import MDDialog
 from kivy.properties import BooleanProperty
 from boardhelper import BoardHelper
 from kivy.utils import platform
+from gameoverdialog import GameOverDialog
 from kivy.clock import mainthread
 from kivy.core.window import Window
 Window.allow_screensaver = False
@@ -61,20 +63,17 @@ class MainApp(MDApp):
         self.client.send_message({"command": "disconnect"})
         self.client.server.close()
 
-
-    def checkmate(self, checkmated_player_color):
-        print(checkmated_player_color, " loses")
+    def update_elo_after_match_ends(self, checkmated_player_color):
         if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
             loser_elo = self.player.elo
             winner_elo = self.player.opponent_elo
         else:
             loser_elo = self.player.opponent_elo
             winner_elo = self.player.elo
+        #host doesn't set opponents elo
+        print("AA", winner_elo, loser_elo)
         new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
-        from kivymd.uix.dialog import MDDialog
-        m = MDDialog(title="CHECKMATE",
-                     text=checkmated_player_color + " IS IN CHECKMATE")
-        m.open()
+        print("BB", new_winner_elo, new_loser_elo)
 
         # Update the player's elo in firebase.
         if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
@@ -83,6 +82,15 @@ class MainApp(MDApp):
             new_elo = new_winner_elo
         self.player.set_elo(new_elo)
 
+        g = GameOverDialog(loser_elo, new_loser_elo, winner_elo, new_winner_elo)
+        g.open()
+
+    def checkmate(self, checkmated_player_color):
+        m = MDDialog(title="CHECKMATE",
+                     text=checkmated_player_color + " IS IN CHECKMATE")
+        m.open()
+
+        self.update_elo_after_match_ends(checkmated_player_color)
 
 
     @mainthread

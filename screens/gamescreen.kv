@@ -19,9 +19,10 @@
             Widget:
             MDRectangleFlatIconButton:
                 icon: 'replay'
-                text: "Restart"
+                text: "Forfeit"
                 on_release:
-                    root.new_game()
+                    root.forfeit()
+                    #root.new_game()
         GridLayout:
             #id: captured_black_pieces
             id: top_captured_pieces

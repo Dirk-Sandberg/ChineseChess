@@ -78,6 +78,7 @@ class Client:
                 if nickname != app.player.nickname:
                     app.player.opponent_elo = elo
             print("Need to make sure usernames are unique")
+            print(players)
             # Valid game joined
             self.app.change_screen('lobby_screen')
             self.app.root.ids.lobby_screen.ids.player_one.text = nicknames[0] + ", " + str(elos[0])
@@ -107,6 +108,11 @@ class Client:
         elif command == 'invalid_game_id':
             # This player tried to join a game with an invalid game id
             pass
+
+        elif command == 'forfeit':
+            loser_color = message_dict['loser_color']
+            self.app.update_elo_after_match_ends(loser_color)
+
 
     def send_message(self, message):
         """Sends a message to the server. All messages should include info about

@@ -205,6 +205,10 @@ class Server:
             response_dict = message_dict
             response_dict['command'] = "piece_moved"
             return response_dict, clients_to_notify
+        elif command == 'forfeit':
+            clients_to_notify = self.clients_by_rooms[game_id]
+            response_dict = message_dict
+            return response_dict, clients_to_notify
 
         elif command == 'disconnect':
             # Client will be closed automatically when it doesn't receive the

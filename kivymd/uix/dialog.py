@@ -373,6 +373,7 @@ class MDDialog(BaseDialog):
     text_button_cancel = StringProperty()
     text_button_ok = StringProperty("Ok")
     events_callback = ObjectProperty()
+    content_dialog = ObjectProperty()
     _background = StringProperty(f"{images_path}ios_bg_mod.png")
 
     def __init__(self, **kwargs):
@@ -384,8 +385,15 @@ class MDDialog(BaseDialog):
             text_button_cancel=self.text_button_cancel,
             device_ios=self.device_ios,
         )
+        self.content_dialog = content_dialog
         self.add_widget(content_dialog)
         self.set_content(content_dialog)
+
+    def on_text(self, dialog, text):
+        # Make it so changing the text of the MDDialog updates the text of the
+        # content dialog
+        if self.content_dialog:
+            self.content_dialog.text = text
 
 
 class ContentInputDialog(Heir):

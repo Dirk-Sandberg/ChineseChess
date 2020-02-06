@@ -272,4 +272,13 @@ class GameScreen(Screen):
             if child.indicator_source == "moved_from":
                 child.indicator_source = "blankpiece"
 
+    def forfeit(self):
+        # Send a message to the server that this player forfeited
+        app = App.get_running_app()
+        loser_color = 'red' if app.player.is_red else 'black'
+        message = {"command": "forfeit", "loser_color": loser_color}
+        app.client.send_message(message)
+
+
+
 

@@ -15,7 +15,6 @@ class Player(EventDispatcher):
     opponent_elo = 0
 
     def retrieve_elo_from_firebase(self):
-        print("Trying to get saved elo ")
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId
         UrlRequest(app.firebase_url + local_id + "/elo.json",
@@ -25,7 +24,6 @@ class Player(EventDispatcher):
                    on_error=self.failed_to_get_elo_from_firebase)
 
     def got_elo_from_firebase(self, thread, elo):
-        print("Got elo from firebase: ", elo)
         self.elo = int(elo)
 
     def failed_to_get_elo_from_firebase(self, *args):
@@ -33,7 +31,6 @@ class Player(EventDispatcher):
         pass
 
     def set_elo(self, elo):
-        print("Setting elo to", elo)
         new_elo = '{"elo": %s}' %elo
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId
@@ -44,7 +41,6 @@ class Player(EventDispatcher):
                     on_error=self.failed_to_update_elo)
 
     def updated_elo(self, thread, elo_data):
-        print("Successfully updated elo")
         self.elo = elo_data['elo']
 
     def failed_to_update_elo(self, *args):
@@ -79,7 +75,6 @@ class Player(EventDispatcher):
         """Gets the saved nickname from firebase
 
         """
-        print("Getting saved nickname now")
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId
         UrlRequest(app.firebase_url + local_id + "/nickname.json",
@@ -89,7 +84,6 @@ class Player(EventDispatcher):
                    on_error=self.failed_to_get_saved_nickname)
 
     def got_saved_nickname(self, thread, nickname):
-        print("Got the saved nickname: ", nickname)
         self.nickname = nickname
 
     def failed_to_get_saved_nickname(self, *args):
