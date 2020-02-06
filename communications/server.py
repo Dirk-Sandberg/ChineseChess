@@ -189,7 +189,6 @@ class Server:
                 else:
                     continue
 
-            print("Should remove lobby here")
             # Tell all players in a room that a game has started
             clients_to_notify = self.clients_by_rooms[game_id]
             response_dict = {"command": "match_started", "player_who_owns_turn": clients_to_notify[0], "players": clients_to_notify}
@@ -207,7 +206,6 @@ class Server:
             response_dict['command'] = "piece_moved"
             return response_dict, clients_to_notify
 
-
         elif command == 'disconnect':
             # Client will be closed automatically when it doesn't receive the
             # next message
@@ -216,6 +214,13 @@ class Server:
                 if self.clients_by_rooms[game_id] == []:
                     # If there are no players remaining, free up the game id
                     self.clients_by_rooms.pop(game_id)
+
+                # Try to remove this players lobby from the open lobbies list
+                for lobby in self.lobbies:
+                    if lobby['game_id'] == game_id:
+                        self.lobbies.remove(lobby)
+                    else:
+                        continue
             except:
                 # Client wasn't in a room yet.
                 pass

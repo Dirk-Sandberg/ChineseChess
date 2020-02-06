@@ -45,6 +45,8 @@ class GameScreen(Screen):
         :return:
         """
         app = App.get_running_app()
+        # Clear the image that showed where the last piece moved from
+        self.clear_just_moved_indicator()
 
         # Need to mirror the rows and columns if the player isn't the client
         if moved_piece_color == "red" and app.player.is_red or moved_piece_color == 'black' and not app.player.is_red:
@@ -129,7 +131,7 @@ class GameScreen(Screen):
                 m.open()
 
         # Stop highlighting the piece
-        moving_piece.indicator_source = "blankpiece"
+        moving_piece.indicator_source = "moved_from"
         app.highlighted_piece = None
 
 
@@ -151,6 +153,7 @@ class GameScreen(Screen):
         to_parent.remove_widget(piece_being_entered_upon)
         to_parent.add_widget(piece_moving, moving_to)
         new_blank_piece = ChessPiece(col=piece_moving.col,row=piece_moving.row)
+        new_blank_piece.indicator_source = "moved_from"
         from_parent.add_widget(new_blank_piece, moving_from)
         piece_moving.row = piece_being_entered_upon.row
         piece_moving.col = piece_being_entered_upon.col
@@ -257,5 +260,16 @@ class GameScreen(Screen):
         app.board_helper.red_pieces = old_red_pieces
 
         return check_is_in_simulated_game_state
+
+    def clear_just_moved_indicator(self):
+        board1 = self.ids.top_board
+        board2 = self.ids.bottom_board
+        # Clear all indicators that don't show where a piece just moved from
+        for child in board1.children:
+            if child.indicator_source == "moved_from":
+                child.indicator_source = "blankpiece"
+        for child in board2.children:
+            if child.indicator_source == "moved_from":
+                child.indicator_source = "blankpiece"
 
 

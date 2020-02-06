@@ -103,7 +103,7 @@ class ChessPiece(ButtonBehavior, Image):
         #print("Touched", self.id())
         if app.is_animating:
             return
-        if self.indicator_source == "glowing_dot":
+        if self.indicator_source == "available_move":
             # Game needs to move the highlighted widget
             self.send_move_piece_command()
             self.clear_indicators()
@@ -153,7 +153,7 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         piece = app.board_helper.get_widget_at(square[0], square[1])
         if piece:
-            piece.indicator_source = "glowing_dot"
+            piece.indicator_source = "available_move"
         else:
             piece.indicator_opacity = "blankpiece"
 
@@ -161,17 +161,19 @@ class ChessPiece(ButtonBehavior, Image):
         app = App.get_running_app()
         piece = app.board_helper.get_widget_at(square[0], square[1])
         if piece:
-            piece.indicator_source = 'rectangular_crosshair'
+            piece.indicator_source = 'unavailable_move'
 
 
     def clear_indicators(self):
         app = App.get_running_app()
         board1 = app.root.ids.game_screen.ids.top_board
         board2 = app.root.ids.game_screen.ids.bottom_board
-        # Clear all indicators
-        for child in board1.walk():
-            child.indicator_source = "blankpiece"
-        for child in board2.walk():
-            child.indicator_source = "blankpiece"
+        # Clear all indicators that don't show where a piece just moved from
+        for child in board1.children:
+            if child.indicator_source != "moved_from":
+                child.indicator_source = "blankpiece"
+        for child in board2.children:
+            if child.indicator_source != "moved_from":
+                child.indicator_source = "blankpiece"
 
 
