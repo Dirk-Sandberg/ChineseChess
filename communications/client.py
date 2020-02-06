@@ -64,12 +64,24 @@ class Client:
 
         elif command == 'player_joined':
             # A new player entered the game room
-            # Get nicknames for each player
-            nicknames = message_dict['players']
+            # Get nicknames and elos for each player
+            app = App.get_running_app()
+            #nicknames = message_dict['players']
+            nicknames = []
+            elos = []
+            players = message_dict['players']
+            for player in players:
+                nickname = player['nickname']
+                nicknames.append(nickname)
+                elo = player['elo']
+                elos.append(elo)
+                if nickname != app.player.nickname:
+                    app.player.opponent_elo = elo
+            print("Need to make sure usernames are unique")
             # Valid game joined
             self.app.change_screen('lobby_screen')
-            self.app.root.ids.lobby_screen.ids.player_one.text = nicknames[0]
-            self.app.root.ids.lobby_screen.ids.player_two.text = nicknames[1]
+            self.app.root.ids.lobby_screen.ids.player_one.text = nicknames[0] + ", " + str(elos[0])
+            self.app.root.ids.lobby_screen.ids.player_two.text = nicknames[1] + ", " + str(elos[1])
 
         elif command == 'match_started':
             # Someone pressed the start game button from the lobby screen

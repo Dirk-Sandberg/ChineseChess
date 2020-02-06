@@ -27,11 +27,11 @@ class Server:
 
     """
     This is a dict with format: 
-        {"ip_and_port": 'nickname'}
+        {"ip_and_port": {'nickname': 'player1', 'elo': 1200}}
     It's sent as data to the clients so the client can figure out which player
     has what nickname.
     """
-    nicknames_for_clients = {}  # e.g. {"192.168.2.4:60124": "player1"}
+    nicknames_for_clients = {}
 
 
     """
@@ -89,15 +89,11 @@ class Server:
                 sender_port = str(addr[1])
                 if received_messages:
                     print("Got message(s)", received_messages)
-                    print("Z")
                     received_messages = received_messages.decode()
-                    print("X")
                     # Separate the messages if more than one was received
                     for received_message in build_messages(received_messages):
                         # Convert the message from a string to a dict object
-                        print("zz", received_message)
                         received_message = json.loads(received_message)
-                        print("Y")
                         # Figure out what needs to be done based on the message
                         message_to_send, clients_to_send_to = self.interpret(sender_ip, sender_port, received_message)
 
@@ -154,7 +150,7 @@ class Server:
             self.lobbies.append(lobby)
 
             # Add the client to the game room
-            self.add_client_to_game_room(sender_ip, sender_port, game_id, nickname)
+            self.add_client_to_game_room(sender_ip, sender_port, game_id, nickname, elo)
             # Send a message back saying they succeeded in creating the room
             response_dict = {"command": "match_hosted", "game_id": game_id}
             clients_to_notify = [sender]
@@ -171,13 +167,18 @@ class Server:
             else:
                 # The game id does exist. Add them to the room
                 nickname = message_dict['from_player']['nickname']
+                elo = message_dict['from_player']['elo']
                 self.add_client_to_game_room(sender_ip, sender_port, game_id,
-                                             nickname)
+                                             nickname, elo)
                 # Send a message to all players in the room.
                 # The message should contain a list of all players currently in
                 # the room.
                 clients_to_notify = self.clients_by_rooms[game_id]
-                response_dict = {"command": "player_joined", "players": list(self.nicknames_for_clients.values())}
+                players = []
+                for client in clients_to_notify:
+                    players.append(self.nicknames_for_clients[client])
+                # players key should now hold nickname and elo
+                response_dict = {"command": "player_joined", "players": players}
                 return response_dict, clients_to_notify
 
         elif command == 'start_match':
@@ -214,7 +215,7 @@ class Server:
                 # Client wasn't in a room yet.
                 pass
 
-    def add_client_to_game_room(self, client_ip, client_port, game_id, nickname):
+    def add_client_to_game_room(self, client_ip, client_port, game_id, nickname, elo):
         """Keeps track of the players that are attached to each game room. Does
         so by adding the player to the :self.clients_by_rooms: dict under the
         :game_id:'s key in the dict.
@@ -238,9 +239,11 @@ class Server:
                 proper_nickname = "Player %s"%num_players
             else:
                 proper_nickname = nickname
-
+            player_info = {}
+            player_info['nickname'] = proper_nickname
+            player_info['elo'] = elo
             # Keep track of the nickname for this client
-            self.nicknames_for_clients[client_ip + ":" + client_port] = proper_nickname
+            self.nicknames_for_clients[client_ip + ":" + client_port] = player_info
         except KeyError:
             # This is the first player entering a new game room
             # Need to create a new key in the self.clients_by_rooms dict
@@ -251,9 +254,12 @@ class Server:
                 proper_nickname = "Player 1"
             else:
                 proper_nickname = nickname
+            player_info = {}
+            player_info['nickname'] = proper_nickname
+            player_info['elo'] = elo
 
             # Keep track of the nickname for this client
-            self.nicknames_for_clients[client_ip + ":" + client_port] = proper_nickname
+            self.nicknames_for_clients[client_ip + ":" + client_port] = player_info
 
 
     def broadcast(self, message, list_of_clients):

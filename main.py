@@ -64,13 +64,26 @@ class MainApp(MDApp):
 
     def checkmate(self, checkmated_player_color):
         print(checkmated_player_color, " loses")
-        winner_elo = 1200
-        loser_elo = 800
+        if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
+            loser_elo = self.player.elo
+            winner_elo = self.player.opponent_elo
+        else:
+            loser_elo = self.player.opponent_elo
+            winner_elo = self.player.elo
         new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
         from kivymd.uix.dialog import MDDialog
         m = MDDialog(title="CHECKMATE",
                      text=checkmated_player_color + " IS IN CHECKMATE")
         m.open()
+
+        # Update the player's elo in firebase.
+        if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
+            new_elo = new_loser_elo
+        else:
+            new_elo = new_winner_elo
+        self.player.set_elo(new_elo)
+
+
 
     @mainthread
     def change_screen(self, screen_name):

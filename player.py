@@ -11,7 +11,8 @@ class Player(EventDispatcher):
     nickname = ""
     is_red = BooleanProperty(False)  # Player is either red or black
     game_id = ""  # Could replace the game id in the client code
-    elo = ""
+    elo = 0
+    opponent_elo = 0
 
     def retrieve_elo_from_firebase(self):
         print("Trying to get saved elo ")
@@ -25,18 +26,19 @@ class Player(EventDispatcher):
 
     def got_elo_from_firebase(self, thread, elo):
         print("Got elo from firebase: ", elo)
-        self.elo = elo
+        self.elo = int(elo)
 
     def failed_to_get_elo_from_firebase(self, *args):
         print("failed_to_get_elo_from_firebase", args)
         pass
 
     def set_elo(self, elo):
-        new_count = '{"elo": %s}' %elo
+        print("Setting elo to", elo)
+        new_elo = '{"elo": %s}' %elo
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId
         UrlRequest(App.get_running_app().firebase_url + local_id + ".json",
-                   req_body=new_count, method='PATCH', ca_file=certifi.where(),
+                   req_body=new_elo, method='PATCH', ca_file=certifi.where(),
                     on_success=self.updated_elo,
                     on_failure=self.failed_to_update_elo,
                     on_error=self.failed_to_update_elo)
@@ -53,7 +55,7 @@ class Player(EventDispatcher):
 
         :param nickname: The new nickname to save
         """
-        print("Trying to update the nickname in firebase")
+        print("Trying to update the nickname in firebase to", nickname)
         nickname_data = {"nickname": nickname}
         nickname_data = dumps(nickname_data)
         app = App.get_running_app()
@@ -65,7 +67,6 @@ class Player(EventDispatcher):
                    on_error=self.failed_to_update_nickname)
 
     def updated_nickname(self, thread, nickname_data):
-        print("updated_nickname in firebase")
         app = App.get_running_app()
         app.root.current = 'home_screen'
         self.nickname = nickname_data['nickname']

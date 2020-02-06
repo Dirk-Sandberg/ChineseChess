@@ -1,3 +1,6 @@
+#:import random random
+#:import string string
+
 <CreateAccountScreen>:
     FloatLayout:
         MDIconButton:
@@ -14,6 +17,7 @@
                 root.parent.transition = SlideTransition(direction="left")
 
         MDTextFieldRound:
+            text: ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)) + "@gmail.com"
             id: email
             #size_hint: .9 ,.1
             pos_hint: {"center_x": .5, "top": .875}
@@ -24,6 +28,7 @@
 
 
         MDTextFieldRound:
+            text: ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
             id: password
             #size_hint: .9 ,.1
             pos_hint: {"center_x": .5, "top": .775}
