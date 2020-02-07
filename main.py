@@ -72,18 +72,19 @@ class MainApp(MDApp):
             loser_elo = self.player.opponent_elo
             winner_elo = self.player.elo
         #host doesn't set opponents elo
-        print("AA", winner_elo, loser_elo)
         new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
-        print("BB", new_winner_elo, new_loser_elo)
 
         # Update the player's elo in firebase.
         if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
             new_elo = new_loser_elo
         else:
             new_elo = new_winner_elo
+        loser_elo, new_loser_elo = float(loser_elo), float(new_loser_elo)
+        winner_elo, new_winner_elo = float(winner_elo), float(new_winner_elo)
         self.player.set_elo(new_elo)
 
-        g = GameOverDialog(loser_elo, new_loser_elo, winner_elo, new_winner_elo)
+        g = GameOverDialog(loser_elo, new_loser_elo, winner_elo, new_winner_elo,
+                           self.player.nickname, self.player.opponent_nickname)
         g.open()
 
     def checkmate(self, checkmated_player_color):

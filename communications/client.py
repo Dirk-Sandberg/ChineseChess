@@ -77,8 +77,8 @@ class Client:
                 elos.append(elo)
                 if nickname != app.player.nickname:
                     app.player.opponent_elo = elo
+                    app.player.opponent_nickname = nickname
             print("Need to make sure usernames are unique")
-            print(players)
             # Valid game joined
             self.app.change_screen('lobby_screen')
             self.app.root.ids.lobby_screen.ids.player_one.text = nicknames[0] + ", " + str(elos[0])
@@ -115,6 +115,7 @@ class Client:
             self.app.update_elo_after_match_ends(loser_color)
         elif command == 'rematch_requested':
             self.app.root.ids.game_screen.request_rematch()
+            #this needs to be updated
 
 
     def send_message(self, message):

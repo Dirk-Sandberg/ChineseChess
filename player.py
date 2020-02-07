@@ -9,6 +9,7 @@ from json import dumps
 
 class Player(EventDispatcher):
     nickname = ""
+    opponent_nickname = ""
     is_red = BooleanProperty(False)  # Player is either red or black
     game_id = ""  # Could replace the game id in the client code
     elo = 0

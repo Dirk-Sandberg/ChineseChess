@@ -131,50 +131,127 @@ Builder.load_string(
         height: dp(20)
         padding: dp(20), 0, dp(20), 0
 
-<ListMDDialog>:
+<BaseGameOverDialog>:
     orientation: 'vertical'
+    #auto_dismiss: False
+    #background_opacity: .9
     padding: dp(15)
     spacing: dp(10)
-    title: "Hey"
-
-    MDLabel:
-        id: title
-        text: root.title
-        font_style: 'H6'
-        halign: 'left' if not root.device_ios else 'center'
-        valign: 'top'
-        size_hint_y: None
-        text_size: self.width, None
-        height: self.texture_size[1]
-
-    ScrollView:
-        id: scroll
-        size_hint_y: None
-        height:
-            root.height - (title.height + dp(48)\
-            + sep.height)
-
-        canvas:
-            Rectangle:
-                pos: self.pos
-                size: self.size
-                #source: f'{images_path}dialog_in_fade.png'
-                source: f'{images_path}transparent.png'
-        MDList:
+    title: "Game Over"
+    player_elo: 0
+    opponent_elo: 0
+    player_nickname: ""
+    opponent_nickname: "NotUniqueUsername"
+    change_in_elo: ""
+    changed_elo_label_color: [1,0,0,1]
+    background: ""
+    canvas:
+        Color:
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            source: root.background
+    BoxLayout:
+        orientation: 'vertical'
+        MDLabel:
+            id: title
+            text: root.title
+            font_style: 'H6'
+            halign: 'left' if not root.device_ios else 'center'
+            valign: 'top'
             size_hint_y: None
-            height: self.minimum_height
-            spacing: dp(15)
-            MDLabel:
-                text: "FMID" + root.FMID
+            text_size: self.width, None
+            height: self.texture_size[1]
+    
+        ScrollView:
+            id: scroll
+            #size_hint_y: None
+            #height:
+            #    root.height - (title.height + dp(48)\
+            #    + sep.height)
+    
+            #canvas:
+            #    Rectangle:
+            #        pos: self.pos
+            #        size: self.size
+            #        #source: f'{images_path}dialog_in_fade.png'
+            #        source: f'{images_path}transparent.png'
+            MDList:
                 size_hint_y: None
-                height: self.texture_size[1]
-                valign: 'top'
-                halign: 'left' if not root.device_ios else 'center'
-                markup: True
-
-    MDSeparator:
-        id: sep
-
+                height: self.minimum_height
+                spacing: dp(15)
+                MDLabel:
+                    text: root.change_in_elo + " elo"
+                    color: root.changed_elo_label_color
+                    font_style: 'H6'
+                    halign: 'left' if not root.device_ios else 'center'
+                    valign: 'top'
+                    size_hint_y: None
+                    text_size: self.width, None
+                    height: self.texture_size[1]
+                MDLabel:
+                    text: "%d"%root.player_elo
+                    font_style: 'H6'
+                    halign: 'left' if not root.device_ios else 'center'
+                    valign: 'top'
+                    size_hint_y: None
+                    text_size: self.width, None
+                    height: self.texture_size[1]
+                #MDLabel:
+                #    text: str(root.opponent_elo)
+                #    font_style: 'H6'
+                #    halign: 'left' if not root.device_ios else 'center'
+                #    valign: 'top'
+                #    size_hint_y: None
+                #    text_size: self.width, None
+                #    height: self.texture_size[1]
+                MDSeparator:
+                    #height: dp(10)
+                MDLabel:
+                    text: "Rematch?"
+                    font_style: 'H6'
+                    halign: 'left' if not root.device_ios else 'center'
+                    valign: 'top'
+                    size_hint_y: None
+                    text_size: self.width, None
+                    height: self.texture_size[1]
+                BoxLayout:
+                    size_hint: 1, None
+                    height: nickname_label.height
+                    MDLabel:
+                        id: nickname_label
+                        text: root.player_nickname
+                        font_style: 'H6'
+                        halign: 'left' if not root.device_ios else 'center'
+                        valign: 'top'
+                        size_hint_y: None
+                        text_size: self.width, None
+                        height: self.texture_size[1]
+                    BoxLayout:
+                        MDCheckbox:
+                            pos_hint: {"center_x": .5}
+                            size_hint_x: None
+                            width: self.height
+                            on_release:
+                                root.request_rematch()
+                BoxLayout:
+                    size_hint: 1, None
+                    height: nickname_label.height
+                    MDLabel:
+                        text: root.opponent_nickname
+                        font_style: 'H6'
+                        halign: 'left' if not root.device_ios else 'center'
+                        valign: 'top'
+                        size_hint_y: None
+                        text_size: self.width, None
+                        height: self.texture_size[1]
+                    MDCheckbox:
+                        id: opponent_is_ready_checkbox
+                        disabled: True
+        MDRaisedButton:
+            text: "Back to Lobby"
+            on_release:
+                root.leave_match()
 
 <ContentMDDialog>
     orientation: 'vertical'
@@ -332,12 +409,13 @@ class BaseDialog(ThemableBehavior, ModalView):
                 instance_content_dialog.ids.sep
             )
 
-class ListMDDialog(BaseDialog):
-    FMID = StringProperty("")
-    #_background = StringProperty(f"{images_path}ios_bg_mod.png")
-    background = StringProperty('{}ios_bg_mod.png'.format(images_path))
+class BaseGameOverDialog(ThemableBehavior, BoxLayout):
+    _background = StringProperty('{}ios_bg_mod.png'.format(images_path))
 
-    pass
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.device_ios:  # create buttons for iOS
+            self.background = self._background
 
 
 
