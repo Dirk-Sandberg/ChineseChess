@@ -8,7 +8,6 @@ from kivymd.uix.dialog import MDDialog
 from kivy.properties import BooleanProperty
 from boardhelper import BoardHelper
 from kivy.utils import platform
-from gameoverdialog import GameOverDialog
 from kivy.clock import mainthread
 from kivy.core.window import Window
 Window.allow_screensaver = False
@@ -62,30 +61,6 @@ class MainApp(MDApp):
         """
         self.client.send_message({"command": "disconnect"})
         self.client.server.close()
-
-    @mainthread
-    def update_elo_after_match_ends(self, checkmated_player_color):
-        if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
-            loser_elo = self.player.elo
-            winner_elo = self.player.opponent_elo
-        else:
-            loser_elo = self.player.opponent_elo
-            winner_elo = self.player.elo
-        #host doesn't set opponents elo
-        new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
-
-        # Update the player's elo in firebase.
-        if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
-            new_elo = new_loser_elo
-        else:
-            new_elo = new_winner_elo
-        loser_elo, new_loser_elo = float(loser_elo), float(new_loser_elo)
-        winner_elo, new_winner_elo = float(winner_elo), float(new_winner_elo)
-        self.player.set_elo(new_elo)
-
-        g = GameOverDialog(loser_elo, new_loser_elo, winner_elo, new_winner_elo,
-                           self.player.nickname, self.player.opponent_nickname)
-        g.open()
 
     def checkmate(self, checkmated_player_color):
         m = MDDialog(title="CHECKMATE",

@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.properties import BooleanProperty
+from kivy.properties import BooleanProperty, ObjectProperty
 from chesspieces.chesspiece import ChessPiece
 from kivy.uix.image import Image
 from kivy.core.window import Window
@@ -8,10 +8,12 @@ from kivy.animation import Animation
 from kivy.clock import mainthread
 from functools import partial
 from kivymd.uix.dialog import MDDialog
+from gameoverdialog import GameOverDialog
 
 
 class GameScreen(Screen):
     online_mode_enabled = BooleanProperty(False)
+    game_over_dialog = ObjectProperty(None)
 
     def return_to_home_screen(self):
         self.manager.current = 'home_screen'
@@ -283,15 +285,27 @@ class GameScreen(Screen):
         message = {"command": "forfeit", "loser_color": loser_color}
         app.client.send_message(message)
 
-    def request_rematch(self):
-        m = MDDialog(events_callback=self.foo, text="Rematch?", size_hint=(.8, .5))
-        m.size_hint = (.8, .5)
-        m.open()
+    def rematch_requested(self):
+        self.game_over_dialog.ids.opponent_is_ready_checkbox.active = True
+        if self.game_over_dialog.ids.player_is_ready_checkbox.active:
+            # Both players are active, start the game
+            self.accept_rematch()
 
-    def foo(self, text, dialog):
+
+    def accept_rematch(self):
         app = App.get_running_app()
         message = {"command": "rematch_accepted"}
         app.client.send_message(message)
+        self.game_over_dialog.dismiss()
+
+    def display_game_over_dialog(self, loser_elo, new_loser_elo, winner_elo,
+                                 new_winner_elo, nickname, opponent_nickname):
+        self.game_over_dialog = GameOverDialog(loser_elo, new_loser_elo,
+                                               winner_elo, new_winner_elo,
+                                               nickname, opponent_nickname)
+        self.game_over_dialog.open()
+
+
 
 
 

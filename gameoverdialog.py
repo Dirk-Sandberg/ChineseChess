@@ -34,7 +34,7 @@ class GameOverDialog(BaseGameOverDialog):
             self.changed_elo_label_color = [1,0,0,1]
 
         # Bring up a little button that lets the user see the board
-        Clock.schedule_once(self.foo, 0)
+        Clock.schedule_once(self.add_fab, 0)
 
     def open(self):
         from kivy.core.window import Window
@@ -43,9 +43,8 @@ class GameOverDialog(BaseGameOverDialog):
         self.is_open = True
 
 
-    def foo(self, *args):
-        from kivy.core.window import Window
-        f = MDFloatingActionButton(icon='minus', on_release=self.show_or_hide_screen)
+    def add_fab(self, *args):
+        f = MDFloatingActionButton(icon='chevron-down', on_release=self.show_or_hide_screen)
         f.center_x = self.center_x
         f.y = self.y - f.height
         self.f = f
@@ -59,6 +58,7 @@ class GameOverDialog(BaseGameOverDialog):
             anim.start(self)
             anim2.start(self.f)
             self.is_open = False
+            self.f.icon = 'chevron-up'
         else:
             fab_y = (.5-self.size_hint_y/2.0)*Window.height - self.f.height
             anim = Animation(pos_hint={"center_y": .5, "center_x": .5})
@@ -66,15 +66,23 @@ class GameOverDialog(BaseGameOverDialog):
             anim.start(self)
             anim2.start(self.f)
             self.is_open = True
+            self.f.icon = 'chevron-down'
 
-    def dismiss(self):
+    def dismiss(self, to_lobby_browser_screen=False):
+        """
+
+        :param to_lobby_screen: if True, takes the player back to the lobby
+        browser screen. Otherwise, just let's them play a new game
+        :return:
+        """
         anim = Animation(
             pos_hint={"center_y": -self.size_hint_y / 2.0, "center_x": .5})
         anim2 = Animation(y=-self.f.height)
+        if to_lobby_browser_screen:
+            anim.bind(on_complete=self.back_to_lobby_browser)
         anim.start(self)
         anim2.start(self.f)
         self.is_open = False
-        anim.bind(on_complete=self.back_to_lobby_browser)
 
     def back_to_lobby_browser(self, *args):
         app = App.get_running_app()
@@ -93,7 +101,9 @@ class GameOverDialog(BaseGameOverDialog):
         # Ask the opponent to rematch
         message = {"command": "rematch_requested"}
         app.client.send_message(message)
-        # Inform this user that they are waiting
+        # If the enemy was already readied up, start the game
+        if self.ids.opponent_is_ready_checkbox.active:
+            app.root.ids.game_screen.accept_rematch()
 
     def leave_match(self):
         # Need to inform other player that this user left!
@@ -101,5 +111,5 @@ class GameOverDialog(BaseGameOverDialog):
         app = App.get_running_app()
         message = {"command": "leave_match"}
         app.client.send_message(message)
-        self.dismiss()
+        self.dismiss(to_lobby_browser_screen=True)
 

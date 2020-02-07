@@ -229,6 +229,7 @@ Builder.load_string(
                         height: self.texture_size[1]
                     BoxLayout:
                         MDCheckbox:
+                            id: player_is_ready_checkbox
                             pos_hint: {"center_x": .5}
                             size_hint_x: None
                             width: self.height

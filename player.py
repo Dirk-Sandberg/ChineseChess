@@ -5,7 +5,8 @@ from kivy.network.urlrequest import UrlRequest
 from kivy.app import App
 import certifi
 from json import dumps
-
+from kivy.clock import mainthread
+from elo import rate_1vs1
 
 class Player(EventDispatcher):
     nickname = ""
@@ -14,6 +15,32 @@ class Player(EventDispatcher):
     game_id = ""  # Could replace the game id in the client code
     elo = 0
     opponent_elo = 0
+
+    @mainthread
+    def update_elo_after_match_ends(self, checkmated_player_color):
+        if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
+            loser_elo = self.elo
+            winner_elo = self.opponent_elo
+        else:
+            loser_elo = self.opponent_elo
+            winner_elo = self.elo
+        #host doesn't set opponents elo
+        new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
+
+        # Update the player's elo in firebase.
+        if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
+            new_elo = new_loser_elo
+        else:
+            new_elo = new_winner_elo
+        loser_elo, new_loser_elo = float(loser_elo), float(new_loser_elo)
+        winner_elo, new_winner_elo = float(winner_elo), float(new_winner_elo)
+        self.set_elo(new_elo)
+
+        # Tell the game screen to open the game over dialog popup
+        app = App.get_running_app()
+        app.root.ids.game_screen.display_game_over_dialog(loser_elo, new_loser_elo, winner_elo, new_winner_elo,
+                           self.nickname, self.opponent_nickname)
+
 
     def retrieve_elo_from_firebase(self):
         app = App.get_running_app()

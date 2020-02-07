@@ -112,9 +112,9 @@ class Client:
 
         elif command == 'forfeit':
             loser_color = message_dict['loser_color']
-            self.app.update_elo_after_match_ends(loser_color)
+            self.app.player.update_elo_after_match_ends(loser_color)
         elif command == 'rematch_requested':
-            self.app.root.ids.game_screen.request_rematch()
+            self.app.root.ids.game_screen.rematch_requested()
             #this needs to be updated
 
 

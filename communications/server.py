@@ -217,6 +217,7 @@ class Server:
         elif command == 'rematch_accepted':
             # Tell all players in a room that a game has started
             clients_to_notify = self.clients_by_rooms[game_id]
+            print("Rematch accepted might start the game twice if both clients ready up at the same time?")
             response_dict = {"command": "match_started",
                              "player_who_owns_turn": clients_to_notify[0],
                              "players": clients_to_notify}
