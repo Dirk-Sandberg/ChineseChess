@@ -222,6 +222,11 @@ class Server:
                              "player_who_owns_turn": clients_to_notify[0],
                              "players": clients_to_notify}
             return response_dict, clients_to_notify
+        elif command == 'revoke_rematch_request':
+            clients_to_notify = self.clients_by_rooms[game_id].copy()
+            clients_to_notify.remove(sender)
+            response_dict = message_dict
+            return response_dict, clients_to_notify
 
         elif command == "leave_match":
             try:

@@ -1,7 +1,7 @@
 from kivymd.uix.dialog import BaseGameOverDialog
 from kivy.properties import NumericProperty, StringProperty#, ObjectProperty
 from kivy.animation import Animation
-from kivymd.uix.button import MDFloatingActionButton
+from gameoverfab import GameOverFab
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.clock import Clock
@@ -14,6 +14,7 @@ class GameOverDialog(BaseGameOverDialog):
     change_in_elo = StringProperty("")
     text_button_ok = "Leave Game"
     text_button_cancel = "Rematch"
+    fab = None
     is_open = False
 
 
@@ -44,29 +45,29 @@ class GameOverDialog(BaseGameOverDialog):
 
 
     def add_fab(self, *args):
-        f = MDFloatingActionButton(icon='chevron-down', on_release=self.show_or_hide_screen)
-        f.center_x = self.center_x
-        f.y = self.y - f.height
-        self.f = f
-        f.size_hint = (None, None)
-        Window.add_widget(f)
+        fab = GameOverFab(on_release=self.show_or_hide_screen)
+        fab.center_x = self.center_x
+        fab.y = self.y - fab.height
+        self.fab = fab
+        fab.size_hint = (None, None)
+        Window.add_widget(fab)
 
     def show_or_hide_screen(self, *args):
         if self.is_open:
             anim = Animation(pos_hint={"center_y": -self.size_hint_y/2.0, "center_x": .5})
-            anim2 = Animation(y=0)
+            anim2 = Animation(y=0, angle=-540)
             anim.start(self)
-            anim2.start(self.f)
+            anim2.start(self.fab)
             self.is_open = False
-            self.f.icon = 'chevron-up'
+            #self.f.icon = 'chevron-up'
         else:
-            fab_y = (.5-self.size_hint_y/2.0)*Window.height - self.f.height
+            fab_y = (.5-self.size_hint_y/2.0)*Window.height - self.fab.height
             anim = Animation(pos_hint={"center_y": .5, "center_x": .5})
-            anim2 = Animation(y=fab_y)
+            anim2 = Animation(y=fab_y, angle=0)
             anim.start(self)
-            anim2.start(self.f)
+            anim2.start(self.fab)
             self.is_open = True
-            self.f.icon = 'chevron-down'
+            #self.f.icon = 'chevron-down'
 
     def dismiss(self, to_lobby_browser_screen=False):
         """
@@ -80,14 +81,19 @@ class GameOverDialog(BaseGameOverDialog):
         anim2 = Animation(y=-self.f.height)
         if to_lobby_browser_screen:
             anim.bind(on_complete=self.back_to_lobby_browser)
+        anim2.bind(on_complete=self.remove_self_and_fab)
         anim.start(self)
-        anim2.start(self.f)
+        anim2.start(self.fab)
         self.is_open = False
+
+    def remove_self_and_fab(self, *args):
+        Window.remove(self.fab)
+        Window.remove(self)
 
     def back_to_lobby_browser(self, *args):
         app = App.get_running_app()
         app.change_screen("lobby_browser_screen")
-        Window.remove_widget(self.f)
+        Window.remove_widget(self.fab)
         Window.remove_widget(self)
 
     def animate_elos(self, elo1_start, elo1_stop, elo2_start, elo2_stop):
@@ -96,14 +102,20 @@ class GameOverDialog(BaseGameOverDialog):
         anim = Animation(player_elo=elo1_stop, opponent_elo=elo2_stop, duration=3)
         anim.start(self)
 
-    def request_rematch(self):
+    def revoke_or_request_rematch(self):
         app = App.get_running_app()
-        # Ask the opponent to rematch
-        message = {"command": "rematch_requested"}
-        app.client.send_message(message)
-        # If the enemy was already readied up, start the game
-        if self.ids.opponent_is_ready_checkbox.active:
-            app.root.ids.game_screen.accept_rematch()
+
+        if self.ids.player_is_ready_checkbox.active:
+            # Ask the opponent to rematch
+            message = {"command": "rematch_requested"}
+            app.client.send_message(message)
+            # If the enemy was already readied up, start the game
+            if self.ids.opponent_is_ready_checkbox.active:
+                app.root.ids.game_screen.accept_rematch()
+        else:
+            message = {"command": "revoke_rematch_request"}
+            app.client.send_message(message)
+
 
     def leave_match(self):
         # Need to inform other player that this user left!

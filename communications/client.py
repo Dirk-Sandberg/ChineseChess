@@ -116,6 +116,10 @@ class Client:
         elif command == 'rematch_requested':
             self.app.root.ids.game_screen.rematch_requested()
             #this needs to be updated
+        elif command == 'revoke_rematch_request':
+            print("Trying to revoke rematch request")
+            self.app.root.ids.game_screen.rematch_request_revoked()
+
 
 
     def send_message(self, message):

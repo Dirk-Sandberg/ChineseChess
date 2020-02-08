@@ -1,0 +1,11 @@
+<GameOverFab>:
+    md_bg_color: app.theme_cls.primary_color
+    icon: 'chevron-up'
+    angle: 0
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: root.angle
+            origin: self.center
+    canvas.after:
+        PopMatrix

@@ -1,5 +1,6 @@
 #:include availablemoveindicator.kv
 #:include halfboard.kv
+#:include gameoverfab.kv
 #:include screens/gamescreen.kv
 #:include screens/homescreen.kv
 #:include screens/lobbyscreen.kv
@@ -13,7 +14,7 @@
 #:import FirebaseLoginScreen FirebaseLoginScreen.firebaseloginscreen.FirebaseLoginScreen
 
 ScreenManager:
-    transition: FadeTransition(clearcolor=get_color_from_hex(colors['Dark']['Background']))
+    transition: FadeTransition(clearcolor=get_color_from_hex(colors['Light']['Background']))
     FirebaseLoginScreen:
         id: firebase_login_screen
         name: "firebase_login_screen"

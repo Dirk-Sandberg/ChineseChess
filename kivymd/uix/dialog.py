@@ -234,7 +234,7 @@ Builder.load_string(
                             size_hint_x: None
                             width: self.height
                             on_release:
-                                root.request_rematch()
+                                root.revoke_or_request_rematch()
                 BoxLayout:
                     size_hint: 1, None
                     height: nickname_label.height

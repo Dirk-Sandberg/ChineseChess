@@ -285,12 +285,14 @@ class GameScreen(Screen):
         message = {"command": "forfeit", "loser_color": loser_color}
         app.client.send_message(message)
 
+    def rematch_request_revoked(self):
+        self.game_over_dialog.ids.opponent_is_ready_checkbox.active = False
+
     def rematch_requested(self):
         self.game_over_dialog.ids.opponent_is_ready_checkbox.active = True
         if self.game_over_dialog.ids.player_is_ready_checkbox.active:
             # Both players are active, start the game
             self.accept_rematch()
-
 
     def accept_rematch(self):
         app = App.get_running_app()
