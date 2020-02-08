@@ -6,6 +6,7 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.clock import Clock
 
+
 class GameOverDialog(BaseGameOverDialog):
     player_elo = NumericProperty(0)
     player_nickname = StringProperty("")
@@ -18,56 +19,67 @@ class GameOverDialog(BaseGameOverDialog):
     is_open = False
 
 
-    def __init__(self, elo1_start, elo1_stop, elo2_start, elo2_stop,
+    def __init__(self, winner_color, elo1_start, elo1_stop, elo2_start, elo2_stop,
                  player_nickname, opponent_nickname, *largs, **kwargs):
         super().__init__(*largs, **kwargs)
+        self.title = winner_color[0].upper() + winner_color[1:] + " Wins!"
         self.animate_elos(elo1_start, elo1_stop, elo2_start, elo2_stop)
         self.player_nickname = player_nickname
         self.opponent_nickname = opponent_nickname
         self.size_hint = (.8, .6)
+        self.pos_hint = {"center_y": -self.size_hint_y, "center_x": .5}
         if elo1_stop > elo1_start:
             # Gained elo, make it green
-            self.change_in_elo = "+%d"%(elo1_stop-elo1_start)
-            self.changed_elo_label_color = [0,1,0,1]
+            self.change_in_elo = "+%d" % (elo1_stop-elo1_start)
+            self.changed_elo_label_color = [0, 1, 0, 1]
         else:
             # Lost elo, make it red
-            self.change_in_elo = "%d"%(elo1_stop-elo1_start)
-            self.changed_elo_label_color = [1,0,0,1]
+            self.change_in_elo = "%d" % (elo1_stop-elo1_start)
+            self.changed_elo_label_color = [1, 0, 0, 1]
 
-        # Bring up a little button that lets the user see the board
-        Clock.schedule_once(self.add_fab, 0)
 
     def open(self):
-        from kivy.core.window import Window
-        self.pos_hint = {"center_x": .5, "center_y": .5}
         Window.add_widget(self)
+        self.add_fab()
+
+        # Slide the menu up
+        fab_y = (.5 - self.size_hint_y / 2.0) * Window.height - self.fab.height * 1.25
+        anim = Animation(pos_hint={"center_y": .5, "center_x": .5},
+                         transition='in_out_back')
+        anim2 = Animation(y=fab_y, angle=0, transition='in_out_back')
+        anim.start(self)
+        anim2.start(self.fab)
+
+        # Bring up a little button that lets the user see the board
+        #Clock.schedule_once(self.add_fab, 0)
+
         self.is_open = True
 
 
     def add_fab(self, *args):
         fab = GameOverFab(on_release=self.show_or_hide_screen)
         fab.center_x = self.center_x
-        fab.y = self.y - fab.height
+        fab.y = self.y - fab.height*1.25
         self.fab = fab
         fab.size_hint = (None, None)
         Window.add_widget(fab)
 
     def show_or_hide_screen(self, *args):
         if self.is_open:
-            anim = Animation(pos_hint={"center_y": -self.size_hint_y/2.0, "center_x": .5})
-            anim2 = Animation(y=0, angle=-540)
+            # Slide the menu down
+            anim = Animation(pos_hint={"center_y": -self.size_hint_y, "center_x": .5}, transition='in_out_back')
+            anim2 = Animation(y=0.25*self.fab.height, angle=-180, transition='in_out_back')
             anim.start(self)
             anim2.start(self.fab)
             self.is_open = False
-            #self.f.icon = 'chevron-up'
         else:
-            fab_y = (.5-self.size_hint_y/2.0)*Window.height - self.fab.height
-            anim = Animation(pos_hint={"center_y": .5, "center_x": .5})
-            anim2 = Animation(y=fab_y, angle=0)
+            # Slide the menu up
+            fab_y = (.5-self.size_hint_y/2.0)*Window.height - self.fab.height*1.25
+            anim = Animation(pos_hint={"center_y": .5, "center_x": .5}, transition='in_out_back')
+            anim2 = Animation(y=fab_y, angle=0, transition='in_out_back')
             anim.start(self)
             anim2.start(self.fab)
             self.is_open = True
-            #self.f.icon = 'chevron-down'
 
     def dismiss(self, to_lobby_browser_screen=False):
         """
@@ -77,8 +89,8 @@ class GameOverDialog(BaseGameOverDialog):
         :return:
         """
         anim = Animation(
-            pos_hint={"center_y": -self.size_hint_y / 2.0, "center_x": .5})
-        anim2 = Animation(y=-self.f.height)
+            pos_hint={"center_y": -self.size_hint_y, "center_x": .5}, transition='in_out_back')
+        anim2 = Animation(y=-self.fab.height, transition='in_out_back')
         if to_lobby_browser_screen:
             anim.bind(on_complete=self.back_to_lobby_browser)
         anim2.bind(on_complete=self.remove_self_and_fab)
@@ -87,8 +99,8 @@ class GameOverDialog(BaseGameOverDialog):
         self.is_open = False
 
     def remove_self_and_fab(self, *args):
-        Window.remove(self.fab)
-        Window.remove(self)
+        Window.remove_widget(self.fab)
+        Window.remove_widget(self)
 
     def back_to_lobby_browser(self, *args):
         app = App.get_running_app()

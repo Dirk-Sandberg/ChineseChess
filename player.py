@@ -38,7 +38,8 @@ class Player(EventDispatcher):
 
         # Tell the game screen to open the game over dialog popup
         app = App.get_running_app()
-        app.root.ids.game_screen.display_game_over_dialog(loser_elo, new_loser_elo, winner_elo, new_winner_elo,
+        winner_color = 'red' if checkmated_player_color == 'black' else 'black'
+        app.root.ids.game_screen.display_game_over_dialog(winner_color, loser_elo, new_loser_elo, winner_elo, new_winner_elo,
                            self.nickname, self.opponent_nickname)
 
 

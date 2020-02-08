@@ -133,11 +133,7 @@ Builder.load_string(
 
 <BaseGameOverDialog>:
     orientation: 'vertical'
-    #auto_dismiss: False
-    #background_opacity: .9
-    padding: dp(15)
-    spacing: dp(10)
-    title: "Game Over"
+    title: ""
     player_elo: 0
     opponent_elo: 0
     player_nickname: ""
@@ -145,14 +141,13 @@ Builder.load_string(
     change_in_elo: ""
     changed_elo_label_color: [1,0,0,1]
     background: ""
-    canvas:
-        Color:
-        Rectangle:
-            size: self.size
-            pos: self.pos
-            source: root.background
-    BoxLayout:
+    #height: self.minimum_height
+    #size_hint: .8, None
+    MDCard:
         orientation: 'vertical'
+        border_radius: dp(10)
+        padding: dp(15)
+        spacing: dp(10)
         MDLabel:
             id: title
             text: root.title
@@ -170,12 +165,12 @@ Builder.load_string(
             #    root.height - (title.height + dp(48)\
             #    + sep.height)
     
-            #canvas:
-            #    Rectangle:
-            #        pos: self.pos
-            #        size: self.size
-            #        #source: f'{images_path}dialog_in_fade.png'
-            #        source: f'{images_path}transparent.png'
+            canvas:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                    #source: f'{images_path}dialog_in_fade.png'
+                    source: f'{images_path}transparent.png'
             MDList:
                 size_hint_y: None
                 height: self.minimum_height
@@ -246,11 +241,17 @@ Builder.load_string(
                         size_hint_y: None
                         text_size: self.width, None
                         height: self.texture_size[1]
-                    MDCheckbox:
-                        id: opponent_is_ready_checkbox
-                        disabled: True
-        MDRaisedButton:
+                    BoxLayout:
+                        MDCheckbox:
+                            id: opponent_is_ready_checkbox
+                            disabled: True
+                            pos_hint: {"center_x": .5}
+                            color: self.unselected_color
+                            size_hint_x: None
+                            width: self.height
+        MDTextButton:
             text: "Back to Lobby"
+            pos_hint: {"center_x": .5}
             on_release:
                 root.leave_match()
 

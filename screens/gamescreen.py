@@ -300,9 +300,9 @@ class GameScreen(Screen):
         app.client.send_message(message)
         self.game_over_dialog.dismiss()
 
-    def display_game_over_dialog(self, loser_elo, new_loser_elo, winner_elo,
+    def display_game_over_dialog(self, winner_color, loser_elo, new_loser_elo, winner_elo,
                                  new_winner_elo, nickname, opponent_nickname):
-        self.game_over_dialog = GameOverDialog(loser_elo, new_loser_elo,
+        self.game_over_dialog = GameOverDialog(winner_color, loser_elo, new_loser_elo,
                                                winner_elo, new_winner_elo,
                                                nickname, opponent_nickname)
         self.game_over_dialog.open()
