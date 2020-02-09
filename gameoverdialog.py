@@ -68,7 +68,7 @@ class GameOverDialog(BaseGameOverDialog):
         if self.is_open:
             # Slide the menu down
             anim = Animation(pos_hint={"center_y": -self.size_hint_y, "center_x": .5}, transition='in_out_back')
-            anim2 = Animation(y=0.25*self.fab.height, angle=-180, transition='in_out_back')
+            anim2 = Animation(y=0.25*self.fab.height, angle=180, transition='in_out_back')
             anim.start(self)
             anim2.start(self.fab)
             self.is_open = False

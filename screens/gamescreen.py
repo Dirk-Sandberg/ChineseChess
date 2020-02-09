@@ -9,17 +9,48 @@ from kivy.clock import mainthread
 from functools import partial
 from kivymd.uix.dialog import MDDialog
 from gameoverdialog import GameOverDialog
-
+from kivymd.uix.button import MDIconButton
+from kivy.core.window import Window
 
 class GameScreen(Screen):
     online_mode_enabled = BooleanProperty(False)
     game_over_dialog = ObjectProperty(None)
+    game_is_playing = BooleanProperty(False)
+    turn_indicator = ObjectProperty(None)
+
 
     def return_to_home_screen(self):
         self.manager.current = 'home_screen'
 
     @mainthread
+    def set_turn_indicator_to_initial_position(self):
+        self.turn_indicator = MDIconButton(icon='chevron-up', disabled=True)
+        animate = True
+        if self.turn_indicator not in Window.children:
+            Window.add_widget(self.turn_indicator)
+            animate = False
+        self.move_turn_indicator(animate=animate)
+
+    def move_turn_indicator(self, animate=True):
+        red_timer_center = self.to_window(*self.ids.red_timer.center)
+        black_timer_center = self.to_window(*self.ids.black_timer.center)
+        timer_height = self.ids.red_timer.texture_size[1]
+        if self.turn_indicator.center[0] == red_timer_center[0]:
+            new_center = black_timer_center[0], black_timer_center[1]-timer_height
+        else:
+            new_center = red_timer_center[0], red_timer_center[1]-timer_height
+
+        if animate:
+            anim = Animation(center=new_center, transition='out_expo')
+            anim.start(self.turn_indicator)
+        else:
+            self.turn_indicator.center = new_center
+
+    @mainthread
     def new_game(self):
+        self.set_turn_indicator_to_initial_position()
+        self.game_is_playing = True
+
         board_helper = App.get_running_app().board_helper
         board_helper.widgets_by_row_and_column = {}
         board_helper.widgets_by_color_and_type = {}
@@ -82,9 +113,12 @@ class GameScreen(Screen):
         new_pos = piece_being_entered.pos
         moving_piece.opacity = 0
         app.is_animating = True
-        anim = Animation(pos=new_pos)#, duration=0)
+        anim = Animation(pos=new_pos, transition='out_expo')#, duration=0)
         anim.bind(on_complete=partial(self.finish_piece_movement, piece_being_entered, moving_piece))
         anim.start(animation_widget)
+
+        # Move the turn indicator
+        self.move_turn_indicator()
 
     def finish_piece_movement(self, piece_being_entered, moving_piece, animation, animated_object):
         app = App.get_running_app()
@@ -132,6 +166,7 @@ class GameScreen(Screen):
             CHECKMATE = self.check_for_checkmate(enemy_color)
             if CHECKMATE:
                 app.checkmate(enemy_color)
+                self.game_is_playing = False
             else:
                 m = MDDialog(title="Check", text=enemy_color + " is in check")
                 m.open()
@@ -139,6 +174,7 @@ class GameScreen(Screen):
         # Stop highlighting the piece
         moving_piece.indicator_source = "moved_from"
         app.highlighted_piece = None
+
 
 
 

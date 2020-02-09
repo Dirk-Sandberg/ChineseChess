@@ -5,22 +5,30 @@
         padding: [dp(5),]
         orientation: 'vertical'
         GridLayout:
-            rows: 1
             size_hint_y: None
-            height: leave_game_button.height
-            MDRectangleFlatIconButton:
-                id: leave_game_button
-                text: "Leave Game"
-                icon: 'close'
-                on_release:
-                    root.return_to_home_screen()
+            height: forfeit_button.height
+            rows: 1
             Widget:
-            MDRectangleFlatIconButton:
-                icon: 'replay'
-                text: "Forfeit"
+                size_hint_x: None
+                width: forfeit_button.width
+            MDLabel:
+                id: black_timer
+                text: "5:00"
+                halign: 'center'
+            MDLabel:
+                id: red_timer
+                text: "4:55"
+                color: 1,0,0,1
+                halign: 'center'
+            MDIconButton:
+                id: forfeit_button
+                theme_text_color: 'Custom'
+                text_color: app.theme_cls.primary_color
+                icon: 'flag'
+                disabled: not root.game_is_playing
                 on_release:
+                    root.game_is_playing = False
                     root.forfeit()
-                    #root.new_game()
         GridLayout:
             #id: captured_black_pieces
             id: top_captured_pieces
