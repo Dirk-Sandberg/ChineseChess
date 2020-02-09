@@ -1,6 +1,10 @@
 <LobbyScreen>:
     BoxLayout:
         orientation: 'vertical'
+        MDIconButton:
+            icon: 'chevron-left'
+            on_release:
+                root.back_to_lobby_browser()
         MDLabel:
             id: player_one
             text: ""
@@ -8,7 +12,7 @@
             id: player_two
             text: "Waiting for someone to join..."
 
-        MDRaisedButton:
+        CardButton:
             text: "Start Match"
             disabled: True if player_two.text == "Waiting for someone to join..." else False
             on_release:

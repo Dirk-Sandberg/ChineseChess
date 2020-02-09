@@ -245,6 +245,10 @@ class GameScreen(Screen):
         to_parent = piece_being_entered_upon.parent
         from_parent = piece_moving.parent
         moving_from = from_parent.children.index(piece_moving)
+        #print(piece_moving.id())
+        #print(piece_moving.parent)
+        #print(piece_being_entered_upon.id())
+        #print(piece_being_entered_upon.parent)
         moving_to = to_parent.children.index(piece_being_entered_upon)
 
         # Account for rearranging of widgets in the gridlayout

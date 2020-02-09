@@ -202,6 +202,18 @@ class Server:
             response_dict = {"command": "match_started", "player_who_owns_turn": clients_to_notify[0], "players": clients_to_notify}
 
             return response_dict, clients_to_notify
+        elif command == 'cancel_match':
+            # Called when someone hosts a game, then goes back to lobby browser
+            for lobby in self.lobbies:
+                if lobby['game_id'] == game_id:
+                    print("REMOVING LOBBY", game_id)
+                    self.lobbies.remove(lobby)
+                else:
+                    continue
+            # Send a message to everyone playing that a new lobby was created
+            clients_to_notify = list(self.list_of_clients.keys())
+            response_dict = {"command": "list_lobbies", "lobbies": self.lobbies}
+            return response_dict, clients_to_notify
 
         elif command == "get_lobbies":
             # Send the client all the active lobbies

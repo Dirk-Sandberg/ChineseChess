@@ -3,6 +3,12 @@ from kivy.app import App
 
 
 class LobbyScreen(Screen):
+    def back_to_lobby_browser(self):
+        app = App.get_running_app()
+        app.change_screen('lobby_browser_screen')
+        message = {"command": "cancel_match"}
+        app.client.send_message(message)
+
     def start_match(self):
         # Send a message to the server that the game is started
         app = App.get_running_app()
