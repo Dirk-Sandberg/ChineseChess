@@ -151,10 +151,18 @@ class Server:
 
             # Add the client to the game room
             self.add_client_to_game_room(sender_ip, sender_port, game_id, nickname, elo)
+
+            # Send a message to everyone playing that a new lobby was created
+            clients_to_notify = list(self.list_of_clients.keys())
+            response_dict = {"command": "list_lobbies", "lobbies": self.lobbies}
+            self.broadcast(response_dict, clients_to_notify)
+
+
             # Send a message back saying they succeeded in creating the room
             response_dict = {"command": "match_hosted", "game_id": game_id}
             clients_to_notify = [sender]
             return response_dict, clients_to_notify
+
 
         elif command == 'join_game':
             # Someone is trying to join a game. Check if their game id is valid

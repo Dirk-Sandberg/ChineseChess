@@ -28,6 +28,10 @@ class LobbyBrowserScreen(Screen):
         app.client.send_message(message)
 
     def display_lobbies(self, lobbies_list):
+        app = App.get_running_app()
+        if app.root.current != 'lobby_browser_screen':
+            return
+
         self.ids.list_layout.clear_widgets()
         for lobby in lobbies_list:
             game_id = lobby['game_id']
