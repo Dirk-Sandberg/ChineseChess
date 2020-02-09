@@ -33,17 +33,24 @@ class Client:
         type object (json data), then call the :interpret: function to figure
         out what needs to be done. Repeats infinitely.
         """
+        message = ""
         while True:
-            # Wait until a command is received from the server
-            message = self.server.recv(2048).decode()
-            # If we get multiple commands at once, separate them
-            for message in build_messages(message):
-                # Convert the message to a dict format
-                message = json.loads(message)
+            try:
+                # Wait until a command is received from the server
+                message += self.server.recv(2048).decode()
+                # If we get multiple commands at once, separate them
+                for message in build_messages(message):
+                    # Convert the message to a dict format
+                    message = json.loads(message)
 
-                #print("received message", message)
-                # Read and interpret the json data
-                self.interpret(message)
+                    #print("received message", message)
+                    # Read and interpret the json data
+                    self.interpret(message)
+                    message = ""
+            except:
+                # Json decoder error, message didn't get fully captured
+                # try to get more of the message before interpreting it
+                pass
 
     def interpret(self, message_dict):
         """Figure our the main command the server sent. Then, based on what that
