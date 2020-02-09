@@ -63,11 +63,7 @@ class MainApp(MDApp):
         self.client.server.close()
 
     def checkmate(self, checkmated_player_color):
-        m = MDDialog(title="CHECKMATE",
-                     text=checkmated_player_color + " IS IN CHECKMATE")
-        m.open()
-
-        self.update_elo_after_match_ends(checkmated_player_color)
+        self.player.update_elo_after_match_ends(checkmated_player_color)
 
 
     @mainthread

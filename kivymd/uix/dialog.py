@@ -148,6 +148,7 @@ Builder.load_string(
         border_radius: dp(10)
         padding: dp(15)
         spacing: dp(10)
+        #background: 'FirebaseLoginScreen/wallpaper.jpg'
         MDLabel:
             id: title
             text: root.title

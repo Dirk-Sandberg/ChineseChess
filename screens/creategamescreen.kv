@@ -7,7 +7,7 @@
             MDIconButton:
                 icon: 'chevron-left'
                 on_release:
-                    time_limit_label.time_limit -= 1 if time_limit_label.time_limit > 2 else 2
+                    time_limit_label.time_limit -= 1 if time_limit_label.time_limit > 1 else 0
             MDLabel:
                 time_limit: 5
                 text: str(self.time_limit) + " min"

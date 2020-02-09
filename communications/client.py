@@ -70,6 +70,7 @@ class Client:
             nicknames = []
             elos = []
             players = message_dict['players']
+            print(message_dict)
             for player in players:
                 nickname = player['nickname']
                 nicknames.append(nickname)

@@ -1,6 +1,6 @@
 from kivy.utils import platform
 from kivy.event import EventDispatcher
-from kivy.properties import BooleanProperty
+from kivy.properties import BooleanProperty, NumericProperty
 from kivy.network.urlrequest import UrlRequest
 from kivy.app import App
 import certifi
@@ -15,6 +15,7 @@ class Player(EventDispatcher):
     game_id = ""  # Could replace the game id in the client code
     elo = 0
     opponent_elo = 0
+    time_limit = NumericProperty(0)
 
     @mainthread
     def update_elo_after_match_ends(self, checkmated_player_color):

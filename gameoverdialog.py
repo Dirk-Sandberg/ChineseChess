@@ -4,7 +4,6 @@ from kivy.animation import Animation
 from gameoverfab import GameOverFab
 from kivy.app import App
 from kivy.core.window import Window
-from kivy.clock import Clock
 
 
 class GameOverDialog(BaseGameOverDialog):

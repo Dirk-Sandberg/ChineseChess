@@ -48,6 +48,12 @@ class GameScreen(Screen):
 
     @mainthread
     def new_game(self):
+        app = App.get_running_app()
+        # Reset the timers
+        self.ids.red_timer.text = "%d:00"%app.player.time_limit
+        self.ids.black_timer.text = "%d:00"%app.player.time_limit
+
+        # Set the turn indicator position
         self.set_turn_indicator_to_initial_position()
         self.game_is_playing = True
 
@@ -66,6 +72,61 @@ class GameScreen(Screen):
         bottom_board.clear_widgets()
         top_board.add_starting_pieces()
         bottom_board.add_starting_pieces()
+
+        # Start ticking the timers
+        from kivy.clock import Clock
+        self.timer_function = Clock.schedule_interval(self.tick_timer, 1)
+
+    def tick_timer(self, *args):
+        app = App.get_running_app()
+        timer_color = 'red' if app.is_turn_owner and app.player.is_red or not app.is_turn_owner and not app.player.is_red else 'black'
+        if timer_color == 'red':
+
+            timer = self.ids.red_timer
+        else:
+            timer = self.ids.black_timer
+        time = timer.text.split(":")
+        minutes = int(time[0])
+        sec = int(time[1])
+        sec = (sec-1)%60
+        if sec == 59:
+            minutes -= 1
+        timer.text = "%d:%.2d" % (minutes, sec)
+        if sec == 0 and minutes == 0:
+            app.checkmate(timer_color)
+            self.timer_function.cancel()
+
+
+    def tick_red_timer(self):
+        app = App.get_running_app()
+        timer = self.ids.red_timer
+        time = timer.text.split(":")
+        minutes = int(time[0])
+        sec = int(time[1])
+        sec = (sec-1)%60
+        if sec == 59:
+            minutes -= 1
+        self.ids.red_timer.text = "%d:%s" % (minutes, sec)
+        if sec == 0 and minutes == 0:
+            app.checkmate('red')
+            self.red_timer.cancel()
+            self.black_timer.cancel()
+
+
+    def tick_black_timer(self):
+        app = App.get_running_app()
+        timer = self.ids.black_timer
+        time = timer.text.split(":")
+        minutes = int(time[0])
+        sec = int(time[1])
+        sec = (sec-1)%60
+        if sec == 59:
+            minutes -= 1
+        self.ids.black_timer.text = "%d:%s" % (minutes, sec)
+        if sec == 0 and minutes == 0:
+            app.checkmate('black')
+            self.red_timer.cancel()
+            self.black_timer.cancel()
 
 
     def mirror_col(self, col):

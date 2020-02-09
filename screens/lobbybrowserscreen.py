@@ -18,6 +18,7 @@ class LobbyItem(TwoLineListItem):
         # Should this be done after receiving the message back from the server?
         app.player.opponent_elo = self.host_elo
         app.player.opponent_nickname = self.host_nickname
+        app.player.time_limit = self.time_limit
 
 
 class LobbyBrowserScreen(Screen):
@@ -38,5 +39,6 @@ class LobbyBrowserScreen(Screen):
             lobby_item.host_nickname = name
             lobby_item.game_id = game_id
             lobby_item.host_elo = host_elo
+            lobby_item.time_limit = time_limit
             self.ids.list_layout.add_widget(lobby_item)
 
