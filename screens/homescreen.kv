@@ -1,16 +1,41 @@
+<CardButton@ButtonBehavior+MDCard>:
+    background: 'images/pieces.jpg'
+    text: ""
+    border_radius: dp(15)
+    on_press:
+        self.elevation = 0
+    on_release:
+        self.elevation = 6
+    MDLabel:
+        color: 1,1,1,1
+        size: root.size
+        pos: root.pos
+        halign: 'center'
+        valign: 'top'
+        text: root.text
+
 <HomeScreen>:
     BoxLayout:
         orientation: 'vertical'
-        MDRaisedButton:
+        Widget:
+        CardButton:
+            size_hint: .6, None
+            height: self.width
+            pos_hint: {"center_x": .5, "center_y": .75}
             text: "Host Match"
             on_release:
                 root.manager.current = 'create_game_screen'
-        MDRaisedButton:
+        Widget:
+        CardButton:
+            size_hint: .6, None
+            height: self.width
+            pos_hint: {"center_x": .5, "center_y": .25}
             text: "Join Match"
             on_release:
                 root.manager.current = 'lobby_browser_screen'
-        MDRaisedButton:
-            text: "Local Game"
-            on_release:
-                root.start_local_game()
+        Widget:
+        #MDRaisedButton:
+        #    text: "Local Game"
+        #    on_release:
+        #        root.start_local_game()
 
