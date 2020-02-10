@@ -1,19 +1,29 @@
 <LobbyScreen>:
     BoxLayout:
         orientation: 'vertical'
-        MDIconButton:
-            icon: 'chevron-left'
-            on_release:
-                root.back_to_lobby_browser()
-        MDLabel:
-            id: player_one
-            text: ""
-        MDLabel:
-            id: player_two
-            text: "Waiting for someone to join..."
+        MDToolbar:
+            left_action_items: [['chevron-left', lambda x: root.back_to_lobby_browser()]]
+            title: "Waiting for an opponent..."
+            md_bg_color: get_color_from_hex(colors['Light']['Background'])
+            elevation: 0
+            specific_text_color: [0,0,0,1]
+        MDCard:
+            size_hint: .6, None
+            pos_hint: {"center_x": .5}
+            height: self.width
+            MDLabel:
+                id: player_one
+                text: ""
+        MDCard:
+            pos_hint: {"center_x": .5}
+            size_hint: .6, None
+            height: self.width
+            MDLabel:
+                id: player_two
+                text: "Waiting for an opponent..."
 
         CardButton:
             text: "Start Match"
-            disabled: True if player_two.text == "Waiting for someone to join..." else False
+            disabled: True if player_two.text == "Waiting for an opponent..." else False
             on_release:
                 root.start_match()

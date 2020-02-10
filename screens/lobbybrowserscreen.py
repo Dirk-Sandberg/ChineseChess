@@ -10,6 +10,7 @@ class LobbyItem(TwoLineListItem):
     def on_release(self):
         # Tell the server that we are joining the lobby
         app = App.get_running_app()
+        app.client.is_host = False
         app.player.game_id = self.game_id
         message = {"command": "join_game"}
         app.client.send_message(message)

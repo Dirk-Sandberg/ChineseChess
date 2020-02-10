@@ -88,7 +88,7 @@ class Server:
                 sender_ip = addr[0]
                 sender_port = str(addr[1])
                 if received_messages:
-                    print("Got message(s)", received_messages)
+                    #print("Got message(s)", received_messages)
                     received_messages = received_messages.decode()
                     # Separate the messages if more than one was received
                     for received_message in build_messages(received_messages):
@@ -202,17 +202,37 @@ class Server:
             response_dict = {"command": "match_started", "player_who_owns_turn": clients_to_notify[0], "players": clients_to_notify}
 
             return response_dict, clients_to_notify
-        elif command == 'cancel_match':
-            # Called when someone hosts a game, then goes back to lobby browser
-            for lobby in self.lobbies:
-                if lobby['game_id'] == game_id:
-                    print("REMOVING LOBBY", game_id)
-                    self.lobbies.remove(lobby)
-                else:
-                    continue
-            # Send a message to everyone playing that a new lobby was created
-            clients_to_notify = list(self.list_of_clients.keys())
-            response_dict = {"command": "list_lobbies", "lobbies": self.lobbies}
+        elif command == 'leave_match':
+            # Called when someone joins a match, then leaves the lobby
+            self.clients_by_rooms[game_id].remove(sender)
+            sender_was_host = message_dict['is_host']
+            if sender_was_host:
+                # All players have left the lobby
+                # Send a message to the other player that the host left
+                if self.clients_by_rooms[game_id] != []:
+                    # There is a player in the room that didn't leave
+                    clients_to_notify = self.clients_by_rooms[game_id]
+                    response_dict = {"command": "host_left_lobby"}
+                    self.broadcast(response_dict, clients_to_notify)
+
+                # Send a message to everyone playing that a lobby was removed
+                clients_to_notify = list(self.list_of_clients.keys())
+                response_dict = {"command": "list_lobbies", "lobbies": self.lobbies}
+
+                self.clients_by_rooms.pop(game_id)
+                for lobby in self.lobbies:
+                    if lobby['game_id'] == game_id:
+                        print("REMOVING LOBBY", game_id)
+                        self.lobbies.remove(lobby)
+                    else:
+                        continue
+                print("lobbies", self.lobbies)
+                print("clients by room", self.clients_by_rooms)
+                return response_dict, clients_to_notify
+            else:
+                # Second player to join left the lobby
+                clients_to_notify = self.clients_by_rooms[game_id]
+                response_dict = {"command": "player_left_lobby"}
             return response_dict, clients_to_notify
 
         elif command == "get_lobbies":
@@ -237,7 +257,6 @@ class Server:
         elif command == 'rematch_accepted':
             # Tell all players in a room that a game has started
             clients_to_notify = self.clients_by_rooms[game_id]
-            print("Rematch accepted might start the game twice if both clients ready up at the same time?")
             response_dict = {"command": "match_started",
                              "player_who_owns_turn": clients_to_notify[0],
                              "players": clients_to_notify}

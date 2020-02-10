@@ -10,6 +10,7 @@ class CreateGameScreen(Screen):
         message = {"command": "host_match", "time_limit": time_limit}
         app.client.send_message(message)
         app.player.time_limit = time_limit
+        app.client.is_host = True
 
         # When the server receives the host match command, it'll send a
         # "match_hosted" command back to this client. That's where the screen

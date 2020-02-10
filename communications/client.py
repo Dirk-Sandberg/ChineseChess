@@ -4,7 +4,7 @@ import json
 from communications.helper_functions import build_messages
 from kivy.app import App
 import select
-
+from kivymd.toast import toast
 
 class Client:
     """This is the class that maintains the connection to the remote server. It
@@ -13,6 +13,7 @@ class Client:
     are meant to be called from the server's message.
     """
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    is_host = False
     app = None  # A reference to the main App class
     game_id = ""  # Always send the game id as part of the message to the server
     current_player = ""  # Ip and port of the player whose turn it is
@@ -68,12 +69,15 @@ class Client:
             self.app.change_screen('lobby_screen')
             game_id = message_dict['game_id']
             self.app.player.game_id = game_id
-
+        elif command == 'host_left_lobby':
+            self.app.change_screen('lobby_browser_screen')
+            toast("Host left the lobby")
+        elif command == 'player_left_lobby':
+            self.app.root.ids.lobby_screen.player_two_left()
         elif command == 'player_joined':
             # A new player entered the game room
             # Get nicknames and elos for each player
             app = App.get_running_app()
-            #nicknames = message_dict['players']
             nicknames = []
             elos = []
             players = message_dict['players']
