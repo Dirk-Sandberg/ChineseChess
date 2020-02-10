@@ -67,7 +67,7 @@ class MainApp(MDApp):
 
 
     @mainthread
-    def change_screen(self, screen_name):
+    def change_screen(self, screen_name, *args):
         self.root.current = screen_name
 
 

@@ -5,6 +5,8 @@ from communications.helper_functions import build_messages
 from kivy.app import App
 import select
 from kivymd.toast import toast
+from functools import partial
+from kivy.clock import Clock
 
 class Client:
     """This is the class that maintains the connection to the remote server. It
@@ -70,7 +72,7 @@ class Client:
             game_id = message_dict['game_id']
             self.app.player.game_id = game_id
         elif command == 'host_left_lobby':
-            self.app.change_screen('lobby_browser_screen')
+            Clock.schedule_once(partial(self.app.change_screen, 'lobby_browser_screen'), 0)
             toast("Host left the lobby")
         elif command == 'player_left_lobby':
             self.app.root.ids.lobby_screen.player_two_left()
@@ -93,8 +95,7 @@ class Client:
             print("Need to make sure usernames are unique")
             # Valid game joined
             self.app.change_screen('lobby_screen')
-            self.app.root.ids.lobby_screen.ids.player_one.text = nicknames[0] + ", " + str(elos[0])
-            self.app.root.ids.lobby_screen.ids.player_two.text = nicknames[1] + ", " + str(elos[1])
+            self.app.root.ids.lobby_screen.set_nicknames_and_elos(nicknames[0], str(elos[0]), nicknames[1], str(elos[1]))
 
         elif command == 'match_started':
             # Someone pressed the start game button from the lobby screen

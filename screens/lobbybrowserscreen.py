@@ -20,6 +20,7 @@ class LobbyItem(TwoLineListItem):
         app.player.opponent_elo = self.host_elo
         app.player.opponent_nickname = self.host_nickname
         app.player.time_limit = self.time_limit
+        app.root.ids.lobby_screen.ids.player_two_image.source = 'images/kingpiece.png'
 
 
 class LobbyBrowserScreen(Screen):

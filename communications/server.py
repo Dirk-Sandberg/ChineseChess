@@ -204,7 +204,9 @@ class Server:
             return response_dict, clients_to_notify
         elif command == 'leave_match':
             # Called when someone joins a match, then leaves the lobby
+            print(self.clients_by_rooms[game_id])
             self.clients_by_rooms[game_id].remove(sender)
+            print(self.clients_by_rooms[game_id])
             sender_was_host = message_dict['is_host']
             if sender_was_host:
                 # All players have left the lobby
@@ -222,12 +224,9 @@ class Server:
                 self.clients_by_rooms.pop(game_id)
                 for lobby in self.lobbies:
                     if lobby['game_id'] == game_id:
-                        print("REMOVING LOBBY", game_id)
                         self.lobbies.remove(lobby)
                     else:
                         continue
-                print("lobbies", self.lobbies)
-                print("clients by room", self.clients_by_rooms)
                 return response_dict, clients_to_notify
             else:
                 # Second player to join left the lobby

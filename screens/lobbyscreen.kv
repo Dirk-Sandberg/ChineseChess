@@ -1,29 +1,69 @@
 <LobbyScreen>:
     BoxLayout:
+        padding: 0, 0, 0, dp(20)
         orientation: 'vertical'
         MDToolbar:
+            id: toolbar
             left_action_items: [['chevron-left', lambda x: root.back_to_lobby_browser()]]
             title: "Waiting for an opponent..."
             md_bg_color: get_color_from_hex(colors['Light']['Background'])
             elevation: 0
             specific_text_color: [0,0,0,1]
-        MDCard:
-            size_hint: .6, None
-            pos_hint: {"center_x": .5}
-            height: self.width
-            MDLabel:
-                id: player_one
-                text: ""
-        MDCard:
-            pos_hint: {"center_x": .5}
-            size_hint: .6, None
-            height: self.width
-            MDLabel:
-                id: player_two
-                text: "Waiting for an opponent..."
-
+        Widget:
+        BoxLayout:
+            size_hint_y: None
+            height: self.minimum_height
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                Image:
+                    size_hint: None, None
+                    #keep_ratio: False
+                    #allow_stretch: True
+                    source: "images/kingpiece.png"
+                    color: [1,0,0,1]
+                    pos_hint: {"center_x": .5}
+                MDLabel:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    id: player_one
+                    text: " "
+                    halign: 'center'
+                MDLabel:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    id: player_one_elo
+                    text: " "
+                    halign: 'center'
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                Image:
+                    size_hint: None, None
+                    id: player_two_image
+                    source: "images/blankpiece.png"
+                    pos_hint: {"center_x": .5}
+                MDLabel:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    id: player_two
+                    text: " "
+                    halign: 'center'
+                MDLabel:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    id: player_two_elo
+                    text: " "
+                    halign: 'center'
+        Widget:
         CardButton:
             text: "Start Match"
-            disabled: True if player_two.text == "Waiting for an opponent..." else False
+            size_hint: .6, None
+            height: self.width
+            pos_hint: {"center_x": .5}
+            disabled: True if toolbar.title == "Waiting for an opponent..." else False
             on_release:
                 root.start_match()
+        Widget:
