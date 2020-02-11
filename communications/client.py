@@ -71,6 +71,7 @@ class Client:
             self.app.change_screen('lobby_screen')
             game_id = message_dict['game_id']
             self.app.player.game_id = game_id
+            self.app.root.ids.lobby_screen.set_this_players_nickname_and_elo()
         elif command == 'host_left_lobby':
             Clock.schedule_once(partial(self.app.change_screen, 'lobby_browser_screen'), 0)
             toast("Host left the lobby")

@@ -44,6 +44,7 @@ class Player(EventDispatcher):
                            self.nickname, self.opponent_nickname)
 
 
+
     def retrieve_elo_from_firebase(self):
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId

@@ -17,6 +17,7 @@ class GameScreen(Screen):
     game_over_dialog = ObjectProperty(None)
     game_is_playing = BooleanProperty(False)
     turn_indicator = ObjectProperty(None)
+    timer_function = None
 
 
     def return_to_home_screen(self):
@@ -30,6 +31,12 @@ class GameScreen(Screen):
             Window.add_widget(self.turn_indicator)
             animate = False
         self.move_turn_indicator(animate=animate)
+
+    def remove_indicator(self):
+        try:
+            Window.remove_widget(self.turn_indicator)
+        except:
+            pass
 
     def move_turn_indicator(self, animate=True):
         red_timer_center = self.to_window(*self.ids.red_timer.center)
@@ -94,7 +101,6 @@ class GameScreen(Screen):
         timer.text = "%d:%.2d" % (minutes, sec)
         if sec == 0 and minutes == 0:
             app.checkmate(timer_color)
-            self.timer_function.cancel()
 
 
     def tick_red_timer(self):
@@ -403,6 +409,8 @@ class GameScreen(Screen):
 
     def display_game_over_dialog(self, winner_color, loser_elo, new_loser_elo, winner_elo,
                                  new_winner_elo, nickname, opponent_nickname):
+        # Game is over, stop ticking the timers
+        self.timer_function.cancel()
         self.game_over_dialog = GameOverDialog(winner_color, loser_elo, new_loser_elo,
                                                winner_elo, new_winner_elo,
                                                nickname, opponent_nickname)

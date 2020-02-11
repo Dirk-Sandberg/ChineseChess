@@ -1,8 +1,16 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
+from kivy.clock import mainthread
 
 
 class LobbyScreen(Screen):
+    @mainthread
+    def set_this_players_nickname_and_elo(self):
+        # This player hosted the match
+        app = App.get_running_app()
+        self.ids.player_one.text = app.player.nickname
+        self.ids.player_one_elo.text = str(app.player.elo)
+
     def back_to_lobby_browser(self):
         self.ids.player_two.text = " "
         self.ids.player_two_elo.text = " "
