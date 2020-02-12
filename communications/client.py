@@ -6,7 +6,7 @@ from kivy.app import App
 import select
 from kivymd.toast import toast
 from functools import partial
-from kivy.clock import Clock
+from kivy.clock import Clock, mainthread
 
 class Client:
     """This is the class that maintains the connection to the remote server. It
@@ -55,6 +55,7 @@ class Client:
                 # try to get more of the message before interpreting it
                 pass
 
+    @mainthread
     def interpret(self, message_dict):
         """Figure our the main command the server sent. Then, based on what that
         command is, get other relevant pieces of data from the message. Finally,

@@ -1,23 +1,78 @@
 <CreateGameScreen>:
+    #BoxLayout:
+    #    orientation: 'vertical'
+    #    MDLabel:
+    #        text: "Time Limit"
+    #    BoxLayout:
+    #        MDIconButton:
+    #            icon: 'chevron-left'
+    #            on_release:
+    #                time_limit_label.time_limit -= 1 if time_limit_label.time_limit > 1 else 0
+    #        MDLabel:
+    #            time_limit: 5
+    #            text: str(self.time_limit) + " min"
+    #            id: time_limit_label
+    #        MDIconButton:
+    #            icon: 'chevron-right'
+    #            on_release:
+    #                time_limit_label.time_limit += 1
+    #    MDRaisedButton:
+    #        text: "Host Match"
+    #        on_release:
+    #            root.host_match(time_limit_label.time_limit)
+
     BoxLayout:
+        padding: 0, 0, 0, dp(20)
         orientation: 'vertical'
-        MDLabel:
-            text: "Time Limit"
+        MDToolbar:
+            id: toolbar
+            left_action_items: [['chevron-left', lambda x: app.change_screen('home_screen')]]
+            title: "Set a time limit"
+            md_bg_color: get_color_from_hex(colors['Light']['Background'])
+            elevation: 0
+            specific_text_color: [0,0,0,1]
+        Widget:
         BoxLayout:
+            padding: dp(20), 0, dp(20), 0
+            #spacing: dp(20)
+            orientation: 'horizontal'
             MDIconButton:
-                icon: 'chevron-left'
+                pos_hint: {"center_y": .5}
+                icon: 'minus'
                 on_release:
                     time_limit_label.time_limit -= 1 if time_limit_label.time_limit > 1 else 0
-            MDLabel:
-                time_limit: 5
-                text: str(self.time_limit) + " min"
-                id: time_limit_label
+            BoxLayout:
+                orientation: 'vertical'
+                id: label_box
+                size_hint_y: None
+                height: self.minimum_height
+                pos_hint: {"center_y": .5}
+                MDLabel:
+                    time_limit: 5
+                    text: str(self.time_limit)
+                    id: time_limit_label
+                    halign: 'center'
+                    font_style: 'H5'
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                MDLabel:
+                    text: "minute%s per player" %("" if time_limit_label.time_limit <2 else "s")
+                    halign: 'center'
+                    font_style: 'H6'
+                    size_hint_y: None
+                    height: self.texture_size[1]
             MDIconButton:
-                icon: 'chevron-right'
+                pos_hint: {"center_y": .5}
+                icon: 'plus'
                 on_release:
                     time_limit_label.time_limit += 1
-        MDRaisedButton:
+
+        Widget:
+        CardButton:
             text: "Host Match"
+            size_hint: .6, None
+            height: self.width
+            pos_hint: {"center_x": .5}
             on_release:
                 root.host_match(time_limit_label.time_limit)
-
+        #Widget:

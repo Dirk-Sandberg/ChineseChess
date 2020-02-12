@@ -25,6 +25,9 @@ class GameScreen(Screen):
 
     @mainthread
     def set_turn_indicator_to_initial_position(self):
+        if self.turn_indicator:
+            # Already have a turn indicator
+            return
         self.turn_indicator = MDIconButton(icon='chevron-up', disabled=True)
         animate = True
         if self.turn_indicator not in Window.children:

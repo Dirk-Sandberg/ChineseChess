@@ -11,6 +11,7 @@ class LobbyScreen(Screen):
         self.ids.player_one.text = app.player.nickname
         self.ids.player_one_elo.text = str(app.player.elo)
 
+    @mainthread
     def back_to_lobby_browser(self):
         self.ids.player_two.text = " "
         self.ids.player_two_elo.text = " "
@@ -22,12 +23,14 @@ class LobbyScreen(Screen):
         message = {"command": "leave_lobby", 'is_host': app.client.is_host}
         app.client.send_message(message)
 
+    @mainthread
     def player_two_left(self):
         self.ids.player_two.text = " "
         self.ids.player_two_elo.text = " "
         self.ids.toolbar.title = "Waiting for an opponent..."
         self.ids.player_two_image.source = 'images/blankpiece.png'
 
+    @mainthread
     def set_nicknames_and_elos(self, nick1, elo1, nick2, elo2):
         # Both players are in the match
         self.ids.player_one.text = nick1
