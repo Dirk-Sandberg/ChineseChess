@@ -6,7 +6,7 @@ from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.animation import Animation
 from kivy.clock import Clock
-
+from kivymd.toast import toast
 from kivy.clock import mainthread
 from functools import partial
 from kivymd.uix.dialog import MDDialog
@@ -256,8 +256,8 @@ class GameScreen(Screen):
             if CHECKMATE:
                 app.checkmate(enemy_color)
             else:
-                m = MDDialog(title="Check", text=enemy_color + " is in check")
-                m.open()
+                toast(enemy_color + " is in check")
+
 
         # Stop highlighting the piece
         moving_piece.indicator_source = "moved_from"

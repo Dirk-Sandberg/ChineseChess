@@ -40,10 +40,9 @@ class MainApp(MDApp):
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing
-        #HOST = self.read_server_ip_file()  # Remote server ip address
+        HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()
         print(HOST, PORT)
-        print("not connecting to server")
         self.client = Client(HOST, PORT)
 
 
