@@ -28,7 +28,6 @@
                 icon: 'flag'
                 disabled: not root.game_is_playing
                 on_release:
-                    root.game_is_playing = False
                     root.forfeit()
         GridLayout:
             #id: captured_black_pieces

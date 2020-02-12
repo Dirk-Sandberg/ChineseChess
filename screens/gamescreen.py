@@ -12,13 +12,13 @@ from gameoverdialog import GameOverDialog
 from kivymd.uix.button import MDIconButton
 from kivy.core.window import Window
 
+
 class GameScreen(Screen):
     online_mode_enabled = BooleanProperty(False)
     game_over_dialog = ObjectProperty(None)
     game_is_playing = BooleanProperty(False)
     turn_indicator = ObjectProperty(None)
     timer_function = None
-
 
     def return_to_home_screen(self):
         self.manager.current = 'home_screen'
@@ -233,7 +233,6 @@ class GameScreen(Screen):
             CHECKMATE = self.check_for_checkmate(enemy_color)
             if CHECKMATE:
                 app.checkmate(enemy_color)
-                self.game_is_playing = False
             else:
                 m = MDDialog(title="Check", text=enemy_color + " is in check")
                 m.open()

@@ -19,7 +19,7 @@ class LobbyScreen(Screen):
 
         app = App.get_running_app()
         app.change_screen('lobby_browser_screen')
-        message = {"command": "leave_match", 'is_host': app.client.is_host}
+        message = {"command": "leave_lobby", 'is_host': app.client.is_host}
         app.client.send_message(message)
 
     def player_two_left(self):

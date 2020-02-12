@@ -73,10 +73,17 @@ class Client:
             self.app.player.game_id = game_id
             self.app.root.ids.lobby_screen.set_this_players_nickname_and_elo()
         elif command == 'host_left_lobby':
+            # Host left match before the game started
             Clock.schedule_once(partial(self.app.change_screen, 'lobby_browser_screen'), 0)
             toast("Host left the lobby")
         elif command == 'player_left_lobby':
+            # Player two left match before the game started
             self.app.root.ids.lobby_screen.player_two_left()
+        elif command == 'player_left_match':
+            # Either player left match after checkmate
+            Clock.schedule_once(partial(self.app.change_screen, 'lobby_browser_screen'), 0)
+            toast("The match has ended")
+            self.app.root.ids.game_screen.game_over_dialog.dismiss(to_lobby_browser_screen=True)
         elif command == 'player_joined':
             # A new player entered the game room
             # Get nicknames and elos for each player
@@ -119,10 +126,6 @@ class Client:
             piece_color = message_dict['color']
             game_screen = self.app.root.ids.game_screen
             game_screen.move_piece(*from_pos, *to_pos, piece_color)
-
-        elif command == 'invalid_game_id':
-            # This player tried to join a game with an invalid game id
-            pass
 
         elif command == 'forfeit':
             loser_color = message_dict['loser_color']

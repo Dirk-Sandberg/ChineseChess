@@ -42,8 +42,7 @@ class Player(EventDispatcher):
         winner_color = 'red' if checkmated_player_color == 'black' else 'black'
         app.root.ids.game_screen.display_game_over_dialog(winner_color, loser_elo, new_loser_elo, winner_elo, new_winner_elo,
                            self.nickname, self.opponent_nickname)
-
-
+        app.root.ids.game_screen.game_is_playing = False
 
     def retrieve_elo_from_firebase(self):
         app = App.get_running_app()

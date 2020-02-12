@@ -202,7 +202,7 @@ class Server:
             response_dict = {"command": "match_started", "player_who_owns_turn": clients_to_notify[0], "players": clients_to_notify}
 
             return response_dict, clients_to_notify
-        elif command == 'leave_match':
+        elif command == 'leave_lobby':
             # Called when someone joins a match, then leaves the lobby
             print(self.clients_by_rooms[game_id])
             self.clients_by_rooms[game_id].remove(sender)
@@ -267,14 +267,11 @@ class Server:
             return response_dict, clients_to_notify
 
         elif command == "leave_match":
-            try:
-                self.clients_by_rooms[game_id].remove(sender)
-                if self.clients_by_rooms[game_id] == []:
-                    # If there are no players remaining, free up the game id
-                    self.clients_by_rooms.pop(game_id)
-            except:
-                # Client wasn't in a room yet.
-                pass
+            # Someone left the game after checkmate occurred
+            response_dict = {"command": "player_left_match"}
+            clients_to_notify = self.clients_by_rooms[game_id]
+            self.clients_by_rooms.pop(game_id)
+            return response_dict, clients_to_notify
 
         elif command == 'disconnect':
             # Client will be closed automatically when it doesn't receive the
