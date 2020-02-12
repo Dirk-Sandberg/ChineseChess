@@ -5,6 +5,8 @@ from chesspieces.chesspiece import ChessPiece
 from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.animation import Animation
+from kivy.clock import Clock
+
 from kivy.clock import mainthread
 from functools import partial
 from kivymd.uix.dialog import MDDialog
@@ -25,11 +27,20 @@ class GameScreen(Screen):
 
     @mainthread
     def set_turn_indicator_to_initial_position(self):
+        animate = True
+        # Already have a turn indicator
         if self.turn_indicator:
             # Already have a turn indicator
-            return
+            # Check if we need to move it
+            red_timer_center = self.to_window(*self.ids.red_timer.center)
+            if self.turn_indicator.center[0] == red_timer_center[0]:
+                return
+            else:
+                self.move_turn_indicator(animate=animate)
+                return
+
+        # Create a new turn indicator and add it to the screen
         self.turn_indicator = MDIconButton(icon='chevron-up', disabled=True)
-        animate = True
         if self.turn_indicator not in Window.children:
             Window.add_widget(self.turn_indicator)
             animate = False
@@ -58,7 +69,14 @@ class GameScreen(Screen):
 
     @mainthread
     def new_game(self):
+        if self.game_is_playing:
+            # this function gets called twice by the server
+            return
         app = App.get_running_app()
+        # Set the turn owner to the red player
+        app.is_turn_owner = True if app.player.is_red else False
+
+
         # Reset the timers
         self.ids.red_timer.text = "%d:00"%app.player.time_limit
         self.ids.black_timer.text = "%d:00"%app.player.time_limit
@@ -84,10 +102,11 @@ class GameScreen(Screen):
         bottom_board.add_starting_pieces()
 
         # Start ticking the timers
-        from kivy.clock import Clock
         self.timer_function = Clock.schedule_interval(self.tick_timer, 1)
 
     def tick_timer(self, *args):
+        if not self.game_is_playing:
+            return
         app = App.get_running_app()
         timer_color = 'red' if app.is_turn_owner and app.player.is_red or not app.is_turn_owner and not app.player.is_red else 'black'
         if timer_color == 'red':
