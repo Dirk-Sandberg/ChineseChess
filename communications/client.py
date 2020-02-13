@@ -37,7 +37,7 @@ class Client:
         out what needs to be done. Repeats infinitely.
         """
         message = ""
-        while True:
+        while self.server:
             try:
                 # Wait until a command is received from the server
                 message += self.server.recv(2048).decode()

@@ -4,6 +4,6 @@ from kivy.properties import ColorProperty
 from kivy.uix.image import Image
 
 class AvailableMoveIndicator(Image):
-    color = ColorProperty([0,1,0,1])
+    color = ColorProperty([0,0,0,1])
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

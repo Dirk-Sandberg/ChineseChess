@@ -22,7 +22,10 @@ class ChessPiece(ButtonBehavior, Image):
         to_pos = (self.row, self.col)
         message = {"command": "move_piece", "from_pos": from_pos,
                    "to_pos": to_pos, "color": app.highlighted_piece.player}
-        app.client.send_message(message)
+        try:
+            app.client.send_message(message)
+        except:
+            print("Not connected to client")
 
     """
     def move_piece_offline(self):

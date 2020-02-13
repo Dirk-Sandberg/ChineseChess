@@ -40,7 +40,7 @@ class MainApp(MDApp):
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing
-        HOST = self.read_server_ip_file()  # Remote server ip address
+        #HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()
         print(HOST, PORT)
         self.client = Client(HOST, PORT)
@@ -59,8 +59,11 @@ class MainApp(MDApp):
     def on_stop(self):
         """on_stop is automatically called when the app is closed.
         """
+        print("Stop")
         self.client.send_message({"command": "disconnect"})
         self.client.server.close()
+        self.client.server = None
+        print("Stopped")
 
     def checkmate(self, checkmated_player_color):
         self.player.update_elo_after_match_ends(checkmated_player_color)
