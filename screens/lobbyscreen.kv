@@ -64,6 +64,7 @@
             height: self.width
             pos_hint: {"center_x": .5}
             disabled: True if toolbar.title == "Waiting for an opponent..." else False
+            background: 'images/start_game.jpg'
             on_release:
                 root.start_match()
         #Widget:

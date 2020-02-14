@@ -33,8 +33,8 @@ class Player(EventDispatcher):
             new_elo = new_loser_elo
         else:
             new_elo = new_winner_elo
-        loser_elo, new_loser_elo = float(loser_elo), float(new_loser_elo)
-        winner_elo, new_winner_elo = float(winner_elo), float(new_winner_elo)
+        loser_elo, new_loser_elo = int(loser_elo), int(new_loser_elo)
+        winner_elo, new_winner_elo = int(winner_elo), int(new_winner_elo)
         self.set_elo(new_elo)
 
         # Tell the game screen to open the game over dialog popup

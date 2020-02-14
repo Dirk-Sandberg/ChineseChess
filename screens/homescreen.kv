@@ -1,18 +1,41 @@
 <CardButton@ButtonBehavior+MDCard>:
     background: 'images/pieces.jpg'
     text: ""
+    box_color: 0, 0, 0, 0.5
+    box_position: 'header'
     border_radius: dp(15)
+    elevation: 1
     on_press:
-        self.elevation = 10
-    on_release:
         self.elevation = 6
-    MDLabel:
-        color: 1,1,1,1
-        size: root.size
-        pos: root.pos
-        halign: 'center'
-        valign: 'top'
-        text: root.text
+    on_release:
+        self.elevation = 1
+    BoxLayout:
+        canvas:
+            Color:
+                rgba: root.box_color
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: 0, 0, root.border_radius, root.border_radius
+
+        id: box
+        size_hint_y: None
+        padding: dp(5), 0, 0, 0
+        height: self.minimum_height
+        x: root.x
+        y: root.y if root.box_position == 'footer' else root.y + root.height - self.height
+
+        MDLabel:
+            id: boxlabel
+            font_style: 'H6'
+            color: 1,1,1,1
+            size: root.size
+            pos: root.pos
+            halign: 'center'
+            valign: 'top'
+            text: root.text
+            size_hint_y: None
+            height: self.texture_size[1]
 
 <HomeScreen>:
     BoxLayout:
@@ -23,6 +46,7 @@
             height: self.width
             pos_hint: {"center_x": .5, "center_y": .75}
             text: "Host Match"
+            background: "images/host_game.jpg"
             on_release:
                 root.manager.current = 'create_game_screen'
         Widget:
@@ -31,6 +55,7 @@
             height: self.width
             pos_hint: {"center_x": .5, "center_y": .25}
             text: "Join Match"
+            background: "images/join_game.jpg"
             on_release:
                 root.manager.current = 'lobby_browser_screen'
         Widget:
