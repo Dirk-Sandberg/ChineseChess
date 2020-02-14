@@ -4,9 +4,9 @@
         spacing: dp(20)
         MDToolbar:
             title: "Choose your username"
-            md_bg_color: get_color_from_hex(colors['Light']['Background'])
+            md_bg_color: get_color_from_hex(colors[app.theme_cls.theme_style]['Background'])
             elevation: 0
-            specific_text_color: [0,0,0,1]
+            specific_text_color: [0,0,0,1] if app.theme_cls.theme_style == 'Light' else [1,1,1,1]
         MDTextField:
             size_hint_x: .9
             pos_hint: {'center_x': .5}

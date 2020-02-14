@@ -14,7 +14,7 @@
 #:import FirebaseLoginScreen FirebaseLoginScreen.firebaseloginscreen.FirebaseLoginScreen
 
 ScreenManager:
-    transition: FadeTransition(clearcolor=get_color_from_hex(colors['Light']['Background']))
+    transition: FadeTransition(clearcolor=get_color_from_hex(colors[app.theme_cls.theme_style]['Background']))
     FirebaseLoginScreen:
         id: firebase_login_screen
         name: "firebase_login_screen"

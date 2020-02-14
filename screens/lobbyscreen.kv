@@ -6,9 +6,9 @@
             id: toolbar
             left_action_items: [['chevron-left', lambda x: root.back_to_lobby_browser()]]
             title: "Waiting for an opponent..."
-            md_bg_color: get_color_from_hex(colors['Light']['Background'])
+            md_bg_color: get_color_from_hex(colors[app.theme_cls.theme_style]['Background'])
             elevation: 0
-            specific_text_color: [0,0,0,1]
+            specific_text_color: [0,0,0,1] if app.theme_cls.theme_style == 'Light' else [1,1,1,1]
         Widget:
         BoxLayout:
             size_hint_y: None
@@ -29,12 +29,18 @@
                     id: player_one
                     text: " "
                     halign: 'center'
+                    opposite_colors: toolbar.opposite_colors
+                    theme_text_color: 'Custom'
+                    text_color: toolbar.specific_text_color
                 MDLabel:
                     size_hint_y: None
                     height: self.texture_size[1]
                     id: player_one_elo
                     text: " "
                     halign: 'center'
+                    opposite_colors: toolbar.opposite_colors
+                    theme_text_color: 'Custom'
+                    text_color: toolbar.specific_text_color
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_y: None
@@ -50,12 +56,18 @@
                     id: player_two
                     text: " "
                     halign: 'center'
+                    opposite_colors: toolbar.opposite_colors
+                    theme_text_color: 'Custom'
+                    text_color: toolbar.specific_text_color
                 MDLabel:
                     size_hint_y: None
                     height: self.texture_size[1]
                     id: player_two_elo
                     text: " "
                     halign: 'center'
+                    opposite_colors: toolbar.opposite_colors
+                    theme_text_color: 'Custom'
+                    text_color: toolbar.specific_text_color
         Widget:
         CardButton:
             text: "Start Match"

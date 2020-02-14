@@ -45,6 +45,13 @@ class MainApp(MDApp):
         print(HOST, PORT)
         self.client = Client(HOST, PORT)
 
+    def change_style(self):
+        style = self.theme_cls.theme_style
+        if style == 'Dark':
+            new_style = 'Light'
+        else:
+            new_style = 'Dark'
+        self.theme_cls.theme_style = new_style
 
 
     def read_port_file(self):
