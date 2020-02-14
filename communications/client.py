@@ -39,7 +39,6 @@ class Client:
         message = ""
         while self.server:
             try:
-                print('listening')
                 # Wait until a command is received from the server
                 message += self.server.recv(2048).decode()
                 # If we get multiple commands at once, separate them
