@@ -3,6 +3,9 @@ from _thread import start_new_thread
 from helper_functions import build_messages
 import json
 from ast import literal_eval
+from requests import get, post, patch
+from json import dumps
+
 
 class Server:
     """This is the class that maintains the connections to the remote clients.
@@ -130,7 +133,7 @@ class Server:
         """
         command = message_dict['command']
         sender = sender_ip + ":" + sender_port
-        if command != 'host_match' and command != 'get_lobbies':
+        if command != 'host_match' and command != 'get_lobbies' and command != 'check_nickname_avail':
             # game_id has been assigned
             game_id = message_dict['from_player']['game_id'].upper()  # Fix upper/lowercase issue
         if command == 'host_match':
@@ -291,6 +294,25 @@ class Server:
             except:
                 # Client wasn't in a room yet.
                 pass
+        elif command == 'check_nickname_avail':
+            r = get('https://chinese-chess-6543e.firebaseio.com/nicknames.json')
+            str_names = r.content.decode()
+            print(str_names)
+            str_names = str_names.replace('"',"")
+            names = str_names.split(",")
+            print(names)
+            name_to_check = message_dict['nickname']
+            if name_to_check in names:
+                response_dict = {'command': 'invalid_nickname'}
+            else:
+                response_dict = {'command': 'valid_nickname'}
+                # Update firebase with new nickname
+                str_names += ',' + name_to_check
+                new_names = {'nicknames': str_names}
+                r = patch('https://chinese-chess-6543e.firebaseio.com/.json',
+                         data=dumps(new_names))
+            return response_dict, [sender]
+
 
     def add_client_to_game_room(self, client_ip, client_port, game_id, nickname, elo):
         """Keeps track of the players that are attached to each game room. Does

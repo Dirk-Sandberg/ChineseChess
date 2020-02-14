@@ -51,7 +51,8 @@ class Client:
                     # Read and interpret the json data
                     self.interpret(message)
                     message = ""
-            except:
+            except Exception as e:
+                print(e)
                 # Json decoder error, message didn't get fully captured
                 # try to get more of the message before interpreting it
                 pass
@@ -134,10 +135,14 @@ class Client:
             self.app.player.update_elo_after_match_ends(loser_color)
         elif command == 'rematch_requested':
             self.app.root.ids.game_screen.rematch_requested()
-            #this needs to be updated
         elif command == 'revoke_rematch_request':
             print("Trying to revoke rematch request")
             self.app.root.ids.game_screen.rematch_request_revoked()
+        elif command == 'valid_nickname':
+            self.app.root.ids.set_nickname_screen.nickname_was_valid()
+        elif command == 'invalid_nickname':
+            self.app.root.ids.set_nickname_screen.nickname_was_invalid()
+
 
 
 

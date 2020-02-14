@@ -39,7 +39,7 @@ class MainApp(MDApp):
         pass
 
     def on_start(self):
-        self.theme_cls.primary_palette = 'Teal'
+        #self.theme_cls.primary_palette = 'Teal'
         #['Red', 'Pink', 'Purple', 'DeepPurple', 'Indigo', 'Blue',
         #     'LightBlue', 'Cyan', 'Teal', 'Green', 'LightGreen', 'Lime',
         #     'Yellow', 'Amber', 'Orange', 'DeepOrange', 'Brown', 'Gray',
