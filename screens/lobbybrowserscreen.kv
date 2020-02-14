@@ -8,10 +8,13 @@
     on_pre_enter: self.get_lobbies_from_server()
     BoxLayout:
         orientation: 'vertical'
-        MDIconButton:
-            icon: 'chevron-left'
-            on_release:
-                root.manager.current = 'home_screen'
+        MDToolbar:
+            id: toolbar
+            left_action_items: [['chevron-left', lambda x: app.change_screen('home_screen')]]
+            title: "Lobby browser"
+            md_bg_color: get_color_from_hex(colors['Light']['Background'])
+            elevation: 0
+            specific_text_color: [0,0,0,1]
         ScrollView:
             id: scroll
             MDList:

@@ -15,12 +15,15 @@ class SetNicknameScreen(Screen):
         app = App.get_running_app()
         message = {'command': 'check_nickname_avail', 'nickname': nickname}
         app.client.send_message(message)
-        print("firebase login screen loading circle here")
+        app.root.ids.firebase_login_screen.display_loading_screen()
 
     def nickname_was_valid(self):
         app = App.get_running_app()
         app.player.set_nickname(self.nickname)
+        app.root.ids.firebase_login_screen.hide_loading_screen()
 
     def nickname_was_invalid(self):
+        app = App.get_running_app()
         toast('That name is already taken')
+        app.root.ids.firebase_login_screen.hide_loading_screen()
 
