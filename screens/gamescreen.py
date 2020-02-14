@@ -260,7 +260,7 @@ class GameScreen(Screen):
 
 
         # Stop highlighting the piece
-        moving_piece.indicator_source = "moved_from"
+        moving_piece.indicator_source = "moved_to"
         app.highlighted_piece = None
 
 
@@ -400,10 +400,10 @@ class GameScreen(Screen):
         board2 = self.ids.bottom_board
         # Clear all indicators that don't show where a piece just moved from
         for child in board1.children:
-            if child.indicator_source == "moved_from":
+            if child.indicator_source == "moved_from" or child.indicator_source == 'moved_to':
                 child.indicator_source = "blankpiece"
         for child in board2.children:
-            if child.indicator_source == "moved_from":
+            if child.indicator_source == "moved_from" or child.indicator_source == 'moved_to':
                 child.indicator_source = "blankpiece"
 
     def forfeit(self):

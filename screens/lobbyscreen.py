@@ -37,7 +37,7 @@ class LobbyScreen(Screen):
         self.ids.player_one_elo.text = elo1
         self.ids.player_two.text = nick2
         self.ids.player_two_elo.text = elo2
-        self.ids.player_two_image.source = 'images/kingpiece.png'
+        self.ids.player_two_image.source = 'images/kingpieceblack.png'
         self.ids.toolbar.title = "Ready to play!"
 
     def start_match(self):

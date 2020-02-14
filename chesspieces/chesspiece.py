@@ -173,10 +173,10 @@ class ChessPiece(ButtonBehavior, Image):
         board2 = app.root.ids.game_screen.ids.bottom_board
         # Clear all indicators that don't show where a piece just moved from
         for child in board1.children:
-            if child.indicator_source != "moved_from":
+            if child.indicator_source != "moved_from" and child.indicator_source != 'moved_to':
                 child.indicator_source = "blankpiece"
         for child in board2.children:
-            if child.indicator_source != "moved_from":
+            if child.indicator_source != "moved_from" and child.indicator_source != 'moved_to':
                 child.indicator_source = "blankpiece"
 
 
