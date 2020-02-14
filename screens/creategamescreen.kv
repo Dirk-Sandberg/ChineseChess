@@ -4,6 +4,7 @@
         orientation: 'vertical'
         MDToolbar:
             id: toolbar
+            right_action_items: [['theme-light-dark', lambda x: app.change_style()]]
             left_action_items: [['chevron-left', lambda x: app.change_screen('home_screen')]]
             title: "Set a time limit"
             md_bg_color: get_color_from_hex(colors[app.theme_cls.theme_style]['Background'])

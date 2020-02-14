@@ -9,9 +9,14 @@
             size_hint_y: None
             height: forfeit_button.height
             rows: 1
-            Widget:
-                size_hint_x: None
-                width: forfeit_button.width
+            MDIconButton:
+                id: forfeit_button
+                theme_text_color: 'Custom'
+                text_color: app.theme_cls.primary_color
+                icon: 'flag'
+                disabled: not root.game_is_playing
+                on_release:
+                    root.forfeit()
             MDLabel:
                 id: black_timer
                 text: "00:00"
@@ -22,13 +27,12 @@
                 color: 1,0,0,1
                 halign: 'center'
             MDIconButton:
-                id: forfeit_button
                 theme_text_color: 'Custom'
-                text_color: app.theme_cls.primary_color
-                icon: 'flag'
+                text_color: [0,0,0,1] if app.theme_cls.theme_style == 'Light' else [1,1,1,1]
+                icon: 'theme-light-dark'
                 disabled: not root.game_is_playing
                 on_release:
-                    root.forfeit()
+                    app.change_style()
         GridLayout:
             id: top_captured_pieces
             cols: 8
