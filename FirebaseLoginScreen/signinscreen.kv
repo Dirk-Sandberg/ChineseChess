@@ -1,47 +1,38 @@
 <SignInScreen>:
     FloatLayout:
         MDIconButton:
-            #size_hint: .4, .05
             pos_hint: {"center_x": .1, "top": .975}
             text: "Back"
             icon: 'chevron-left'
             markup: True
-            #bg_color: root.parent.parent.primary_color if root.parent else (0,0,0,1)
-            #color: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
             on_release:
                 root.parent.transition = SlideTransition(direction="right")
                 root.parent.current = root.parent.current = "welcome_screen"
                 root.parent.transition = SlideTransition(direction="left")
 
-        MDTextFieldRound:
+        MDTextField:
             id: email
-            #size_hint: .9 ,.1
+            size_hint_x: .9
             pos_hint: {"center_x": .5, "top": .875}
             hint_text: "Email"
-            #bg_color: root.parent.parent.primary_color if root.parent else (0,0,0,1)
-            #highlight_color1: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
-            #highlight_color2: root.parent.parent.tertiary_color if root.parent else (0,0,0,1)
+            color_mode: 'custom'
+            line_color_focus: 1,1,1,1
 
-        MDTextFieldRound:
+        MDTextField:
             id: password
-            #size_hint: .9 ,.1
+            size_hint_x: .9
             pos_hint: {"center_x": .5, "top": .775}
             hint_text: "Password"
-            icon: 'lock-outline'
             password: True
-            #bg_color: root.parent.parent.primary_color if root.parent else (0,0,0,1)
-            #highlight_color1: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
-            #highlight_color2: root.parent.parent.tertiary_color if root.parent else (0,0,0,1)
+            color_mode: 'custom'
+            line_color_focus: 1,1,1,1
 
-        MDIconButton:
-            text: "[u]Reset password[/u]"
+        MDTextButton:
+            text: "[u]Forgot your password?[/u]"
             icon: 'lock-open-outline'
             markup: True
             color: Window.clearcolor
-            #size: sign_in_button.size[1], sign_in_button.size[1]
-            #pos_hint: {"right": .25, "top": .675}
-            pos: password.pos[0]+password.size[0], password.pos[1]
-            pos_x: password.pos[0]
+            pos_hint: {"center_x": .5, "top": .675}
             opposite_colors: True
             on_release:
                 # Need to refer to the FirebaseLoginScreen
@@ -54,11 +45,8 @@
 
         MDRaisedButton:
             text: "Sign In"
-            #size_hint: .4 ,.05
             id: sign_in_button
-            pos_hint: {"center_x": .5, "top": .67}
-            #bg_color: root.parent.parent.primary_color if root.parent else (0,0,0,1)
-            #color: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
+            pos_hint: {"center_x": .5, "top": .615}
             on_release:
                 # Need to refer to the FirebaseLoginScreen
                 root.parent.parent.sign_in(email.text, password.text)
@@ -72,8 +60,8 @@
             size_hint: .9 ,.1
             pos_hint: {"center_x": .5, "center_y": .1}
             opacity: 0
-            bg_color: (root.parent.parent.primary_color[:3] + [.7] if (type(root.parent.parent.primary_color) != tuple) else root.parent.parent.primary_color[:3] + tuple([.7])) if root.parent else (0,0,0,1)
-            color: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
+            #bg_color: (root.parent.parent.primary_color[:3] + [.7] if (type(root.parent.parent.primary_color) != tuple) else root.parent.parent.primary_color[:3] + tuple([.7])) if root.parent else (0,0,0,1)
+            #color: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
             on_text:
                 Animation(opacity=1, duration=0.5).start(self)
 
@@ -81,11 +69,9 @@
             id: sign_in_button
             text: "Sign up"
             size_hint: .2 ,.05
-            pos_hint: {"right": .85, "center_y": .1}
+            pos_hint: {"center_x": .5, "center_y": .25}
             opacity: 0
             disabled: True
-            bg_color: (0,0,0,0)# root.parent.parent.primary_color if root.parent else (0,0,0,1)
-            color: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
             on_release:
                 root.parent.current = "create_account_screen"
                 root.parent.parent.ids.create_account_screen.ids.email.text = email.text

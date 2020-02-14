@@ -1,166 +1,299 @@
 """
-Text Fields
-===========
+Components/Text Field
+=====================
 
-Copyright (c) 2015 Andrés Rodríguez and KivyMD contributors -
-    KivyMD library up to version 0.1.2
-Copyright (c) 2019 Ivanov Yuri and KivyMD contributors -
-    KivyMD library version 0.1.3 and higher
+.. seealso::
 
-For suggestions and questions:
-<kivydevelopment@gmail.com>
+    `Material Design spec, Text fields <https://material.io/components/text-fields>`_
 
-This file is distributed under the terms of the same license,
-as the Kivy framework.
+.. rubric:: Text fields let users enter and edit text.
 
-`Material Design spec, Text fields <https://material.io/design/components/text-fields.html>`_
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-fields.png
+    :align: center
 
-Example
--------
+`KivyMD` provides the following field classes for use:
 
-from kivymd.app import MDApp
-from kivy.lang import Builder
-from kivy.factory import Factory
+- MDTextField_
+- MDTextFieldRound_
+- MDTextFieldRect_
 
-from kivymd.theming import ThemeManager
+.. Note:: :class:`~MDTextField` inherited from
+    :class:`~kivy.uix.textinput.TextInput`. Therefore, most parameters and all
+    events of the :class:`~kivy.uix.textinput.TextInput` class are also
+    available in the :class:`~MDTextField` class.
 
-Builder.load_string('''
-#:import Window kivy.core.window.Window
-
-#:set color_shadow [0, 0, 0, .2980392156862745]
+.. MDTextField:
+MDTextField
+-----------
 
 
-<MyMDTextFieldRound@MDTextFieldRound>
-    size_hint_x: None
-    normal_color: color_shadow
-    active_color: color_shadow
+:class:`~MDTextField` can be with helper text and without.
+
+Without helper text mode
+------------------------
+
+.. code-block:: kv
+
+    MDTextField:
+        hint_text: "No helper text"
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-no-helper-mode.gif
+    :align: center
+
+Helper text mode on ``on_focus`` event
+--------------------------------------
+
+.. code-block:: kv
+
+    MDTextField:
+        hint_text: "Helper text on focus"
+        helper_text: "This will disappear when you click off"
+        helper_text_mode: "on_focus"
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-helper-mode-on-focus.gif
+    :align: center
+
+Persistent helper text mode
+---------------------------
+
+.. code-block:: kv
+
+    MDTextField:
+        hint_text: "Persistent helper text"
+        helper_text: "Text is always here"
+        helper_text_mode: "persistent"
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-helper-mode-persistent.gif
+    :align: center
+
+Helper text mode `'on_error'`
+----------------------------
+
+To display an error in a text field when using the
+``helper_text_mode: "on_error"`` parameter, set the `"error"` text field
+parameter to `True`:
+
+.. code-block:: python
+
+    from kivy.lang import Builder
+
+    from kivymd.app import MDApp
+
+    KV = '''
+    BoxLayout:
+        padding: "10dp"
+
+        MDTextField:
+            id: text_field_error
+            hint_text: "Helper text on error (press 'Enter')"
+            helper_text: "There will always be a mistake"
+            helper_text_mode: "on_error"
+            pos_hint: {"center_y": .5}
+    '''
 
 
-<TextFields@Screen>
-    name: 'textfields'
+    class Test(MDApp):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.screen = Builder.load_string(KV)
 
-    canvas:
-        Color:
-            rgba: 0, 0, 0, .2
-        Rectangle:
-            pos: self.pos
-            size: self.size
+        def build(self):
+            self.screen.ids.text_field_error.bind(
+                on_text_validate=self.set_error_message,
+                on_focus=self.set_error_message,
+            )
+            return self.screen
 
-    ScrollView:
-
-        BoxLayout:
-            orientation: 'vertical'
-            size_hint_y: None
-            height: self.minimum_height
-            padding: dp(48)
-            spacing: dp(15)
-
-            MyMDTextFieldRound:
-                hint_text: 'Empty field'
-
-            MyMDTextFieldRound:
-                icon_left: 'email'
-                hint_text: 'Field with left icon'
-
-            MyMDTextFieldRound:
-                icon_left: 'key-variant'
-                icon_right: 'eye-off'
-                hint_text: 'Field with left and right icons'
-
-            MDTextField:
-                hint_text: 'mode = "rectangle"'
-                mode: "rectangle"
-
-            MDTextField:
-                input_filter: "int"
-                hint_text: "Numeric field"
-
-            MDTextField:
-                hint_text: "No helper text"
-
-            MDTextField:
-                hint_text: "Helper text on focus"
-                helper_text: "This will disappear when you click off"
-                helper_text_mode: "on_focus"
-
-            MDTextField:
-                hint_text: "Persistent helper text"
-                helper_text: "Text is always here"
-                helper_text_mode: "persistent"
-
-            Widget:
-                size_hint_y: None
-                height: dp(5)
-
-            MDTextField:
-                id: text_field_error
-                hint_text: "Helper text on error (Hit Enter with  two characters here)"
-                helper_text: "Two is my least favorite number"
-                helper_text_mode: "on_error"
-
-            MDTextField:
-                hint_text: "Max text length = 10"
-                max_text_length: 10
-
-            MDTextField:
-                hint_text: "required = True"
-                required: True
-                helper_text_mode: "on_error"
-
-            MDTextField:
-                multiline: True
-                hint_text: "Multi-line text"
-                helper_text: "Messages are also supported here"
-                helper_text_mode: "persistent"
-
-            MDTextField:
-                hint_text: "color_mode = \'accent\'"
-                color_mode: 'accent'
-
-            MDTextField:
-                hint_text: "color_mode = \'custom\'"
-                color_mode: 'custom'
-                helper_text_mode: "on_focus"
-                helper_text: "Color is defined by \'line_color_focus\' property"
-                line_color_focus: self.theme_cls.opposite_bg_normal
-
-            MDTextField:
-                hint_text: "disabled = True"
-                disabled: True
-
-            MDTextFieldRect:
-                size_hint: None, None
-                size: Window.width - dp(40), dp(30)
-                pos_hint: {'center_y': .5, 'center_x': .5}
-''')
+        def set_error_message(self, instance_textfield):
+            self.screen.ids.text_field_error.error = True
 
 
-class Example(MDApp):
-    title = "Example Text Fields"
-    main_widget = None
+    Test().run()
 
-    def build(self):
-        return Factory.TextFields()
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-helper-mode-on-error.gif
+    :align: center
 
-    def show_password(self, field, button):
-        '''
-        Called when you press the right button in the password field
-        for the screen TextFields.
+Helper text mode `'on_error'` (with required)
+--------------------------------------------
 
-        instance_field: kivy.uix.textinput.TextInput;
-        instance_button: kivymd.button.MDIconButton;
+.. code-block:: kv
 
-        '''
+    MDTextField:
+        hint_text: "required = True"
+        required: True
+        helper_text_mode: "on_error"
+        helper_text: "Enter text"
 
-        # Show or hide text of password, set focus field
-        # and set icon of right button.
-        field.password = not field.password
-        field.focus = True
-        button.icon = "eye" if button.icon == "eye-off" else "eye-off"
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-required.gif
+    :align: center
+
+Text length control
+-------------------
+
+.. code-block:: kv
+
+    MDTextField:
+        hint_text: "Max text length = 5"
+        max_text_length: 5
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-text-length.gif
+    :align: center
 
 
-Example().run()
+Multi line text
+---------------
+
+.. code-block:: kv
+
+    MDTextField:
+        multiline: True
+        hint_text: "Multi-line text"
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-text-multi-line.gif
+    :align: center
+
+Color mode
+----------
+
+.. code-block:: kv
+
+    MDTextField:
+        hint_text: "color_mode = 'accent'"
+        color_mode: 'accent'
+
+Available options are  `'primary'`, `'accent'` or `'custom`'.
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-color-mode.gif
+    :align: center
+
+.. code-block:: kv
+
+    MDTextField:
+        hint_text: "color_mode = 'custom'"
+        color_mode: 'custom'
+        helper_text_mode: "on_focus"
+        helper_text: "Color is defined by 'line_color_focus' property"
+        line_color_focus: 1, 0, 1, 1
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-color-mode-custom.gif
+    :align: center
+
+.. code-block:: kv
+
+    MDTextField:
+        hint_text: "Line color normal"
+        line_color_normal: app.theme_cls.accent_color
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-line-color-normal.png
+    :align: center
+
+Rectangle mode
+--------------
+
+.. code-block:: kv
+
+    MDTextField:
+        hint_text: "Rectangle mode"
+        mode: "rectangle"
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-rectangle-mode.gif
+    :align: center
+
+.. MDTextFieldRect:
+MDTextFieldRect
+---------------
+
+.. Note:: :class:`~MDTextFieldRect` inherited from
+    :class:`~kivy.uix.textinput.TextInput`. You can use all parameters and
+    attributes of the :class:`~kivy.uix.textinput.TextInput` class in the
+    :class:`~MDTextFieldRect` class.
+
+.. code-block:: kv
+
+    MDTextFieldRect:
+        size_hint: 1, None
+        height: "30dp"
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-rect.gif
+    :align: center
+
+.. Warning:: While there is no way to change the color of the border.
+
+.. MDTextFieldRound:
+MDTextFieldRound
+----------------
+
+Without icon
+------------
+
+.. code-block:: kv
+
+    MDTextFieldRound:
+        hint_text: 'Empty field'
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-round.gif
+    :align: center
+
+With left icon
+--------------
+
+.. Warning:: The icons in the :class:`~MDTextFieldRound` are static. You cannot
+    bind events to them.
+
+.. code-block:: kv
+
+    MDTextFieldRound:
+        icon_left: "email"
+        hint_text: "Field with left icon"
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-round-left-icon.png
+    :align: center
+
+With left and right icons
+-------------------------
+
+.. code-block:: kv
+
+    MDTextFieldRound:
+        icon_left: 'key-variant'
+        icon_right: 'eye-off'
+        hint_text: 'Field with left and right icons'
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-round-left-right-icon.png
+    :align: center
+
+Control background color
+------------------------
+
+.. code-block:: kv
+
+    MDTextFieldRound:
+        icon_left: 'key-variant'
+        normal_color: app.theme_cls.accent_color
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-round-normal-color.gif
+    :align: center
+
+.. code-block:: kv
+
+    MDTextFieldRound:
+        icon_left: 'key-variant'
+        normal_color: app.theme_cls.accent_color
+        color_active: 1, 0, 0, 1
+
+.. image:: https://github.com/HeaTTheatR/KivyMD-data/raw/master/gallery/kivymddoc/text-field-round-active-color.gif
+    :align: center
+
+.. seealso::
+
+    See more information in the :class:`~MDTextFieldRect` class.
 """
+
+__all__ = (
+    "MDTextField",
+    "MDTextFieldRect",
+    "MDTextFieldRound",
+)
 
 import sys
 
@@ -418,36 +551,97 @@ class TextfieldLabel(ThemableBehavior, Label):
 
 
 class MDTextField(ThemableBehavior, FixedHintTextInput):
-    # TODO: Add class fields description.
     helper_text = StringProperty("This field is required")
+    """
+    Text for ``helper_text`` mode.
+
+    :attr:`helper_text` is an :class:`~kivy.properties.StringProperty`
+    and defaults to `'This field is required'`.
+    """
 
     helper_text_mode = OptionProperty(
         "none", options=["none", "on_error", "persistent", "on_focus"]
     )
+    """
+    Helper text mode. Available options are: `'on_error'`, `'persistent'`,
+    `'on_focus'`.
+
+    :attr:`helper_text_mode` is an :class:`~kivy.properties.OptionProperty`
+    and defaults to `'none'`.
+    """
 
     max_text_length = NumericProperty(None)
+    """
+    Maximum allowed value of characters in a text field.
+
+    :attr:`max_text_length` is an :class:`~kivy.properties.NumericProperty`
+    and defaults to `None`.
+    """
 
     required = BooleanProperty(False)
+    """
+    Required text. If True then the text field requires text.
+
+    :attr:`required` is an :class:`~kivy.properties.BooleanProperty`
+    and defaults to `False`.
+    """
 
     color_mode = OptionProperty(
         "primary", options=["primary", "accent", "custom"]
     )
+    """
+    Color text mode. Available options are: `'primary'`, `'accent'`,
+    `'custom'`.
+
+    :attr:`color_mode` is an :class:`~kivy.properties.OptionProperty`
+    and defaults to `'primary'`.
+    """
 
     mode = OptionProperty("line", options=["rectangle"])
+    """
+    Text field mode. Available options are: `'line'`, `'rectangle'`.
+
+    :attr:`mode` is an :class:`~kivy.properties.OptionProperty`
+    and defaults to `'line'`.
+    """
 
     line_color_normal = ListProperty()
+    """
+    Line color normal in ``rgba`` format.
+
+    :attr:`line_color_normal` is an :class:`~kivy.properties.ListProperty`
+    and defaults to `[]`.
+    """
 
     line_color_focus = ListProperty()
+    """
+    Line color focus in ``rgba`` format.
+
+    :attr:`line_color_focus` is an :class:`~kivy.properties.ListProperty`
+    and defaults to `[]`.
+    """
 
     error_color = ListProperty()
+    """
+    Error color in ``rgba`` format for ``required = True``.
+
+    :attr:`error_color` is an :class:`~kivy.properties.ListProperty`
+    and defaults to `[]`.
+    """
 
     error = BooleanProperty(False)
+    """
+    If True, then the text field goes into ``error`` mode.
+
+    :attr:`error` is an :class:`~kivy.properties.BooleanProperty`
+    and defaults to `False`.
+    """
 
     _text_len_error = BooleanProperty(False)
-    _hint_lbl_font_size = NumericProperty(sp(16))
+    _hint_lbl_font_size = NumericProperty("16sp")
     _line_blank_space_right_hint_text = NumericProperty(0)
     _line_blank_space_left_hint_text = NumericProperty(0)
-    _hint_y = NumericProperty(dp(38))
+    _hint_y = NumericProperty("38dp")
     _line_width = NumericProperty(0)
     _current_line_color = ListProperty([0.0, 0.0, 0.0, 0.0])
     _current_error_color = ListProperty([0.0, 0.0, 0.0, 0.0])
@@ -808,25 +1002,53 @@ class MDTextField(ThemableBehavior, FixedHintTextInput):
 
 class MDTextFieldRound(ThemableBehavior, TextInput):
     icon_left = StringProperty()
-    """Left icon."""
+    """Left icon.
+
+    :attr:`icon_left` is an :class:`~kivy.properties.StringProperty`
+    and defaults to `''`.
+    """
 
     icon_left_color = ListProperty([0, 0, 0, 1])
-    """Color of left icon."""
+    """Color of left icon in ``rgba`` format.
+
+    :attr:`icon_left_color` is an :class:`~kivy.properties.ListProperty`
+    and defaults to `[0, 0, 0, 1]`.
+    """
 
     icon_right = StringProperty()
-    """Right icon."""
+    """Right icon.
+
+    :attr:`icon_right` is an :class:`~kivy.properties.StringProperty`
+    and defaults to `''`.
+    """
 
     icon_right_color = ListProperty([0, 0, 0, 1])
-    """Color of right icon."""
+    """Color of right icon.
+
+    :attr:`icon_right_color` is an :class:`~kivy.properties.ListProperty`
+    and defaults to `[0, 0, 0, 1]`.
+    """
 
     line_color = ListProperty()
-    """Field line color."""
+    """Field line color.
+
+    :attr:`line_color` is an :class:`~kivy.properties.ListProperty`
+    and defaults to `[]`.
+    """
 
     normal_color = ListProperty()
-    """Field color if `focus` is `False`."""
+    """Field color if `focus` is `False`.
+
+    :attr:`normal_color` is an :class:`~kivy.properties.ListProperty`
+    and defaults to `[]`.
+    """
 
     color_active = ListProperty()
-    """Field color if `focus` is `True`."""
+    """Field color if `focus` is `True`.
+
+    :attr:`color_active` is an :class:`~kivy.properties.ListProperty`
+    and defaults to `[]`.
+    """
 
     _color_active = ListProperty()
 

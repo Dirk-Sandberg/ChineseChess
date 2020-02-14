@@ -39,6 +39,12 @@ class MainApp(MDApp):
         pass
 
     def on_start(self):
+        self.theme_cls.primary_palette = 'Teal'
+        #['Red', 'Pink', 'Purple', 'DeepPurple', 'Indigo', 'Blue',
+        #     'LightBlue', 'Cyan', 'Teal', 'Green', 'LightGreen', 'Lime',
+        #     'Yellow', 'Amber', 'Orange', 'DeepOrange', 'Brown', 'Gray',
+        #     'BlueGray']
+
         HOST = '127.0.0.1'  # Local testing
         #HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()

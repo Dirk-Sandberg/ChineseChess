@@ -83,8 +83,8 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         """Overwrite this method to switch to your app's home screen.
         """
         print("Logged in successfully", args)
-        #with open(self.refresh_token_file, "w") as f:
-        #    f.write("")
+        with open(self.refresh_token_file, "w") as f:
+            f.write("")
 
 
     def on_web_api_key(self, *args):
@@ -304,7 +304,7 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
             print("Failed to load an account.", args)
 
     def display_loading_screen(self, *args):
-        self.popup.color = self.tertiary_color
+        #self.popup.color = self.tertiary_color
         self.popup.open()
 
     def hide_loading_screen(self, *args):
