@@ -41,7 +41,7 @@ class LobbyBrowserScreen(Screen):
             host_elo = str(lobby['host_elo'])
             time_limit = str(lobby['time_limit'])
             s = '' if time_limit == '1' else 's'
-            lobby_item = LobbyItem(text=name + "'s Match, rating " + host_elo,
+            lobby_item = LobbyItem(text=name + "'s match, rating " + host_elo,
                                          secondary_text="Time Limit: " + time_limit + " minute" + s + ' per player')
             lobby_item.host_nickname = name
             lobby_item.game_id = game_id
