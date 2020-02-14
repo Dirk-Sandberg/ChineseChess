@@ -13,6 +13,7 @@ from kivy.core.window import Window
 Window.allow_screensaver = False
 Window.size = (350, 600)
 from player import Player
+from kivymd.color_definitions import colors
 from communications.client import Client
 from screens.lobbyscreen import LobbyScreen
 from screens.setnicknamescreen import SetNicknameScreen
@@ -52,6 +53,22 @@ class MainApp(MDApp):
         else:
             new_style = 'Dark'
         self.theme_cls.theme_style = new_style
+
+    def get_theme_color(self):
+        style = self.theme_cls.theme_style
+        accent_hue = self.theme_cls.accent_hue
+        return colors[style][accent_hue]
+
+
+    def get_opp_theme_color(self):
+        style = self.theme_cls.theme_style
+        if style == 'Dark':
+            opp_style = 'Light'
+            accent_hue = self.theme_cls.accent_dark_hue
+        else:
+            opp_style = 'Dark'
+            accent_hue = self.theme_cls.accent_light_hue
+        return colors[opp_style][accent_hue]
 
 
     def read_port_file(self):
