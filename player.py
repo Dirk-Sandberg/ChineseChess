@@ -19,6 +19,10 @@ class Player(EventDispatcher):
 
     @mainthread
     def update_elo_after_match_ends(self, checkmated_player_color):
+        print(checkmated_player_color, 'LOST')
+        print("I AM RED?", self.is_red)
+        print("My elo", self.elo) # This is right, but dialog thinks opponent elo and opponent DeltaElo is mine
+        print("Opponent elo", self.opponent_elo)
         if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
             loser_elo = self.elo
             winner_elo = self.opponent_elo
@@ -30,12 +34,13 @@ class Player(EventDispatcher):
 
         # Update the player's elo in firebase.
         if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
-            new_elo = new_loser_elo
+            new_elo = int(new_loser_elo)
         else:
-            new_elo = new_winner_elo
+            new_elo = int(new_winner_elo)
         loser_elo, new_loser_elo = int(loser_elo), int(new_loser_elo)
         winner_elo, new_winner_elo = int(winner_elo), int(new_winner_elo)
         self.set_elo(new_elo)
+        print("My new elo is", new_elo)
 
         # Tell the game screen to open the game over dialog popup
         app = App.get_running_app()

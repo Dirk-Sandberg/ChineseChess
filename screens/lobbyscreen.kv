@@ -6,7 +6,7 @@
             id: toolbar
             right_action_items: [['theme-light-dark', lambda x: app.change_style()]]
             left_action_items: [['chevron-left', lambda x: root.back_to_lobby_browser()]]
-            title: "Waiting for an opponent..."
+            title: "Waiting for opponent"
             md_bg_color: get_color_from_hex(colors[app.theme_cls.theme_style]['Background'])
             elevation: 0
             specific_text_color: [0,0,0,1] if app.theme_cls.theme_style == 'Light' else [1,1,1,1]
@@ -75,7 +75,7 @@
             size_hint: .6, None
             height: self.width
             pos_hint: {"center_x": .5}
-            disabled: True if toolbar.title == "Waiting for an opponent..." else False
+            disabled: True if toolbar.title == "Waiting for opponent" else False
             background: 'images/start_game.jpg'
             on_release:
                 root.start_match()

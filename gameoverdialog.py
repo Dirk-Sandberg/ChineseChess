@@ -18,22 +18,30 @@ class GameOverDialog(BaseGameOverDialog):
     is_open = False
 
 
-    def __init__(self, winner_color, elo1_start, elo1_stop, elo2_start, elo2_stop,
+    def __init__(self, winner_color, loser_elo, new_loser_elo,
+                                               winner_elo, new_winner_elo,
                  player_nickname, opponent_nickname, *largs, **kwargs):
         super().__init__(*largs, **kwargs)
+        app = App.get_running_app()
         self.title = winner_color[0].upper() + winner_color[1:] + " Wins!"
-        self.animate_elos(elo1_start, elo1_stop, elo2_start, elo2_stop)
+        if winner_color == 'red' and app.player.is_red or winner_color == 'black' and not app.player.is_red:
+            elo_start = winner_elo
+            elo_stop = new_winner_elo
+        else:
+            elo_start = loser_elo
+            elo_stop = new_loser_elo
+        self.animate_elos(elo_start, elo_stop)
         self.player_nickname = player_nickname
         self.opponent_nickname = opponent_nickname
         self.size_hint = (.8, .6)
         self.pos_hint = {"center_y": -self.size_hint_y, "center_x": .5}
-        if elo1_stop > elo1_start:
+        if elo_stop > elo_start:
             # Gained elo, make it green
-            self.change_in_elo = "+%d" % (elo1_stop-elo1_start)
+            self.change_in_elo = "+%d" % (elo_stop-elo_start)
             self.changed_elo_label_color = [0, 1, 0, 1]
         else:
             # Lost elo, make it red
-            self.change_in_elo = "%d" % (elo1_stop-elo1_start)
+            self.change_in_elo = "%d" % (elo_stop-elo_start)
             self.changed_elo_label_color = [1, 0, 0, 1]
 
 
@@ -107,10 +115,9 @@ class GameOverDialog(BaseGameOverDialog):
         Window.remove_widget(self.fab)
         Window.remove_widget(self)
 
-    def animate_elos(self, elo1_start, elo1_stop, elo2_start, elo2_stop):
+    def animate_elos(self, elo1_start, elo1_stop):
         self.player_elo = elo1_start
-        self.opponent_elo = elo2_start
-        anim = Animation(player_elo=elo1_stop, opponent_elo=elo2_stop, duration=3)
+        anim = Animation(player_elo=elo1_stop, duration=3)
         anim.start(self)
 
     def revoke_or_request_rematch(self):

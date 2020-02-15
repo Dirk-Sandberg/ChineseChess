@@ -15,7 +15,7 @@ class LobbyScreen(Screen):
     def back_to_lobby_browser(self):
         self.ids.player_two.text = " "
         self.ids.player_two_elo.text = " "
-        self.ids.toolbar.text = "Waiting for an opponent..."
+        self.ids.toolbar.text = "Waiting for opponent"
         self.ids.player_two_image.source = 'images/blankpiece.png'
 
         app = App.get_running_app()
@@ -27,7 +27,7 @@ class LobbyScreen(Screen):
     def player_two_left(self):
         self.ids.player_two.text = " "
         self.ids.player_two_elo.text = " "
-        self.ids.toolbar.title = "Waiting for an opponent..."
+        self.ids.toolbar.title = "Waiting for opponent"
         self.ids.player_two_image.source = 'images/blankpiece.png'
 
     @mainthread
