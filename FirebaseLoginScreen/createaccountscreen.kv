@@ -17,7 +17,7 @@
                 root.parent.transition = SlideTransition(direction="left")
 
         MDTextField:
-            text: ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)) + "@gmail.com"
+            text: ''#.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)) + "@gmail.com"
             id: email
             size_hint_x: .9
             pos_hint: {"center_x": .5, "top": .875}
@@ -27,7 +27,7 @@
 
 
         MDTextField:
-            text: ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+            text: ''#.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
             id: password
             size_hint_x: .9
             pos_hint: {"center_x": .5, "top": .775}
