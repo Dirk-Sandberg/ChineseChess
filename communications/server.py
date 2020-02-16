@@ -87,11 +87,11 @@ class Server:
         while True:
             try:
                 # Pause this thread until a message is received from the client
+                print("Listening for a message")
                 received_messages = conn.recv(2048)
                 sender_ip = addr[0]
                 sender_port = str(addr[1])
                 if received_messages:
-                    #print("Got message(s)", received_messages)
                     received_messages = received_messages.decode()
                     # Separate the messages if more than one was received
                     for received_message in build_messages(received_messages):
@@ -99,22 +99,21 @@ class Server:
                         received_message = json.loads(received_message)
                         # Figure out what needs to be done based on the message
                         message_to_send, clients_to_send_to = self.interpret(sender_ip, sender_port, received_message)
-
                         # Send the message to all the necessary clients
                         self.broadcast(message_to_send, clients_to_send_to)
-
                 else:
-                    print("Didnt get message")
                     # Message may have no content if the connection is broken,
                     # in this case we remove the connection
                     self.remove(sender_ip+":"+sender_port, conn)
                     # End the while loop as the connection has closed
                     # This will terminate the thread
                     break
-
+            except IOError as e:
+                # Bad file descriptor
+                print('Client connection broke, end this client thread')
+                break
             except Exception as e:
-                print('error in client thread', e)
-                print("Client thread error -- message", received_messages)
+                print('error in client thread', e, received_messages)
                 continue
 
     def interpret(self, sender_ip, sender_port, message_dict):
@@ -133,7 +132,9 @@ class Server:
         """
         command = message_dict['command']
         sender = sender_ip + ":" + sender_port
-        if command != 'host_match' and command != 'get_lobbies' and command != 'check_nickname_avail':
+        # These commands can be sent from a client that doesn't have a game ID assigned yet
+        commands_without_game_id = ['host_match', 'get_lobbies', 'check_nickname_avail', 'disconnect']
+        if command not in commands_without_game_id:
             # game_id has been assigned
             game_id = message_dict['from_player']['game_id'].upper()  # Fix upper/lowercase issue
         if command == 'host_match':
@@ -207,9 +208,7 @@ class Server:
             return response_dict, clients_to_notify
         elif command == 'leave_lobby':
             # Called when someone joins a match, then leaves the lobby
-            print(self.clients_by_rooms[game_id])
             self.clients_by_rooms[game_id].remove(sender)
-            print(self.clients_by_rooms[game_id])
             sender_was_host = message_dict['is_host']
             if sender_was_host:
                 # All players have left the lobby
@@ -270,30 +269,27 @@ class Server:
             return response_dict, clients_to_notify
 
         elif command == "leave_match":
-            # Someone left the game after checkmate occurred
+            # Someone left the game after match ended occurred
             response_dict = {"command": "player_left_match"}
-            clients_to_notify = self.clients_by_rooms[game_id]
-            self.clients_by_rooms.pop(game_id)
+            # This might occur after the other player disconnected before checkmate
+            # If so, clients_by_rooms[game_id] will give an exception as it was popped already
+            try:
+                clients_to_notify = self.clients_by_rooms[game_id].copy()
+                clients_to_notify.remove(sender)
+                self.clients_by_rooms.pop(game_id)
+                #print("1")
+            except:
+                clients_to_notify = []
+                pass
+                #print("2")
+                #clients_to_notify = [sender]
             return response_dict, clients_to_notify
 
         elif command == 'disconnect':
             # Client will be closed automatically when it doesn't receive the
             # next message
-            try:
-                self.clients_by_rooms[game_id].remove(sender)
-                if self.clients_by_rooms[game_id] == []:
-                    # If there are no players remaining, free up the game id
-                    self.clients_by_rooms.pop(game_id)
-
-                # Try to remove this player's lobby from the open lobbies list
-                for lobby in self.lobbies:
-                    if lobby['game_id'] == game_id:
-                        self.lobbies.remove(lobby)
-                    else:
-                        continue
-            except:
-                # Client wasn't in a room yet.
-                pass
+            self.remove(sender, self.list_of_clients[sender])
+            return "", []  # Don't send any messages to anyone
         elif command == 'check_nickname_avail':
             r = get('https://chinese-chess-6543e.firebaseio.com/nicknames.json')
             str_names = r.content.decode()
@@ -368,7 +364,9 @@ class Server:
         :param list_of_clients: The list of ip_and_port strings to send to
         :return:
         """
+        print("Trying to broadcast")
         for ip_and_port in list_of_clients:
+            print("broadcasting to:", ip_and_port)
             # Get a reference to the actual client connection using their
             # ip and port
             client = self.list_of_clients[ip_and_port]
@@ -387,7 +385,7 @@ class Server:
                 client.send(json.dumps(message).encode())
             except Exception as e:
                 # If the connection is broken, we remove the client
-                print("Couldn't send message", e)
+                print("Couldn't send message, going to remove client!", e)
                 self.remove(ip_and_port, client)
 
 
@@ -395,14 +393,85 @@ class Server:
         """Remove all references to the client that is being removed, and close
         that connection.
         """
+        print("Trying to remove:", ip_and_port)
         try:
             self.list_of_clients.pop(ip_and_port)  # Remove client from dictionary
             self.nicknames_for_clients.pop(ip_and_port) # Forget nickname for client
-        except:
+            # Remove this client from the clients by rooms dict
+            for game_id, client_ip_and_ports in self.clients_by_rooms.items():  # for name, age in dictionary.iteritems():  (for Python 2.x)
+                if ip_and_port in client_ip_and_ports:
+                    print("Client is in game room: ", game_id)
+                    # GOT THE PROPER GAME ID
+                    # The player is either in a lobby or a match
+
+                    # Check if they're in a lobby
+                    # - If they are:
+                    # -- remove them from clients_by_game_rooms
+                    # -- close lobby if they weren't the host
+                    # Try to remove this player's lobby from the open lobbies list
+                    player_was_in_lobby = False
+                    for lobby in self.lobbies:
+                        if lobby['game_id'] == game_id:
+                            # Player was in a lobby
+                            player_was_in_lobby = True
+                            # Remove them from the lobby
+                            index = self.clients_by_rooms[game_id].index(ip_and_port)
+                            was_host = True if index == 0 else False
+                            self.clients_by_rooms[game_id].remove(ip_and_port)
+                            # Remove the lobby entirely if it's empty now
+                            if was_host:
+                                # If there was a second player, tell them to leave the lobby
+                                clients_to_notify = self.clients_by_rooms[game_id]
+                                response_dict = {"command": "player_left_lobby"}
+                                self.broadcast(response_dict, clients_to_notify)
+
+                                # Remove the lobby
+                                # Remove the room from clients by rooms
+                                self.lobbies.remove(lobby)
+                                self.clients_by_rooms.pop(game_id)
+
+                                response_dict = {"command": "list_lobbies",
+                                                 "lobbies": self.lobbies}
+                                # Send a message to all clients that a lobby was removed
+                                self.broadcast(response_dict, list(self.list_of_clients.keys()))
+
+                            else:
+                                # Second player to join left the lobby
+                                clients_to_notify = self.clients_by_rooms[game_id]
+                                response_dict = {"command": "player_left_lobby"}
+                                print('3')
+                                self.broadcast(response_dict, clients_to_notify)
+                            print("Client was in lobby: ", lobby)
+                        else:
+                            continue
+                    # Check if they're in a match
+                    # - If they are:
+                    # -- remove the game id from clients_by_rooms
+                    # -- tell other player the match ended
+                    # -- (deduct elo)
+                    player_was_in_match = not player_was_in_lobby
+                    if player_was_in_match:
+                        print("Client was in match")
+                        self.clients_by_rooms[game_id].remove(ip_and_port)
+                        # Someone disconnected during the middle of a game
+                        response_dict = {"command": "player_left_match"}
+                        clients_to_notify = self.clients_by_rooms[game_id]
+                        # The match is completely over, so remove that key from clients_by_rooms
+                        self.clients_by_rooms.pop(game_id)
+                        self.broadcast(response_dict, clients_to_notify)
+        except Exception as e:
             # Won't work if they close the app before joining or starting a game
-            pass
+            print('issue removing client', e)
+
         connection.close()
         print("Closed connection from", ip_and_port)
+
+    def list_clients(self, *args):
+        import time
+        while True:
+            time.sleep(2)
+            print('1', self.list_of_clients.keys())
+            print('2', self.clients_by_rooms)
 
     def run(self):
         """The function being run by the server in the main thread. This listens
@@ -410,6 +479,7 @@ class Server:
         the client that connected. The thread runs the :self.clientthread:
         function.
         """
+        #start_new_thread(self.list_clients, ('foo','bar'))
         while True:
             """
             Wait for a connection request and store two parameters, conn 

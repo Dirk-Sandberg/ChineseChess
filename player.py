@@ -20,9 +20,6 @@ class Player(EventDispatcher):
     @mainthread
     def update_elo_after_match_ends(self, checkmated_player_color):
         print(checkmated_player_color, 'LOST')
-        print("I AM RED?", self.is_red)
-        print("My elo", self.elo) # This is right, but dialog thinks opponent elo and opponent DeltaElo is mine
-        print("Opponent elo", self.opponent_elo)
         if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
             loser_elo = self.elo
             winner_elo = self.opponent_elo

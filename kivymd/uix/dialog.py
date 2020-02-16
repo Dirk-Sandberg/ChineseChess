@@ -242,6 +242,7 @@ Builder.load_string(
                         size_hint_y: None
                         text_size: self.width, None
                         height: self.texture_size[1]
+                        markup: True
                     BoxLayout:
                         MDCheckbox:
                             id: opponent_is_ready_checkbox

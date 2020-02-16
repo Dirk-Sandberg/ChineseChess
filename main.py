@@ -41,7 +41,7 @@ class MainApp(MDApp):
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing
-        HOST = self.read_server_ip_file()  # Remote server ip address
+        #HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()
         print(HOST, PORT)
         self.client = Client(HOST, PORT)
@@ -92,7 +92,10 @@ class MainApp(MDApp):
     def checkmate(self, checkmated_player_color):
         self.player.update_elo_after_match_ends(checkmated_player_color)
 
-
+    @mainthread
+    def lost_connection_to_server(self):
+        from kivymd.toast import toast
+        toast('Lost connection to the server.')
     @mainthread
     def change_screen(self, screen_name, *args):
         self.root.current = screen_name

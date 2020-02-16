@@ -41,6 +41,9 @@ class Client:
             try:
                 # Wait until a command is received from the server
                 message += self.server.recv(2048).decode()
+                if not message:
+                    self.server = None
+                    self.app.lost_connection_to_server()
                 # If we get multiple commands at once, separate them
                 for message in build_messages(message):
                     # Convert the message to a dict format
@@ -50,11 +53,15 @@ class Client:
                     # Read and interpret the json data
                     self.interpret(message)
                     message = ""
-            except Exception as e:
+            except ValueError as e:
                 print(e)
                 # Json decoder error, message didn't get fully captured
                 # try to get more of the message before interpreting it
                 pass
+            except OSError as e:
+                print(e)
+                self.app.lost_connection_to_server()
+                break
 
     @mainthread
     def interpret(self, message_dict):
@@ -79,13 +86,30 @@ class Client:
             Clock.schedule_once(partial(self.app.change_screen, 'lobby_browser_screen'), 0)
             toast("Host left the lobby")
         elif command == 'player_left_lobby':
-            # Player two left match before the game started
-            self.app.root.ids.lobby_screen.player_two_left()
+            if self.is_host:
+                # Player two left lobby before the game started
+                self.app.root.ids.lobby_screen.player_two_left()
+                toast("Opponent left the lobby")
+            else:
+                # Host left lobby before game started
+                # Either player left match after checkmate
+                Clock.schedule_once(
+                    partial(self.app.change_screen, 'lobby_browser_screen'), 0)
+                toast("Host left the lobby")
+
         elif command == 'player_left_match':
-            # Either player left match after checkmate
-            Clock.schedule_once(partial(self.app.change_screen, 'lobby_browser_screen'), 0)
-            toast("The match has ended")
-            self.app.root.ids.game_screen.game_over_dialog.dismiss(to_lobby_browser_screen=True)
+            # Either player left match
+            if self.app.root.ids.game_screen.game_is_playing:
+                # Player left during the match
+                toast("Your opponent disconnected")
+                loser_color = 'black' if self.app.player.is_red else 'red'
+                self.app.player.update_elo_after_match_ends(loser_color)
+                self.app.root.ids.game_screen.opponent_left()
+
+            else:
+                # Player left after checkmate occurred
+                toast("Your opponent left")
+                self.app.root.ids.game_screen.opponent_left()
         elif command == 'player_joined':
             # A new player entered the game room
             # Get nicknames and elos for each player
@@ -151,10 +175,10 @@ class Client:
 
         :param message: dictionary format (json data)
         """
-        #message['game_id'] = self.game_id
         message['from_player'] = self.app.player.__dict__
         # To send the message over the socket connection, convert the message to
         # a string of bytes
-        self.server.send(json.dumps(message).encode())
+        if self.server:
+            self.server.send(json.dumps(message).encode())
 
 

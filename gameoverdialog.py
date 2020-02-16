@@ -137,8 +137,11 @@ class GameOverDialog(BaseGameOverDialog):
 
     def leave_match(self):
         # Need to inform other player that this user left!
-        print("# Need to inform other player that this user left!")
         app = App.get_running_app()
         message = {"command": "leave_match"}
         app.client.send_message(message)
+        app.change_screen('lobby_browser_screen')
+        self.dismiss()
+
+
 
