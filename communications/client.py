@@ -75,8 +75,6 @@ class Client:
 
         if command == 'match_hosted':
             # The host is the player who goes first
-            self.app.is_turn_owner = True
-            self.app.player.is_red = True
             self.app.change_screen('lobby_screen')
             game_id = message_dict['game_id']
             self.app.player.game_id = game_id
@@ -88,7 +86,7 @@ class Client:
         elif command == 'player_left_lobby':
             if self.is_host:
                 # Player two left lobby before the game started
-                self.app.root.ids.lobby_screen.player_two_left()
+                self.app.root.ids.lobby_screen.clear_player_two_widgets()
                 toast("Opponent left the lobby")
             else:
                 # Host left lobby before game started
@@ -105,7 +103,6 @@ class Client:
                 loser_color = 'black' if self.app.player.is_red else 'red'
                 self.app.player.update_elo_after_match_ends(loser_color)
                 self.app.root.ids.game_screen.opponent_left()
-
             else:
                 # Player left after checkmate occurred
                 toast("Your opponent left")
@@ -140,6 +137,7 @@ class Client:
             # Switch to the game screen
             self.app.change_screen('game_screen')
             self.app.root.ids.game_screen.new_game()
+            self.app.root.ids.lobby_screen.clear_player_two_widgets()
         elif command == "list_lobbies":
             lobbies = message_dict['lobbies']
             self.app.root.ids.lobby_browser_screen.display_lobbies(lobbies)

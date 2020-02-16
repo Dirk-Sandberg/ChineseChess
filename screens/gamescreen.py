@@ -438,10 +438,13 @@ class GameScreen(Screen):
         self.game_over_dialog.open()
 
     def opponent_left(self):
+        print("Opponent left, should try to disable the checkbox")
         if self.game_over_dialog:
             self.game_over_dialog.ids.player_is_ready_checkbox.disabled=True
             opponent_nickname = self.game_over_dialog.opponent_nickname
             self.game_over_dialog.opponent_nickname = '[s]'+opponent_nickname+'[/s]'
+        else:
+            print("couldn't disable checkbox, no game_over_dialog")
 
 
 

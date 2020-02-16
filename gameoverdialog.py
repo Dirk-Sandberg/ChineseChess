@@ -142,6 +142,7 @@ class GameOverDialog(BaseGameOverDialog):
         app.client.send_message(message)
         app.change_screen('lobby_browser_screen')
         self.dismiss()
+        app.client.is_host = False
 
 
 

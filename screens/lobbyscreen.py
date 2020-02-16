@@ -24,7 +24,7 @@ class LobbyScreen(Screen):
         app.client.send_message(message)
 
     @mainthread
-    def player_two_left(self):
+    def clear_player_two_widgets(self):
         self.ids.player_two.text = " "
         self.ids.player_two_elo.text = " "
         self.ids.toolbar.title = "Waiting for opponent"

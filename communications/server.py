@@ -87,7 +87,6 @@ class Server:
         while True:
             try:
                 # Pause this thread until a message is received from the client
-                print("Listening for a message")
                 received_messages = conn.recv(2048)
                 sender_ip = addr[0]
                 sender_port = str(addr[1])
@@ -439,9 +438,7 @@ class Server:
                                 # Second player to join left the lobby
                                 clients_to_notify = self.clients_by_rooms[game_id]
                                 response_dict = {"command": "player_left_lobby"}
-                                print('3')
                                 self.broadcast(response_dict, clients_to_notify)
-                            print("Client was in lobby: ", lobby)
                         else:
                             continue
                     # Check if they're in a match
@@ -451,7 +448,6 @@ class Server:
                     # -- (deduct elo)
                     player_was_in_match = not player_was_in_lobby
                     if player_was_in_match:
-                        print("Client was in match")
                         self.clients_by_rooms[game_id].remove(ip_and_port)
                         # Someone disconnected during the middle of a game
                         response_dict = {"command": "player_left_match"}

@@ -21,6 +21,8 @@ class LobbyItem(TwoLineListItem):
         app.player.opponent_nickname = self.host_nickname
         app.player.time_limit = self.time_limit
         app.root.ids.lobby_screen.ids.player_two_image.source = 'images/kingpieceblack.png'
+        app.is_turn_owner = False
+        app.player.is_red = False
 
 
 class LobbyBrowserScreen(Screen):
