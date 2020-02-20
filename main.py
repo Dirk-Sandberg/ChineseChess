@@ -11,7 +11,7 @@ from kivy.utils import platform
 from kivy.clock import mainthread
 from kivy.core.window import Window
 Window.allow_screensaver = False
-Window.size = (350, 600)
+#Window.size = (350, 600)
 from player import Player
 from kivymd.color_definitions import colors
 from communications.client import Client

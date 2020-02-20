@@ -1,8 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from kivymd.toast import toast
-from kivy.network.urlrequest import UrlRequest
-import certifi
+
 
 class SetNicknameScreen(Screen):
     nickname = ''

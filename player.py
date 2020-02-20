@@ -13,7 +13,7 @@ class Player(EventDispatcher):
     opponent_nickname = ""
     is_red = BooleanProperty(False)  # Player is either red or black
     game_id = ""  # Could replace the game id in the client code
-    elo = 0
+    elo = 1200
     opponent_elo = 0
     time_limit = NumericProperty(0)
 
@@ -56,6 +56,7 @@ class Player(EventDispatcher):
                    on_error=self.failed_to_get_elo_from_firebase)
 
     def got_elo_from_firebase(self, thread, elo):
+        print("Got elo", elo)
         self.elo = int(elo)
 
     def failed_to_get_elo_from_firebase(self, *args):
@@ -116,6 +117,7 @@ class Player(EventDispatcher):
                    on_error=self.failed_to_get_saved_nickname)
 
     def got_saved_nickname(self, thread, nickname):
+        print("My nickname is: ", nickname)
         self.nickname = nickname
 
     def failed_to_get_saved_nickname(self, *args):
