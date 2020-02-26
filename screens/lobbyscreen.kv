@@ -4,8 +4,8 @@
         orientation: 'vertical'
         MDToolbar:
             id: toolbar
-            right_action_items: [['theme-light-dark', lambda x: app.change_style()]]
             left_action_items: [['chevron-left', lambda x: root.back_to_lobby_browser()]]
+            right_action_items: [['theme-light-dark', lambda x: app.change_style()]]
             title: "Waiting for opponent"
             md_bg_color: get_color_from_hex(colors[app.theme_cls.theme_style]['Background'])
             elevation: 0
