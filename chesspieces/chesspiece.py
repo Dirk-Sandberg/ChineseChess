@@ -104,7 +104,9 @@ class ChessPiece(ButtonBehavior, Image):
     def handle_touch(self):
         app = App.get_running_app()
         #print("Touched", self.id())
-        if app.is_animating:
+        # Don't allow pieces to be moved if the app is animating a previous
+        # movement or the game has ended.
+        if app.is_animating or not app.root.ids.game_screen.game_is_playing:
             return
         if self.indicator_source == "available_move":
             # Game needs to move the highlighted widget
