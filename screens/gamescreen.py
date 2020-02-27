@@ -19,7 +19,7 @@ class GameScreen(Screen):
     online_mode_enabled = BooleanProperty(False)
     game_over_dialog = ObjectProperty(None)
     game_is_playing = BooleanProperty(False)
-    turn_indicator = ObjectProperty(None)
+    turn_indicator = None
     timer_function = None
 
     def return_to_home_screen(self):
@@ -28,6 +28,8 @@ class GameScreen(Screen):
     @mainthread
     def set_turn_indicator_to_initial_position(self):
         animate = True
+        print("Trying to set turn indicator to initial position!")
+        print('TI', self.turn_indicator)
         # Already have a turn indicator
         if self.turn_indicator:
             # Already have a turn indicator
@@ -47,10 +49,13 @@ class GameScreen(Screen):
         self.move_turn_indicator(animate=animate)
 
     def remove_indicator(self):
+        print("Trying to remove indicator", self.turn_indicator)
         try:
             Window.remove_widget(self.turn_indicator)
-        except:
-            pass
+            self.turn_indicator = None
+        except Exception as e:
+            print("Couldnt remove turn indicator: ", e)
+        print("Removed", self.turn_indicator)
 
     def move_turn_indicator(self, animate=True):
         red_timer_center = self.to_window(*self.ids.red_timer.center)

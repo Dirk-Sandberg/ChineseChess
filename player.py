@@ -19,7 +19,6 @@ class Player(EventDispatcher):
 
     @mainthread
     def update_elo_after_match_ends(self, checkmated_player_color):
-        print(checkmated_player_color, 'LOST')
         if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
             loser_elo = self.elo
             winner_elo = self.opponent_elo

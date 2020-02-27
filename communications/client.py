@@ -114,7 +114,7 @@ class Client:
             nicknames = []
             elos = []
             players = message_dict['players']
-            print(message_dict)
+            #print(message_dict)
             for player in players:
                 nickname = player['nickname']
                 nicknames.append(nickname)
@@ -123,7 +123,6 @@ class Client:
                 if nickname != app.player.nickname:
                     app.player.opponent_elo = elo
                     app.player.opponent_nickname = nickname
-            print("Need to make sure usernames are unique")
             # Valid game joined
             self.app.change_screen('lobby_screen')
             self.app.root.ids.lobby_screen.set_nicknames_and_elos(nicknames[0], str(elos[0]), nicknames[1], str(elos[1]))
