@@ -33,7 +33,7 @@ class LobbyBrowserScreen(Screen):
 
     def display_lobbies(self, lobbies_list):
         app = App.get_running_app()
-        if app.root.current != 'lobby_browser_screen':
+        if app.root.ids.screen_manager.current != 'lobby_browser_screen':
             return
 
         self.ids.list_layout.clear_widgets()

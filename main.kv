@@ -13,42 +13,47 @@
 #:include FirebaseLoginScreen/firebaseloginscreen.kv
 #:import FirebaseLoginScreen FirebaseLoginScreen.firebaseloginscreen.FirebaseLoginScreen
 
-ScreenManager:
-    transition: FadeTransition(clearcolor=get_color_from_hex(colors[app.theme_cls.theme_style]['Background']))
-    FirebaseLoginScreen:
-        id: firebase_login_screen
-        name: "firebase_login_screen"
-        #debug: True
-        web_api_key: "AIzaSyB06j5jSIjrZj6oAi0Fkk23bHXLIpEcVC0" # Found in Firebase -> Project Settings -> Web API Key
-        canvas.before:
-            Color:
-            Rectangle:
-                size: self.size#[Window.width, Window.height]#app.window_height]
-                pos: self.pos
-                #source: 'FirebaseLoginScreen/wallpaper.jpg'
-                source: 'images/background.jpg'
-        on_login_success:
-            # Defining this function lets you program what to do when the
-            # user has logged in (probably you'll want to change screens)!
-            # Get the important user info
-            app.user_localId = self.localId
-            app.user_idToken = self.idToken
-            app.on_login()
-    SetNicknameScreen:
-        id: set_nickname_screen
-        name: "set_nickname_screen"
-    HomeScreen:
-        id: home_screen
-        name: "home_screen"
-    GameScreen:
-        id: game_screen
-        name: "game_screen"
-    CreateGameScreen:
-        id: create_game_screen
-        name: "create_game_screen"
-    LobbyScreen:
-        id: lobby_screen
-        name: "lobby_screen"
-    LobbyBrowserScreen:
-        id: lobby_browser_screen
-        name: "lobby_browser_screen"
+BoxLayout:
+    orientation: 'vertical'
+    Widget:
+        size_hint: None, None
+        height: app.notch_height
+    ScreenManager:
+        transition: FadeTransition(clearcolor=get_color_from_hex(colors[app.theme_cls.theme_style]['Background']))
+        id: screen_manager
+        FirebaseLoginScreen:
+            id: firebase_login_screen
+            name: "firebase_login_screen"
+            #debug: True
+            web_api_key: "AIzaSyB06j5jSIjrZj6oAi0Fkk23bHXLIpEcVC0" # Found in Firebase -> Project Settings -> Web API Key
+            canvas.before:
+                Color:
+                Rectangle:
+                    size: self.size#[Window.width, Window.height]#app.window_height]
+                    pos: self.pos
+                    source: 'images/background.jpg'
+            on_login_success:
+                # Defining this function lets you program what to do when the
+                # user has logged in (probably you'll want to change screens)!
+                # Get the important user info
+                app.user_localId = self.localId
+                app.user_idToken = self.idToken
+                app.on_login()
+        SetNicknameScreen:
+            id: set_nickname_screen
+            name: "set_nickname_screen"
+        HomeScreen:
+            id: home_screen
+            name: "home_screen"
+        GameScreen:
+            id: game_screen
+            name: "game_screen"
+        CreateGameScreen:
+            id: create_game_screen
+            name: "create_game_screen"
+        LobbyScreen:
+            id: lobby_screen
+            name: "lobby_screen"
+        LobbyBrowserScreen:
+            id: lobby_browser_screen
+            name: "lobby_browser_screen"

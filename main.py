@@ -5,7 +5,7 @@ sys.path.append("/".join(x for x in __file__.split("/")[:-1]))
 from elo import rate_1vs1
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
-from kivy.properties import BooleanProperty
+from kivy.properties import BooleanProperty, NumericProperty
 from boardhelper import BoardHelper
 from kivy.utils import platform
 from kivy.clock import mainthread
@@ -28,6 +28,7 @@ class MainApp(MDApp):
     highlighted_piece = None
     is_animating = BooleanProperty(False)
     is_turn_owner = BooleanProperty(False)
+    notch_height = NumericProperty(0) # dp(25) if on new iphones
 
     # The player class will have its data updated when playing a game
     player = Player()
@@ -41,7 +42,7 @@ class MainApp(MDApp):
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing
-        HOST = self.read_server_ip_file()  # Remote server ip address
+        #HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()
         print(HOST, PORT)
         self.client = Client(HOST, PORT)
@@ -98,7 +99,7 @@ class MainApp(MDApp):
         toast('Lost connection to the server.')
     @mainthread
     def change_screen(self, screen_name, *args):
-        self.root.current = screen_name
+        self.root.ids.screen_manager.current = screen_name
 
 
 if __name__ == "__main__":
