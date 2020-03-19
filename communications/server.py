@@ -5,7 +5,7 @@ import json
 from ast import literal_eval
 from requests import get, post, patch
 from json import dumps
-
+from time import sleep
 
 class Server:
     """This is the class that maintains the connections to the remote clients.
@@ -27,6 +27,25 @@ class Server:
     It lets us get references to all players inside of one game room
     """
     clients_by_rooms = {}
+
+    """
+    This is a dict with format:
+        {"ABCD": [60, 26], "EFGH": [16, 26]}
+    Where "ABCD" is the game_id and the integers are the number of seconds for
+    the black and red player respectively. Once one number reaches 0, the 
+    ticking thread should stop. If a match is forfeited, the ticking thread 
+    should stop. The ticking begins when a match starts.
+    """
+    clocks_by_rooms = {}
+
+    """
+    This is a dict with format:
+        {"ABCD": 0, "EFGH": 1}
+    Contains info about which clock (player) is currently ticking down. Can be
+    either 0 or 1. 
+    """
+    active_clock_by_rooms = {}
+
 
     """
     This is a dict with format: 
@@ -75,6 +94,75 @@ class Server:
         increased as per convenience. 
         """
         self.server.listen(100)
+
+
+    def clockthread(self, game_id):
+        """Sends a clock_ticked command.
+        """
+        SLEEPTIME = .5  # Tenth of a second
+        while True:
+            sleep(SLEEPTIME)
+
+            # Remove time from the active clock
+            active_clock = self.active_clock_by_rooms[game_id]
+
+            # Check time before and after to see if an integer second has passed
+            time_before = self.clocks_by_rooms[game_id][active_clock]
+
+
+            self.clocks_by_rooms[game_id][active_clock] -= SLEEPTIME
+            seconds_remaining = self.clocks_by_rooms[game_id][active_clock]
+
+            if int(time_before) - int(seconds_remaining) == 1:
+                # Send new clock times to both clients
+                message = {"command": "clock_ticked"}
+                clients = self.clients_by_rooms[game_id]
+                self.broadcast(message, clients)
+                print("Sending msg")
+
+            if seconds_remaining <= 0:
+                # No longer needs this clockthread
+                print("BRREAKING CLOCKTHREAD")
+                break
+
+    def switch_active_clocks(self, game_id):
+        """
+        Switch which clock is active for a particular game. Called when this
+        server receives a move_piece command, as that signifies the end of one
+        player's turn.
+        :param game_id: The game room in question
+        """
+        current_clock = self.active_clock_by_rooms[game_id]
+        new_clock = 1 if current_clock == 0 else 0
+        self.active_clock_by_rooms[game_id] = new_clock
+
+
+    def start_new_clockthread(self, game_id, time_limit):
+        print("Starting new clockthread")
+        # Convert time limit to seconds
+        # Initialize the clocks
+        # Convert time limit to seconds
+        time_limit *= 60
+        self.clocks_by_rooms[game_id] = [time_limit, time_limit]
+
+        # the self.clocks_by_rooms variable is set when the match is hosted
+        # instead of started
+        self.active_clock_by_rooms[game_id] = 0
+
+        # Start the clockthread
+        start_new_thread(self.clockthread, (game_id,))
+
+    def end_clockthread(self, game_id):
+        """Stops the clockthread by pretending a player's clock is at zero.
+        Needs to be called when the game ends via
+            checkmate
+            disconnect
+            forfeit
+        :param game_id:
+        :return:
+        """
+        print("Trying to stop clocks")
+        self.clocks_by_rooms[game_id] = [0, 0]
 
     def clientthread(self, conn, addr):
         """Pauses the thread while waiting for a command from this particular
@@ -199,11 +287,15 @@ class Server:
                     self.lobbies.remove(lobby)
                 else:
                     continue
+            time_limit = message_dict['time_limit']
 
             # Tell all players in a room that a game has started
             clients_to_notify = self.clients_by_rooms[game_id]
             response_dict = {"command": "match_started", "player_who_owns_turn": clients_to_notify[0], "players": clients_to_notify}
 
+            # Start the thread that watches the players' clocks
+            print("NEW CLOCKTHREAD ONE")
+            self.start_new_clockthread(game_id, time_limit)
             return response_dict, clients_to_notify
         elif command == 'leave_lobby':
             # Called when someone joins a match, then leaves the lobby
@@ -241,20 +333,32 @@ class Server:
             response_dict = {"command": "list_lobbies", "lobbies": self.lobbies}
             return response_dict, clients_to_notify
         elif command == "move_piece":
+            # Switch which clock is ticking down.
+            self.switch_active_clocks(game_id)
             clients_to_notify = self.clients_by_rooms[game_id]
             response_dict = message_dict
             response_dict['command'] = "piece_moved"
             return response_dict, clients_to_notify
         elif command == 'forfeit':
+            # End the clockthread for this game
+            self.end_clockthread(game_id)
             clients_to_notify = self.clients_by_rooms[game_id]
             response_dict = message_dict
             return response_dict, clients_to_notify
+        elif command == 'checkmate':
+            # Someone got checkmated, end the ticking clocks
+            self.end_clockthread(game_id)
         elif command == 'rematch_requested':
             clients_to_notify = self.clients_by_rooms[game_id].copy()
             clients_to_notify.remove(sender)
             response_dict = message_dict
             return response_dict, clients_to_notify
         elif command == 'rematch_accepted':
+            # Start ticking the clocks again
+            time_limit = message_dict['time_limit']
+            print("NEW CLOCKTHREAD TWO")
+            self.start_new_clockthread(game_id, time_limit)
+
             # Tell all players in a room that a game has started
             clients_to_notify = self.clients_by_rooms[game_id]
             response_dict = {"command": "match_started",
@@ -276,12 +380,9 @@ class Server:
                 clients_to_notify = self.clients_by_rooms[game_id].copy()
                 clients_to_notify.remove(sender)
                 self.clients_by_rooms.pop(game_id)
-                #print("1")
             except:
                 clients_to_notify = []
                 pass
-                #print("2")
-                #clients_to_notify = [sender]
             return response_dict, clients_to_notify
 
         elif command == 'disconnect':
@@ -444,6 +545,7 @@ class Server:
                     # Check if they're in a match
                     # - If they are:
                     # -- remove the game id from clients_by_rooms
+                    # -- stop the clock ticking on the server
                     # -- tell other player the match ended
                     # -- (deduct elo)
                     player_was_in_match = not player_was_in_lobby
@@ -452,6 +554,8 @@ class Server:
                         # Someone disconnected during the middle of a game
                         response_dict = {"command": "player_left_match"}
                         clients_to_notify = self.clients_by_rooms[game_id]
+                        # Stop the clockthread for this game
+                        self.end_clockthread(game_id)
                         # The match is completely over, so remove that key from clients_by_rooms
                         self.clients_by_rooms.pop(game_id)
                         self.broadcast(response_dict, clients_to_notify)
@@ -462,20 +566,12 @@ class Server:
         connection.close()
         print("Closed connection from", ip_and_port)
 
-    def list_clients(self, *args):
-        import time
-        while True:
-            time.sleep(2)
-            print('1', self.list_of_clients.keys())
-            print('2', self.clients_by_rooms)
-
     def run(self):
         """The function being run by the server in the main thread. This listens
         for new connections, and if it receives one, it starts a new thread for
         the client that connected. The thread runs the :self.clientthread:
         function.
         """
-        #start_new_thread(self.list_clients, ('foo','bar'))
         while True:
             """
             Wait for a connection request and store two parameters, conn 

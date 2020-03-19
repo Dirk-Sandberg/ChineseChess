@@ -78,5 +78,4 @@
             disabled: True if toolbar.title == "Waiting for opponent" else False
             background: 'images/start_game.jpg'
             on_release:
-                root.start_match()
-        #Widget:
+                root.start_match(app.player.time_limit)

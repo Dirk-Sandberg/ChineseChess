@@ -20,7 +20,6 @@ class GameScreen(Screen):
     game_over_dialog = ObjectProperty(None)
     game_is_playing = BooleanProperty(False)
     turn_indicator = None
-    timer_function = None
 
     def return_to_home_screen(self):
         self.manager.current = 'home_screen'
@@ -28,8 +27,6 @@ class GameScreen(Screen):
     @mainthread
     def set_turn_indicator_to_initial_position(self):
         animate = True
-        print("Trying to set turn indicator to initial position!")
-        print('TI', self.turn_indicator)
         # Already have a turn indicator
         if self.turn_indicator:
             # Already have a turn indicator
@@ -49,13 +46,11 @@ class GameScreen(Screen):
         self.move_turn_indicator(animate=animate)
 
     def remove_indicator(self):
-        print("Trying to remove indicator", self.turn_indicator)
         try:
             Window.remove_widget(self.turn_indicator)
             self.turn_indicator = None
         except Exception as e:
             print("Couldnt remove turn indicator: ", e)
-        print("Removed", self.turn_indicator)
 
     def move_turn_indicator(self, animate=True):
         red_timer_center = self.to_window(*self.ids.red_timer.center)
@@ -81,10 +76,9 @@ class GameScreen(Screen):
         # Set the turn owner to the red player
         app.is_turn_owner = True if app.player.is_red else False
 
-
         # Reset the timers
-        self.ids.red_timer.text = "%d:00"%app.player.time_limit
-        self.ids.black_timer.text = "%d:00"%app.player.time_limit
+        self.ids.red_timer.text = "%d:00" % app.player.time_limit
+        self.ids.black_timer.text = "%d:00" % app.player.time_limit
 
         # Set the turn indicator position
         self.set_turn_indicator_to_initial_position()
@@ -107,7 +101,8 @@ class GameScreen(Screen):
         bottom_board.add_starting_pieces()
 
         # Start ticking the timers
-        self.timer_function = Clock.schedule_interval(self.tick_timer, 1)
+        # This needs to be moved to the server
+        #self.timer_function = Clock.schedule_interval(self.tick_timer, 1)
 
     def tick_timer(self, *args):
         if not self.game_is_playing:
@@ -428,15 +423,17 @@ class GameScreen(Screen):
             self.accept_rematch()
 
     def accept_rematch(self):
+        # Both players have accepted the rematch. Tell the server to start a
+        # new game. Only have the host send that message.
         app = App.get_running_app()
-        message = {"command": "rematch_accepted"}
-        app.client.send_message(message)
+        if app.client.is_host:
+            message = {"command": "rematch_accepted", "time_limit": app.player.time_limit}
+            app.client.send_message(message)
         self.game_over_dialog.dismiss()
 
     def display_game_over_dialog(self, winner_color, loser_elo, new_loser_elo, winner_elo,
                                  new_winner_elo, nickname, opponent_nickname):
         # Game is over, stop ticking the timers
-        self.timer_function.cancel()
         self.game_over_dialog = GameOverDialog(winner_color, loser_elo, new_loser_elo,
                                                winner_elo, new_winner_elo,
                                                nickname, opponent_nickname)

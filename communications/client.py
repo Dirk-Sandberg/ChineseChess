@@ -162,6 +162,8 @@ class Client:
             self.app.root.ids.set_nickname_screen.nickname_was_valid()
         elif command == 'invalid_nickname':
             self.app.root.ids.set_nickname_screen.nickname_was_invalid()
+        elif command == 'clock_ticked':
+            self.app.root.ids.game_screen.tick_timer()
 
 
 

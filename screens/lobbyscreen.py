@@ -40,10 +40,10 @@ class LobbyScreen(Screen):
         self.ids.player_two_image.source = 'images/kingpieceblack.png'
         self.ids.toolbar.title = "Ready to play!"
 
-    def start_match(self):
+    def start_match(self, time_limit):
         # Send a message to the server that the game is started
         app = App.get_running_app()
-        message = {"command": "start_match"}
+        message = {"command": "start_match", "time_limit": time_limit}
         app.client.send_message(message)
         # When the game starts, it will send a message back to both players
         # which will change the screen to the game screen

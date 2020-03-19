@@ -11,7 +11,9 @@ from kivy.utils import platform
 from kivy.clock import mainthread
 from kivy.core.window import Window
 Window.allow_screensaver = False
-#Window.size = (350, 600)
+print(platform)
+if platform == 'macosx':
+    Window.size = (350, 600)
 from player import Player
 from kivymd.color_definitions import colors
 from communications.client import Client
@@ -91,6 +93,9 @@ class MainApp(MDApp):
         print("Stopped")
 
     def checkmate(self, checkmated_player_color):
+        # Inform the server that checkmate happened so it can stop the clocks
+        message = {"command": "checkmate"}
+        self.client.send_message(message)
         self.player.update_elo_after_match_ends(checkmated_player_color)
 
     @mainthread
