@@ -101,7 +101,9 @@ class Server:
 
 
     def _clockthread(self, game_id):
-        asyncio.run(self.clockthread(game_id))
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.clockthread(game_id))
+        #asyncio.run(self.clockthread(game_id))
         """Sends a clock_ticked command.
 
     async def clockthread(self, game_id):
