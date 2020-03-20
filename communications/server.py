@@ -101,6 +101,7 @@ class Server:
 
 
     def _clockthread(self, game_id):
+        asyncio.set_event_loop(asyncio.new_event_loop())
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.clockthread(game_id))
         #asyncio.run(self.clockthread(game_id))
