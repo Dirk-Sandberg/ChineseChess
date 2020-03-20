@@ -3,6 +3,7 @@ from _thread import start_new_thread
 from helper_functions import build_messages
 import json
 from ast import literal_eval
+from datetime import datetime
 from requests import get, post, patch
 from json import dumps
 from time import sleep
@@ -99,7 +100,7 @@ class Server:
     def clockthread(self, game_id):
         """Sends a clock_ticked command.
         """
-        SLEEPTIME = .5  # Tenth of a second
+        SLEEPTIME = .05  # Tenth of a second
         while True:
             sleep(SLEEPTIME)
 
@@ -118,11 +119,12 @@ class Server:
                 message = {"command": "clock_ticked"}
                 clients = self.clients_by_rooms[game_id]
                 self.broadcast(message, clients)
-                print("Sending msg")
+                print('tick', datetime.now().second)
+
 
             if seconds_remaining <= 0:
                 # No longer needs this clockthread
-                print("BRREAKING CLOCKTHREAD")
+                print("BREAKING CLOCKTHREAD")
                 break
 
     def switch_active_clocks(self, game_id):
