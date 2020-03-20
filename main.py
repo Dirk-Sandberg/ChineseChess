@@ -3,6 +3,7 @@ import sys
 sys.path.append("/".join(x for x in __file__.split("/")[:-1]))
 
 from elo import rate_1vs1
+from kivy.metrics import dp
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
 from kivy.properties import BooleanProperty, NumericProperty
@@ -48,6 +49,18 @@ class MainApp(MDApp):
         PORT = self.read_port_file()
         print(HOST, PORT)
         self.client = Client(HOST, PORT)
+        if platform == 'ios':
+            self.account_for_iphone_notch()
+
+    def account_for_iphone_notch(self):
+        # Account for the notch in newer iPhones
+        from pyobjus import autoclass
+        notch_detector = autoclass("NotchDetector").alloc().init()
+        notch_exists = notch_detector.hasTopNotch()
+        if notch_exists:
+            self.notch_height = dp(25) # pixels
+
+
 
     def change_style(self):
         style = self.theme_cls.theme_style

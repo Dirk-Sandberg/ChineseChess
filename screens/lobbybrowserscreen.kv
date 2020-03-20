@@ -8,6 +8,9 @@
     on_pre_enter: self.get_lobbies_from_server()
     BoxLayout:
         orientation: 'vertical'
+        Widget:
+            size_hint: None, None
+            height: app.notch_height
         MDToolbar:
             id: toolbar
             right_action_items: [['theme-light-dark', lambda x: app.change_style()]]

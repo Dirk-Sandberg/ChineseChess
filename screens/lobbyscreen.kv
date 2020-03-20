@@ -2,6 +2,9 @@
     BoxLayout:
         padding: 0, 0, 0, dp(20)
         orientation: 'vertical'
+        Widget:
+            size_hint: None, None
+            height: app.notch_height
         MDToolbar:
             id: toolbar
             left_action_items: [['chevron-left', lambda x: root.back_to_lobby_browser()]]

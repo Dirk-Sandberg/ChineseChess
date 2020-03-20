@@ -40,12 +40,18 @@
 <HomeScreen>:
     BoxLayout:
         orientation: 'vertical'
+        Widget:
+            size_hint: None, None
+            height: app.notch_height
         MDToolbar:
             id: toolbar
             right_action_items: [['theme-light-dark', lambda x: app.change_style()]]
             md_bg_color: get_color_from_hex(colors[app.theme_cls.theme_style]['Background'])
             elevation: 0
             specific_text_color: [0,0,0,1] if app.theme_cls.theme_style == 'Light' else [1,1,1,1]
+        Widget:
+            id: w1
+            size: w3.size
         CardButton:
             size_hint: .6, None
             height: self.width
@@ -55,6 +61,8 @@
             on_release:
                 root.manager.current = 'create_game_screen'
         Widget:
+            id: w2
+            size: w3.size
         CardButton:
             size_hint: .6, None
             height: self.width
@@ -64,8 +72,5 @@
             on_release:
                 root.manager.current = 'lobby_browser_screen'
         Widget:
-        #MDRaisedButton:
-        #    text: "Local Game"
-        #    on_release:
-        #        root.start_local_game()
+            id: w3
 

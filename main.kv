@@ -15,9 +15,6 @@
 
 BoxLayout:
     orientation: 'vertical'
-    Widget:
-        size_hint: None, None
-        height: app.notch_height
     ScreenManager:
         transition: FadeTransition(clearcolor=get_color_from_hex(colors[app.theme_cls.theme_style]['Background']))
         id: screen_manager

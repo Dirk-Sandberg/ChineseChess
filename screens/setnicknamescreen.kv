@@ -2,6 +2,9 @@
     BoxLayout:
         orientation: 'vertical'
         spacing: dp(20)
+        Widget:
+            size_hint: None, None
+            height: app.notch_height
         MDToolbar:
             title: "Choose your username"
             right_action_items: [['theme-light-dark', lambda x: app.change_style()]]

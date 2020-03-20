@@ -3,8 +3,11 @@
 <GameScreen>:
     on_leave: self.remove_indicator()
     BoxLayout:
-        padding: [dp(5),]
+        padding: [dp(5), 0, dp(5), dp(5)]
         orientation: 'vertical'
+        Widget:
+            size_hint: None, None
+            height: app.notch_height
         GridLayout:
             size_hint_y: None
             height: forfeit_button.height
