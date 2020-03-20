@@ -7,6 +7,9 @@ from datetime import datetime
 from requests import get, post, patch
 from json import dumps
 from time import sleep
+import asyncio
+
+
 
 class Server:
     """This is the class that maintains the connections to the remote clients.
@@ -97,12 +100,24 @@ class Server:
         self.server.listen(100)
 
 
-    def clockthread(self, game_id):
+    def _clockthread(self, game_id):
+        asyncio.run(self.clockthread(game_id))
         """Sends a clock_ticked command.
+
+    async def clockthread(self, game_id):
+        Sends a clock_ticked command.
+
+        SLEEPTIME = .05  # Tenth of a second
+        time_before = self.clocks_by_rooms[game_id][0]
+        print(time_before)
+        while True:
+            await asyncio.sleep(SLEEPTIME)
+
         """
+    async def clockthread(self, game_id):
         SLEEPTIME = .05  # Tenth of a second
         while True:
-            sleep(SLEEPTIME)
+            await asyncio.sleep(SLEEPTIME)
 
             # Remove time from the active clock
             active_clock = self.active_clock_by_rooms[game_id]
@@ -152,7 +167,7 @@ class Server:
         self.active_clock_by_rooms[game_id] = 0
 
         # Start the clockthread
-        start_new_thread(self.clockthread, (game_id,))
+        start_new_thread(self._clockthread, (game_id,))
 
     def end_clockthread(self, game_id):
         """Stops the clockthread by pretending a player's clock is at zero.
@@ -161,9 +176,7 @@ class Server:
             disconnect
             forfeit
         :param game_id:
-        :return:
         """
-        print("Trying to stop clocks")
         self.clocks_by_rooms[game_id] = [0, 0]
 
     def clientthread(self, conn, addr):
