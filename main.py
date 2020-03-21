@@ -58,7 +58,7 @@ class MainApp(MDApp):
         notch_detector = autoclass("NotchDetector").alloc().init()
         notch_exists = notch_detector.hasTopNotch()
         if notch_exists:
-            self.notch_height = dp(25) # pixels
+            self.notch_height = dp(30)
 
 
 
