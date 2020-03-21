@@ -17,7 +17,7 @@ _This is assuming you are more interested in the internals of the game rather th
 
 If you want to connect to your own server after maybe forking this project, you have two options:
 1. Hosting a local server locally
-2. Hosting a server that's open to public internet traffic
+2. Hosting a server through a cloud service
 
 ### Running the server 
 #### How to set up the server on your local machine
