@@ -9,8 +9,7 @@
     col: 0
     row: 0
     on_release:
-        #if app.is_turn_owner: self.handle_touch()
-        self.handle_touch()
+        if app.is_turn_owner: self.handle_touch()
     AvailableMoveIndicator:
         color: (0,0,0,1) if root.indicator_source != 'available_move' else ((1,1,1,1) if 'blankpiece' in root.source else ((1,0,0,1) if root.player == "black" else (0,0,0,1)))
         # This is to make the indicators opposite colors of background, and it works, just doesn't look great

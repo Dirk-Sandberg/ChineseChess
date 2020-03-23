@@ -21,12 +21,15 @@
                 orientation: 'vertical'
                 size_hint_y: None
                 height: self.minimum_height
+                spacing: dp(5)
                 Image:
                     size_hint: None, None
-                    #keep_ratio: False
-                    #allow_stretch: True
+                    keep_ratio: False
+                    allow_stretch: True
                     source: "images/kingpiecered.png"
                     pos_hint: {"center_x": .5}
+                    width: 2 * root.width / 9
+                    height: self.width
                 MDLabel:
                     size_hint_y: None
                     height: self.texture_size[1]
@@ -49,11 +52,16 @@
                 orientation: 'vertical'
                 size_hint_y: None
                 height: self.minimum_height
+                spacing: dp(5)
                 Image:
                     size_hint: None, None
+                    keep_ratio: False
+                    allow_stretch: True
                     id: player_two_image
                     source: "images/blankpiece.png"
                     pos_hint: {"center_x": .5}
+                    width: 2 * root.width / 9
+                    height: self.width
                 MDLabel:
                     size_hint_y: None
                     height: self.texture_size[1]
