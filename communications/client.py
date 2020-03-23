@@ -99,14 +99,14 @@ class Client:
             # Either player left match
             if self.app.root.ids.game_screen.game_is_playing:
                 # Player left during the match
-                toast("Your opponent disconnected")
                 loser_color = 'black' if self.app.player.is_red else 'red'
                 self.app.player.update_elo_after_match_ends(loser_color)
                 self.app.root.ids.game_screen.opponent_left()
+                Clock.schedule_once(lambda x: toast("Your opponent disconnected"), .25)
             else:
                 # Player left after checkmate occurred
-                toast("Your opponent left")
                 self.app.root.ids.game_screen.opponent_left()
+                Clock.schedule_once(lambda x: toast("Your opponent left"), .25)
         elif command == 'player_joined':
             # A new player entered the game room
             # Get nicknames and elos for each player
