@@ -10,6 +10,7 @@ from kivymd.toast import toast
 from kivy.clock import mainthread
 from functools import partial
 from kivymd.uix.dialog import MDDialog
+from chesspieces.capturedpieceimage import CapturedPieceImage
 from gameoverdialog import GameOverDialog
 from kivymd.uix.button import MDIconButton
 from kivy.core.window import Window
@@ -221,10 +222,10 @@ class GameScreen(Screen):
         if piece_being_entered.piece_type != 'blank':
             if piece_being_entered.player == 'black' and app.player.is_red or piece_being_entered.player == 'red' and not app.player.is_red:
                 bottom_captured_pieces_grid.add_widget(
-                    Image(source=piece_being_entered.source, color=piece_being_entered.color))
+                    CapturedPieceImage(source=piece_being_entered.source, color=piece_being_entered.color))
             else:
                 top_captured_pieces_grid.add_widget(
-                    Image(source=piece_being_entered.source, color=piece_being_entered.color))
+                    CapturedPieceImage(source=piece_being_entered.source, color=piece_being_entered.color))
 
 
 
