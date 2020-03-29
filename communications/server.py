@@ -506,6 +506,37 @@ class Server:
                 print("Couldn't send message, going to remove client!", e)
                 self.remove(ip_and_port, client)
 
+    def set_elo(self, elo):
+        """Set elo for both players of a game
+
+        :param elo:
+        :return:
+        """
+        #new_elo = '{"elo": %s}' %elo
+        #app = App.get_running_app()
+        #local_id = app.root.ids.firebase_login_screen.localId
+        #UrlRequest(App.get_running_app().firebase_url + local_id + ".json",
+        #           req_body=new_elo, method='PATCH', ca_file=certifi.where(),
+        #            on_success=self.updated_elo,
+        #            on_failure=self.failed_to_update_elo,
+        #            on_error=self.failed_to_update_elo)
+        pass
+
+    def updated_elo(self, thread, elo_data):
+        """Successfully updated elo.
+
+        :param thread:
+        :param elo_data:
+        """
+        self.elo = elo_data['elo']
+
+    def failed_to_update_elo(self, *args):
+        """Failed to update elo
+
+        :param args:
+        """
+        print("failed_to_update_elo", *args)
+
 
     def remove(self, ip_and_port, connection):
         """Remove all references to the client that is being removed, and close
