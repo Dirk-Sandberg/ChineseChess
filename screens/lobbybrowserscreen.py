@@ -12,7 +12,8 @@ class LobbyItem(TwoLineListItem):
         app = App.get_running_app()
         app.client.is_host = False
         app.player.game_id = self.game_id
-        message = {"command": "join_game"}
+        local_id = app.root.ids.firebase_login_screen.localId
+        message = {"command": "join_game", "firebase_id": local_id}
         app.client.send_message(message)
         # Set the opponents host elo so we can change elo when game is over
         #TODO

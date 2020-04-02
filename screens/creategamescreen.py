@@ -7,7 +7,8 @@ class CreateGameScreen(Screen):
         app = App.get_running_app()
 
         # Send command to server
-        message = {"command": "host_match", "time_limit": time_limit}
+        local_id = app.root.ids.firebase_login_screen.localId
+        message = {"command": "host_match", "time_limit": time_limit, 'firebase_id': local_id}
         app.client.send_message(message)
         app.player.time_limit = time_limit
         app.client.is_host = True

@@ -7,6 +7,8 @@ from datetime import datetime
 from requests import get, post, patch
 from json import dumps
 from time import sleep
+from firebase_functions import set_elo
+from elo import rate_1vs1
 import asyncio
 
 
@@ -58,6 +60,14 @@ class Server:
     has what nickname.
     """
     nicknames_for_clients = {}
+
+    """
+    This is a dict with format: 
+        {"ip_and_port": {'nickname': 'player1', 'localId': 'ge835xYA73_Yx00kv'}}
+    It's used to keep track of the player's identity in firebase so that their
+    elo can be updated when a match ends.
+    """
+    firebase_ids_for_clients = {}
 
 
     """
@@ -182,6 +192,32 @@ class Server:
         """
         self.clocks_by_rooms[game_id] = [0, 0]
 
+    def update_elos(self, game_id, sender, winner):
+        # Only update the elo once. This can be accomplished by only running
+        # this function from the command sent by the winner
+        # Sender was the winner
+        if winner == True:
+            winner_elo = self.nicknames_for_clients[sender]['elo']
+            both_players = self.clients_by_rooms[game_id].copy()
+            both_players.remove(sender)
+            loser = both_players[0]
+            loser_elo = self.nicknames_for_clients[loser]['elo']
+            new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
+
+            # Set the new elos in the dictionary
+            self.nicknames_for_clients[sender]['elo'] = new_winner_elo
+            self.nicknames_for_clients[loser]['elo'] = new_loser_elo
+
+            # Update the new elos in firebase
+            set_elo(self.firebase_ids_for_clients[sender], new_winner_elo)
+            set_elo(self.firebase_ids_for_clients[loser], new_loser_elo)
+
+            print(self.firebase_ids_for_clients[sender], 'went from ', winner_elo,
+                  'to ', new_winner_elo)
+            print(self.firebase_ids_for_clients[loser], 'went from ', loser_elo,
+                  'to ', new_loser_elo)
+
+
     def clientthread(self, conn, addr):
         """Pauses the thread while waiting for a command from this particular
         client. If a command is received, it will decode the message(s) from
@@ -251,6 +287,7 @@ class Server:
             if nickname == "":
                 nickname = "Anonymous"
             elo = message_dict['from_player']['elo']
+            firebase_id = message_dict['firebase_id']
             time_limit = message_dict['time_limit']
 
             # Keep track of the lobby they created
@@ -259,7 +296,7 @@ class Server:
             self.lobbies.append(lobby)
 
             # Add the client to the game room
-            self.add_client_to_game_room(sender_ip, sender_port, game_id, nickname, elo)
+            self.add_client_to_game_room(sender_ip, sender_port, game_id, nickname, elo, firebase_id)
 
             # Send a message to everyone playing that a new lobby was created
             clients_to_notify = list(self.list_of_clients.keys())
@@ -284,9 +321,10 @@ class Server:
             else:
                 # The game id does exist. Add them to the room
                 nickname = message_dict['from_player']['nickname']
+                firebase_id = message_dict['firebase_id']
                 elo = message_dict['from_player']['elo']
                 self.add_client_to_game_room(sender_ip, sender_port, game_id,
-                                             nickname, elo)
+                                             nickname, elo, firebase_id)
                 # Send a message to all players in the room.
                 # The message should contain a list of all players currently in
                 # the room.
@@ -360,12 +398,26 @@ class Server:
         elif command == 'forfeit':
             # End the clockthread for this game
             self.end_clockthread(game_id)
+            # Update the elos of the players
+            # Person who did not forfeit is the winner
+            both_players = self.clients_by_rooms[game_id].copy()
+            print("A", both_players)
+            both_players.remove(sender)
+            print("B", both_players)
+            winner = both_players[0]
+            print("C", winner)
+            self.update_elos(game_id, winner, True)
+            print("D")
             clients_to_notify = self.clients_by_rooms[game_id]
             response_dict = message_dict
             return response_dict, clients_to_notify
         elif command == 'checkmate':
             # Someone got checkmated, end the ticking clocks
             self.end_clockthread(game_id)
+            # Get the new elos for both players
+            self.update_elos(game_id, sender, message_dict['winner'])
+
+
         elif command == 'rematch_requested':
             clients_to_notify = self.clients_by_rooms[game_id].copy()
             clients_to_notify.remove(sender)
@@ -411,10 +463,8 @@ class Server:
         elif command == 'check_nickname_avail':
             r = get('https://chinese-chess-6543e.firebaseio.com/nicknames.json')
             str_names = r.content.decode()
-            print(str_names)
             str_names = str_names.replace('"',"")
             names = str_names.split(",")
-            print(names)
             name_to_check = message_dict['nickname']
             if name_to_check in names:
                 response_dict = {'command': 'invalid_nickname'}
@@ -428,7 +478,8 @@ class Server:
             return response_dict, [sender]
 
 
-    def add_client_to_game_room(self, client_ip, client_port, game_id, nickname, elo):
+    def add_client_to_game_room(self, client_ip, client_port, game_id, nickname,
+                                elo, firebase_id):
         """Keeps track of the players that are attached to each game room. Does
         so by adding the player to the :self.clients_by_rooms: dict under the
         :game_id:'s key in the dict.
@@ -440,8 +491,12 @@ class Server:
         :param client_port: The port the client is using
         :param game_id: The game id of the room to be joined by the client
         :param nickname: A nickname for the client
+        :param elo: The client's elo as stored in firebase
+        :param firebase_id: The client's localId in firebase
         :return:
         """
+        # Record their firebase localId so we can update their elo after match
+        self.firebase_ids_for_clients[client_ip + ":" + client_port] = firebase_id
         try:
             # Fails if there is no game id key in self.clients_by_rooms
             self.clients_by_rooms[game_id].append(client_ip + ":" + client_port)
@@ -506,36 +561,6 @@ class Server:
                 print("Couldn't send message, going to remove client!", e)
                 self.remove(ip_and_port, client)
 
-    def set_elo(self, elo):
-        """Set elo for both players of a game
-
-        :param elo:
-        :return:
-        """
-        #new_elo = '{"elo": %s}' %elo
-        #app = App.get_running_app()
-        #local_id = app.root.ids.firebase_login_screen.localId
-        #UrlRequest(App.get_running_app().firebase_url + local_id + ".json",
-        #           req_body=new_elo, method='PATCH', ca_file=certifi.where(),
-        #            on_success=self.updated_elo,
-        #            on_failure=self.failed_to_update_elo,
-        #            on_error=self.failed_to_update_elo)
-        pass
-
-    def updated_elo(self, thread, elo_data):
-        """Successfully updated elo.
-
-        :param thread:
-        :param elo_data:
-        """
-        self.elo = elo_data['elo']
-
-    def failed_to_update_elo(self, *args):
-        """Failed to update elo
-
-        :param args:
-        """
-        print("failed_to_update_elo", *args)
 
 
     def remove(self, ip_and_port, connection):
@@ -605,6 +630,13 @@ class Server:
                         clients_to_notify = self.clients_by_rooms[game_id]
                         # Stop the clockthread for this game
                         self.end_clockthread(game_id)
+                        # Update the elos of the players
+                        # Person who disconnected is loser, so get the winner
+                        both_players = self.clients_by_rooms[game_id].copy()
+                        both_players.remove(ip_and_port)
+                        winner = both_players[0]
+                        self.update_elos(game_id, winner, True)
+
                         # The match is completely over, so remove that key from clients_by_rooms
                         self.clients_by_rooms.pop(game_id)
                         self.broadcast(response_dict, clients_to_notify)

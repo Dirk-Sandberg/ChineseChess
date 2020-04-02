@@ -45,7 +45,7 @@ class MainApp(MDApp):
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing
-        HOST = self.read_server_ip_file()  # Remote server ip address
+        #HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()
         print(HOST, PORT)
         self.client = Client(HOST, PORT)
@@ -106,8 +106,14 @@ class MainApp(MDApp):
         print("Stopped")
 
     def checkmate(self, checkmated_player_color):
+        if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
+            winner = False
+        else:
+            winner = True
+
         # Inform the server that checkmate happened so it can stop the clocks
-        message = {"command": "checkmate"}
+        # and update elo in firebase
+        message = {"command": "checkmate", 'winner': winner}
         self.client.send_message(message)
         self.player.update_elo_after_match_ends(checkmated_player_color)
 

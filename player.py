@@ -25,17 +25,17 @@ class Player(EventDispatcher):
         else:
             loser_elo = self.opponent_elo
             winner_elo = self.elo
-        #host doesn't set opponents elo
+        # host doesn't set opponents elo
         new_winner_elo, new_loser_elo = rate_1vs1(winner_elo, loser_elo)
 
-        # Update the player's elo in firebase.
+        # Update the player's elo. Server will update it in the database
         if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
             new_elo = int(new_loser_elo)
         else:
             new_elo = int(new_winner_elo)
         loser_elo, new_loser_elo = int(loser_elo), int(new_loser_elo)
         winner_elo, new_winner_elo = int(winner_elo), int(new_winner_elo)
-        self.set_elo(new_elo)
+        self.elo(new_elo)
         print("My new elo is", new_elo)
 
         # Tell the game screen to open the game over dialog popup
@@ -61,22 +61,6 @@ class Player(EventDispatcher):
     def failed_to_get_elo_from_firebase(self, *args):
         print("failed_to_get_elo_from_firebase", args)
         pass
-
-    def set_elo(self, elo):
-        new_elo = '{"elo": %s}' %elo
-        app = App.get_running_app()
-        local_id = app.root.ids.firebase_login_screen.localId
-        UrlRequest(App.get_running_app().firebase_url + local_id + ".json",
-                   req_body=new_elo, method='PATCH', ca_file=certifi.where(),
-                    on_success=self.updated_elo,
-                    on_failure=self.failed_to_update_elo,
-                    on_error=self.failed_to_update_elo)
-
-    def updated_elo(self, thread, elo_data):
-        self.elo = elo_data['elo']
-
-    def failed_to_update_elo(self, *args):
-        print("failed_to_update_elo", *args)
 
     def set_nickname(self, nickname):
         """Overwrites the nickname saved firebase for this player
