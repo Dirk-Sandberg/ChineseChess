@@ -80,6 +80,8 @@ class GameScreen(Screen):
         # Reset the timers
         self.ids.red_timer.text = "%d:00" % app.player.time_limit
         self.ids.black_timer.text = "%d:00" % app.player.time_limit
+        #self.ids.red_timer.text = "00:05"
+        #self.ids.black_timer.text = "00:05"
 
         # Set the turn indicator position
         self.set_turn_indicator_to_initial_position()

@@ -35,7 +35,7 @@ class Player(EventDispatcher):
             new_elo = int(new_winner_elo)
         loser_elo, new_loser_elo = int(loser_elo), int(new_loser_elo)
         winner_elo, new_winner_elo = int(winner_elo), int(new_winner_elo)
-        self.elo(new_elo)
+        self.elo = new_elo
         print("My new elo is", new_elo)
 
         # Tell the game screen to open the game over dialog popup

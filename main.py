@@ -106,7 +106,7 @@ class MainApp(MDApp):
         print("Stopped")
 
     def checkmate(self, checkmated_player_color):
-        if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
+        if checkmated_player_color == 'red' and self.player.is_red or checkmated_player_color == 'black' and not self.player.is_red:
             winner = False
         else:
             winner = True

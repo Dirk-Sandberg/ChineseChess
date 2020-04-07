@@ -11,8 +11,6 @@ def set_elo(firebase_id, new_elo):
     """
     new_elo = '{"elo": %s}' %new_elo
     req = patch(FIREBASE_URL+firebase_id+".json", new_elo)
-    print("REQ OK?", req.ok)
-    print(req.json())
 
 
 def updated_elo(self, thread, elo_data):

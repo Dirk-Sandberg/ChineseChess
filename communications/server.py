@@ -10,7 +10,7 @@ from time import sleep
 from firebase_functions import set_elo
 from elo import rate_1vs1
 import asyncio
-
+import logging
 
 
 class Server:
@@ -114,19 +114,7 @@ class Server:
         asyncio.set_event_loop(asyncio.new_event_loop())
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.clockthread(game_id))
-        #asyncio.run(self.clockthread(game_id))
-        """Sends a clock_ticked command.
 
-    async def clockthread(self, game_id):
-        Sends a clock_ticked command.
-
-        SLEEPTIME = .05  # Tenth of a second
-        time_before = self.clocks_by_rooms[game_id][0]
-        print(time_before)
-        while True:
-            await asyncio.sleep(SLEEPTIME)
-
-        """
     async def clockthread(self, game_id):
         SLEEPTIME = .05  # Tenth of a second
         while True:
@@ -147,12 +135,10 @@ class Server:
                 message = {"command": "clock_ticked"}
                 clients = self.clients_by_rooms[game_id]
                 self.broadcast(message, clients)
-                print('tick', datetime.now().second)
 
 
             if seconds_remaining <= 0:
                 # No longer needs this clockthread
-                print("BREAKING CLOCKTHREAD")
                 break
 
     def switch_active_clocks(self, game_id):
@@ -168,7 +154,6 @@ class Server:
 
 
     def start_new_clockthread(self, game_id, time_limit):
-        print("Starting new clockthread")
         # Convert time limit to seconds
         # Initialize the clocks
         # Convert time limit to seconds
@@ -212,10 +197,6 @@ class Server:
             set_elo(self.firebase_ids_for_clients[sender], new_winner_elo)
             set_elo(self.firebase_ids_for_clients[loser], new_loser_elo)
 
-            print(self.firebase_ids_for_clients[sender], 'went from ', winner_elo,
-                  'to ', new_winner_elo)
-            print(self.firebase_ids_for_clients[loser], 'went from ', loser_elo,
-                  'to ', new_loser_elo)
 
 
     def clientthread(self, conn, addr):
@@ -350,7 +331,6 @@ class Server:
             response_dict = {"command": "match_started", "player_who_owns_turn": clients_to_notify[0], "players": clients_to_notify}
 
             # Start the thread that watches the players' clocks
-            print("NEW CLOCKTHREAD ONE")
             self.start_new_clockthread(game_id, time_limit)
             return response_dict, clients_to_notify
         elif command == 'leave_lobby':
@@ -401,13 +381,9 @@ class Server:
             # Update the elos of the players
             # Person who did not forfeit is the winner
             both_players = self.clients_by_rooms[game_id].copy()
-            print("A", both_players)
             both_players.remove(sender)
-            print("B", both_players)
             winner = both_players[0]
-            print("C", winner)
             self.update_elos(game_id, winner, True)
-            print("D")
             clients_to_notify = self.clients_by_rooms[game_id]
             response_dict = message_dict
             return response_dict, clients_to_notify
@@ -416,6 +392,8 @@ class Server:
             self.end_clockthread(game_id)
             # Get the new elos for both players
             self.update_elos(game_id, sender, message_dict['winner'])
+            # No message to send out
+            return {}, []
 
 
         elif command == 'rematch_requested':
@@ -426,7 +404,6 @@ class Server:
         elif command == 'rematch_accepted':
             # Start ticking the clocks again
             time_limit = message_dict['time_limit']
-            print("NEW CLOCKTHREAD TWO")
             self.start_new_clockthread(game_id, time_limit)
 
             # Tell all players in a room that a game has started
@@ -537,7 +514,6 @@ class Server:
         :param list_of_clients: The list of ip_and_port strings to send to
         :return:
         """
-        print("Trying to broadcast")
         for ip_and_port in list_of_clients:
             print("broadcasting to:", ip_and_port)
             # Get a reference to the actual client connection using their

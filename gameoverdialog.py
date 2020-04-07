@@ -35,7 +35,7 @@ class GameOverDialog(BaseGameOverDialog):
         self.opponent_nickname = opponent_nickname
         self.size_hint = (.8, .6)
         self.pos_hint = {"center_y": -self.size_hint_y, "center_x": .5}
-        if elo_stop > elo_start:
+        if elo_stop >= elo_start:
             # Gained elo, make it green
             self.change_in_elo = "+%d" % (elo_stop-elo_start)
             self.changed_elo_label_color = [0, 1, 0, 1]
