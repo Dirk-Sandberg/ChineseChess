@@ -2,7 +2,6 @@ import sys
 # Fix path on iOS, otherwise can't find relative imports
 sys.path.append("/".join(x for x in __file__.split("/")[:-1]))
 
-from elo import rate_1vs1
 from kivy.metrics import dp
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
@@ -45,7 +44,7 @@ class MainApp(MDApp):
 
     def on_start(self):
         HOST = '127.0.0.1'  # Local testing
-        #HOST = self.read_server_ip_file()  # Remote server ip address
+        HOST = self.read_server_ip_file()  # Remote server ip address
         PORT = self.read_port_file()
         print(HOST, PORT)
         self.client = Client(HOST, PORT)

@@ -1,7 +1,6 @@
 certifi==2019.11.28
 chardet==3.0.4
 docutils==0.16
-elo==0.1.1
 idna==2.9
 Kivy==1.11.1
 Kivy-Garden==0.1.4
