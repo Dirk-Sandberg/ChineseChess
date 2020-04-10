@@ -2,15 +2,12 @@ import socket
 from _thread import start_new_thread
 from helper_functions import build_messages
 import json
-from ast import literal_eval
-from datetime import datetime
-from requests import get, post, patch
+from requests import get, patch
 from json import dumps
-from time import sleep
+import traceback
 from firebase_functions import set_elo
 from elo import rate_1vs1
 import asyncio
-import logging
 
 
 class Server:
@@ -435,6 +432,7 @@ class Server:
         elif command == 'disconnect':
             # Client will be closed automatically when it doesn't receive the
             # next message
+            print("Removing a sender because of a Disconnect command!")
             self.remove(sender, self.list_of_clients[sender])
             return "", []  # Don't send any messages to anyone
         elif command == 'check_nickname_avail':
@@ -515,11 +513,12 @@ class Server:
         :return:
         """
         for ip_and_port in list_of_clients:
-            print("broadcasting to:", ip_and_port)
             # Get a reference to the actual client connection using their
             # ip and port
-            client = self.list_of_clients[ip_and_port]
-
+            # If the client was removed from list of clients, return None
+            client = self.list_of_clients.get(ip_and_port, None)
+            if not client:
+                continue
             # If the message contains info about whose turn it is, give a
             # special message to the person whose turn it is so they know
             player_who_owns_turn = message.get("player_who_owns_turn", "")
@@ -546,9 +545,11 @@ class Server:
         print("Trying to remove:", ip_and_port)
         try:
             self.list_of_clients.pop(ip_and_port)  # Remove client from dictionary
-            self.nicknames_for_clients.pop(ip_and_port) # Forget nickname for client
             # Remove this client from the clients by rooms dict
-            for game_id, client_ip_and_ports in self.clients_by_rooms.items():  # for name, age in dictionary.iteritems():  (for Python 2.x)
+            # clients_by_rooms changes during this loop, so make a copy of it
+            # so we don't get an iteration error
+            games_and_clients = self.clients_by_rooms.copy().items()
+            for game_id, client_ip_and_ports in games_and_clients:  # for name, age in dictionary.iteritems():  (for Python 2.x)
                 if ip_and_port in client_ip_and_ports:
                     print("Client is in game room: ", game_id)
                     # GOT THE PROPER GAME ID
@@ -600,12 +601,7 @@ class Server:
                     # -- (deduct elo)
                     player_was_in_match = not player_was_in_lobby
                     if player_was_in_match:
-                        self.clients_by_rooms[game_id].remove(ip_and_port)
                         # Someone disconnected during the middle of a game
-                        response_dict = {"command": "player_left_match"}
-                        clients_to_notify = self.clients_by_rooms[game_id]
-                        # Stop the clockthread for this game
-                        self.end_clockthread(game_id)
                         # Update the elos of the players
                         # Person who disconnected is loser, so get the winner
                         both_players = self.clients_by_rooms[game_id].copy()
@@ -613,13 +609,24 @@ class Server:
                         winner = both_players[0]
                         self.update_elos(game_id, winner, True)
 
+
+                        # Remove the disconnected player from the game room
+                        self.clients_by_rooms[game_id].remove(ip_and_port)
+                        response_dict = {"command": "player_left_match"}
+                        clients_to_notify = self.clients_by_rooms[game_id]
+                        # Stop the clockthread for this game
+                        self.end_clockthread(game_id)
+
                         # The match is completely over, so remove that key from clients_by_rooms
                         self.clients_by_rooms.pop(game_id)
                         self.broadcast(response_dict, clients_to_notify)
         except Exception as e:
             # Won't work if they close the app before joining or starting a game
             print('issue removing client', e)
+            traceback.print_exc()
 
+        # Forget nickname for client
+        self.nicknames_for_clients.pop(ip_and_port)
         connection.close()
         print("Closed connection from", ip_and_port)
 
