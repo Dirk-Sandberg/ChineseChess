@@ -3,14 +3,18 @@ from requests import patch
 FIREBASE_URL = "https://chinese-chess-6543e.firebaseio.com/"
 
 
-def set_elo(firebase_id, new_elo):
+def set_elo(firebase_id, new_elo, idToken):
     """Set elo for both players of a game
 
     :param elo:
+    :param idToken: auth token of admin firebase account
     :return:
     """
     new_elo = '{"elo": %s}' %new_elo
-    req = patch(FIREBASE_URL+firebase_id+".json", new_elo)
+    # Firebase rules allow the server's auth token to update all players' elos
+
+    req = patch(FIREBASE_URL+firebase_id+".json?auth=%s"%idToken, new_elo)
+    print(req.content)
 
 
 def updated_elo(self, thread, elo_data):

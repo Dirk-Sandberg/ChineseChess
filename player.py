@@ -48,7 +48,8 @@ class Player(EventDispatcher):
     def retrieve_elo_from_firebase(self):
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId
-        UrlRequest(app.firebase_url + local_id + "/elo.json",
+        auth_token = app.root.ids.firebase_login_screen.idToken
+        UrlRequest(app.firebase_url + local_id + "/elo.json?auth=%s" % auth_token,
                    ca_file=certifi.where(),
                    on_success=self.got_elo_from_firebase,
                    on_failure=self.failed_to_get_elo_from_firebase,
@@ -72,7 +73,8 @@ class Player(EventDispatcher):
         nickname_data = dumps(nickname_data)
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId
-        UrlRequest(app.firebase_url + local_id + ".json",
+        auth_token = app.root.ids.firebase_login_screen.idToken
+        UrlRequest(app.firebase_url + local_id + ".json?auth=%s" % auth_token,
                    req_body=nickname_data, method='PATCH', ca_file=certifi.where(),
                    on_success=self.updated_nickname,
                    on_failure=self.failed_to_update_nickname,
@@ -93,7 +95,8 @@ class Player(EventDispatcher):
         """
         app = App.get_running_app()
         local_id = app.root.ids.firebase_login_screen.localId
-        UrlRequest(app.firebase_url + local_id + "/nickname.json",
+        auth_token = app.root.ids.firebase_login_screen.idToken
+        UrlRequest(app.firebase_url + local_id + "/nickname.json?auth=%s" % auth_token,
                    ca_file=certifi.where(),
                    on_success=self.got_saved_nickname,
                    on_failure=self.failed_to_get_saved_nickname,

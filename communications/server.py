@@ -17,6 +17,13 @@ class Server:
     a response tailored to what the received message was.
     """
 
+    """
+    idToken for the admin account that has access to write privileges on all
+    other accounts. Obtained by passing in admin account login credentials
+    in command line
+    """
+    idToken = ""
+
     """ 
     This is a dict with format: {"client_ip_and_port": ConnectionObject}
     It lets us refer to a clients connection just by know the client's
@@ -191,8 +198,8 @@ class Server:
             self.nicknames_for_clients[loser]['elo'] = new_loser_elo
 
             # Update the new elos in firebase
-            set_elo(self.firebase_ids_for_clients[sender], new_winner_elo)
-            set_elo(self.firebase_ids_for_clients[loser], new_loser_elo)
+            set_elo(self.firebase_ids_for_clients[sender], new_winner_elo, idToken)
+            set_elo(self.firebase_ids_for_clients[loser], new_loser_elo, idToken)
 
 
 
@@ -630,7 +637,8 @@ class Server:
         connection.close()
         print("Closed connection from", ip_and_port)
 
-    def run(self):
+    def run(self, idToken):
+        self.idToken = idToken
         """The function being run by the server in the main thread. This listens
         for new connections, and if it receives one, it starts a new thread for
         the client that connected. The thread runs the :self.clientthread:
@@ -659,4 +667,21 @@ class Server:
         server.close()
 
 
-Server().run()
+if __name__ == "__main__":
+    # Need to pass servers admin credentials as arguments in command line
+    import sys
+    username = sys.argv[1]
+    password = sys.argv[2]
+    # Log in as admin
+    web_api_key = "AIzaSyB06j5jSIjrZj6oAi0Fkk23bHXLIpEcVC0"
+    import requests
+    from json import dumps
+    print("Attempting to sign user in: ", username, password)
+    sign_in_url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=" + web_api_key
+    sign_in_payload = dumps(
+        {"email": username, "password": password, "returnSecureToken": True})
+    r = requests.post(sign_in_url, data=sign_in_payload)
+    idToken = r.json()['idToken']
+
+    # Don't save refresh token
+    Server().run(idToken)
