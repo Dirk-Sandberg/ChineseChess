@@ -8,6 +8,7 @@ import traceback
 from firebase_functions import set_elo
 from elo import rate_1vs1
 import asyncio
+import os
 
 
 class Server:
@@ -98,7 +99,8 @@ class Server:
         Open the server on port xxxxx. This port number must be known by all 
         clients
         """
-        with open("port.txt", "r") as f:
+        port_filename = os.path.realpath(__file__).replace(__file__, "ChineseChess/port.txt")
+        with open(port_filename, "r") as f:
             port = int(f.read())
 
         """ 
