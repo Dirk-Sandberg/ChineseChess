@@ -553,7 +553,8 @@ class Server:
         """
         print("Trying to remove:", ip_and_port)
         try:
-            self.list_of_clients.pop(ip_and_port)  # Remove client from dictionary
+            if ip_and_port in self.list_of_clients.keys():
+                self.list_of_clients.pop(ip_and_port)  # Remove client from dictionary
             # Remove this client from the clients by rooms dict
             # clients_by_rooms changes during this loop, so make a copy of it
             # so we don't get an iteration error
@@ -635,7 +636,8 @@ class Server:
             traceback.print_exc()
 
         # Forget nickname for client
-        self.nicknames_for_clients.pop(ip_and_port)
+        if ip_and_port in self.nicknames_for_clients.keys():
+            self.nicknames_for_clients.pop(ip_and_port)
         connection.close()
         print("Closed connection from", ip_and_port)
 
