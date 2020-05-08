@@ -4,6 +4,7 @@
 
 sudo apt install -y git
 git clone https://github.com/Dirk-Sandberg/ChineseChess.git
+git -C ChineseChess pull
 sudo apt-get install -y python3-pip
 sudo pip3 install -r ChineseChess/communications/requirements.txt
 python3 ChineseChess/communications/server.py USERNAME PASSWORD
