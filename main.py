@@ -4,6 +4,9 @@ sys.path.append("/".join(x for x in __file__.split("/")[:-1]))
 
 from kivy.metrics import dp
 from kivymd.app import MDApp
+from kivymd.toast import toast
+from kivy.network.urlrequest import UrlRequest
+import certifi
 from kivymd.uix.dialog import MDDialog
 from kivy.properties import BooleanProperty, NumericProperty
 from boardhelper import BoardHelper
@@ -38,16 +41,17 @@ class MainApp(MDApp):
     client = None
 
     firebase_url = "https://chinese-chess-6543e.firebaseio.com/"
+    HOST = ""
 
     def on_login(self):
         pass
 
     def on_start(self):
-        HOST = '127.0.0.1'  # Local testing
-        HOST = self.read_server_ip_file()  # Remote server ip address
+        # set the HOST by finding remote server ip address
+        self.get_server_ip_address()
         PORT = self.read_port_file()
-        print(HOST, PORT)
-        self.client = Client(HOST, PORT)
+        if self.HOST:
+            self.client = Client(self.HOST, PORT)
         if platform == 'ios':
             self.account_for_iphone_notch()
 
@@ -91,9 +95,18 @@ class MainApp(MDApp):
             port = f.read()
             return int(port)
 
-    def read_server_ip_file(self):
-        with open("server_ip.txt", "r") as f:
-            return f.read()
+    def get_server_ip_address(self):
+        req = UrlRequest(self.firebase_url + "/server_ip.json", ca_file=certifi.where(), on_success=self.got_server_ip, on_failure=self.didnt_get_server_ip,on_error=self.didnt_get_server_ip)
+        req.wait()
+
+    def got_server_ip(self, req, result):
+        print(result)
+        print("GOT HOST", result)
+        self.HOST = result
+
+    def didnt_get_server_ip(self, req, result):
+        print(result)
+        toast("Unable to connect to multiplayer server.")
 
     def on_stop(self):
         """on_stop is automatically called when the app is closed.
