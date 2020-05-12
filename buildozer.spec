@@ -49,7 +49,7 @@ requirements = python3,kivy==2.0.0rc1,elo
 presplash.filename = %(source.dir)s/images/background.jpg
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/images/background_500x500.jpg
+icon.filename = %(source.dir)s/images/background_500x500.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
