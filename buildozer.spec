@@ -28,7 +28,7 @@ source.include_exts = py,png,jpg,kv,atlas,ttf,tff,txt
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1
+version = 0.2
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
@@ -46,10 +46,10 @@ requirements = python3,kivy==2.0.0rc1,elo
 #garden_requirements =
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/images/background.jpg
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/images/background_500x500.jpg
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -88,7 +88,7 @@ fullscreen = 0
 android.permissions = INTERNET
 
 # (int) Target Android API, should be as high as possible.
-#android.api = 27
+android.api = 28
 
 # (int) Minimum API your APK will support.
 #android.minapi = 21
