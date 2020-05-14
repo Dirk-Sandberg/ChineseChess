@@ -28,6 +28,8 @@ from screens.creategamescreen import CreateGameScreen
 from screens.lobbybrowserscreen import LobbyBrowserScreen
 from halfboard import HalfBoard
 
+import encodings.idna
+
 class MainApp(MDApp):
     board_helper = BoardHelper()
     highlighted_piece = None
@@ -105,7 +107,7 @@ class MainApp(MDApp):
         self.HOST = result
 
     def didnt_get_server_ip(self, req, result):
-        print(result)
+        print('couldnt connect to server because:', result)
         toast("Unable to connect to multiplayer server.")
 
     def on_stop(self):
