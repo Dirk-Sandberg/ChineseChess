@@ -17,6 +17,11 @@ class Player(EventDispatcher):
     opponent_elo = 0
     time_limit = NumericProperty(0)
 
+    def set_new_player_elo(self):
+        message = {"command": "set_new_player_elo"}
+        App.get_running_app().client.send_message(message)
+        print("Setting new player elo!", message)
+
     @mainthread
     def update_elo_after_match_ends(self, checkmated_player_color):
         if checkmated_player_color == 'red' and self.is_red or checkmated_player_color == 'black' and not self.is_red:
@@ -66,8 +71,14 @@ class Player(EventDispatcher):
     def set_nickname(self, nickname):
         """Overwrites the nickname saved firebase for this player
 
+        Also sets the players elo to 1200 if they are new.
+
         :param nickname: The new nickname to save
         """
+        # Send a command to server to set this players elo to 1200
+        # server will deny request if they aren't a new player.
+        self.set_new_player_elo()
+
         print("Trying to update the nickname in firebase to", nickname)
         nickname_data = {"nickname": nickname}
         nickname_data = dumps(nickname_data)
@@ -82,7 +93,7 @@ class Player(EventDispatcher):
 
     def updated_nickname(self, thread, nickname_data):
         app = App.get_running_app()
-        app.root.current = 'home_screen'
+        app.change_screen('home_screen')
         self.nickname = nickname_data['nickname']
 
 

@@ -5,7 +5,7 @@ import json
 from requests import get, patch
 from json import dumps
 import traceback
-from firebase_functions import set_elo
+from firebase_functions import set_elo, check_if_new_player
 from elo import rate_1vs1
 import asyncio
 import os
@@ -242,6 +242,7 @@ class Server:
                 break
             except Exception as e:
                 print('error in client thread', e, received_messages)
+                traceback.print_exc()
                 continue
 
     def interpret(self, sender_ip, sender_port, message_dict):
@@ -261,7 +262,7 @@ class Server:
         command = message_dict['command']
         sender = sender_ip + ":" + sender_port
         # These commands can be sent from a client that doesn't have a game ID assigned yet
-        commands_without_game_id = ['host_match', 'get_lobbies', 'check_nickname_avail', 'disconnect']
+        commands_without_game_id = ['host_match', 'get_lobbies', 'check_nickname_avail', 'disconnect', 'set_new_player_elo', 'set_firebase_id']
         if command not in commands_without_game_id:
             # game_id has been assigned
             game_id = message_dict['from_player']['game_id'].upper()  # Fix upper/lowercase issue
@@ -322,6 +323,22 @@ class Server:
                 # players key should now hold nickname and elo
                 response_dict = {"command": "player_joined", "players": players}
                 return response_dict, clients_to_notify
+
+        elif command == 'set_firebase_id':
+            # Record their firebase localId so we can update their elo after match
+            firebase_id = message_dict['firebase_id']
+            self.firebase_ids_for_clients[sender_ip + ":" + sender_port] = firebase_id
+            # No message to send out
+            return {}, []
+
+
+        elif command == 'set_new_player_elo':
+            # Set players elo to 1200 if they're new (no cheating!)
+            player_is_new = check_if_new_player(self.firebase_ids_for_clients[sender], idToken)
+            if player_is_new:
+                set_elo(self.firebase_ids_for_clients[sender], 1200, idToken)
+            # No message to send out
+            return {}, []
 
         elif command == 'start_match':
             # Since the game started, remove it from the open lobbies list

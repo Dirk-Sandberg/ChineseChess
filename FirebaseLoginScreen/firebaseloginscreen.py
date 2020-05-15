@@ -133,7 +133,10 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         app.change_screen('set_nickname_screen')
 
         # Update the user's profile with the default elo
-        app.player.set_elo(1200)
+        # Set the firebase_id for this client
+        message = {'command': 'set_firebase_id',
+                   'firebase_id': self.localId}
+        app.client.send_message(message)
 
     def successful_login(self, urlrequest, log_in_data):
         """Collects info from Firebase upon successfully registering a new user.
