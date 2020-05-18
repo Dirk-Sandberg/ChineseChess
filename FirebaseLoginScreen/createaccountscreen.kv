@@ -2,6 +2,8 @@
 #:import string string
 
 <CreateAccountScreen>:
+    on_enter:
+        email.focused = True
     FloatLayout:
         MDIconButton:
             #size_hint: .4, .05
@@ -24,6 +26,8 @@
             hint_text: "Email"
             color_mode: 'custom'
             line_color_focus: 1,1,1,1
+            on_text_validate:
+                password.focused = True
 
 
         MDTextField:
@@ -36,6 +40,12 @@
             password: True
             color_mode: 'custom'
             line_color_focus: 1,1,1,1
+            on_text_validate:
+                root.parent.parent.sign_up(email.text, password.text)
+                Animation(opacity=0, duration=0.5).start(message)
+                sign_in_button.opacity = 0
+                sign_in_button.disabled = True
+                root.parent.parent.display_loading_screen()
 
         MDRaisedButton:
             text: "Create Account"

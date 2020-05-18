@@ -1,4 +1,6 @@
 <SetNicknameScreen>:
+    on_enter:
+        nickname.focused = True
     BoxLayout:
         orientation: 'vertical'
         spacing: dp(20)
@@ -15,6 +17,8 @@
             size_hint_x: .9
             pos_hint: {'center_x': .5}
             id: nickname
+            on_text_validate:
+                root.set_nickname(nickname.text)
         MDRaisedButton:
             text: 'Set'
             pos_hint: {"center_x": .5}

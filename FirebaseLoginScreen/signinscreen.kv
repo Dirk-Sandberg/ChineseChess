@@ -1,4 +1,6 @@
 <SignInScreen>:
+    on_enter:
+        email.focused = True
     FloatLayout:
         MDIconButton:
             pos_hint: {"center_x": .1, "top": .975}
@@ -17,6 +19,8 @@
             hint_text: "Email"
             color_mode: 'custom'
             line_color_focus: 1,1,1,1
+            on_text_validate:
+                password.focused = True
 
         MDTextField:
             id: password
@@ -26,6 +30,13 @@
             password: True
             color_mode: 'custom'
             line_color_focus: 1,1,1,1
+            on_text_validate:
+                # Need to refer to the FirebaseLoginScreen
+                root.parent.parent.sign_in(email.text, password.text)
+                Animation(opacity=0, duration=0.5).start(message)
+                sign_in_button.opacity = 0
+                sign_in_button.disabled = True
+                root.parent.parent.display_loading_screen()
 
         MDTextButton:
             text: "[u]Forgot your password?[/u]"
