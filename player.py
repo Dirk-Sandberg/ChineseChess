@@ -21,6 +21,9 @@ class Player(EventDispatcher):
         message = {"command": "set_new_player_elo"}
         App.get_running_app().client.send_message(message)
         print("Setting new player elo!", message)
+        # If this runs successfully, the client will receive a 'new_player_elo_update' command
+        # Which will set self.elo here to 1200
+        # If it doesn't set player.elo, then the from_player dict won't contain elo
 
     @mainthread
     def update_elo_after_match_ends(self, checkmated_player_color):

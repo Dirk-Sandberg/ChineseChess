@@ -337,6 +337,7 @@ class Server:
             player_is_new = check_if_new_player(self.firebase_ids_for_clients[sender], idToken)
             if player_is_new:
                 set_elo(self.firebase_ids_for_clients[sender], 1200, idToken)
+                return {'command': 'new_player_elo_update'}, [sender]
             # No message to send out
             return {}, []
 

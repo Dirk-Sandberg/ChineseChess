@@ -140,6 +140,8 @@ class Client:
         elif command == "list_lobbies":
             lobbies = message_dict['lobbies']
             self.app.root.ids.lobby_browser_screen.display_lobbies(lobbies)
+        elif command == 'new_player_elo_update':
+            self.app.player.elo = 1200
         elif command == 'piece_moved':
             # Switch whose turn it is to play
             self.app.is_turn_owner = not self.app.is_turn_owner
@@ -174,7 +176,10 @@ class Client:
 
         :param message: dictionary format (json data)
         """
+        #TODO: What info is sent in from_player?
+        # Can it be replaced with self.player.elo and self.player.nickname?
         message['from_player'] = self.app.player.__dict__
+        print("Sending a message: ", message)
         # To send the message over the socket connection, convert the message to
         # a string of bytes
         if self.server:
