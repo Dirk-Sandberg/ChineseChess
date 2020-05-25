@@ -57,6 +57,14 @@ class MainApp(MDApp):
         if platform == 'ios':
             self.account_for_iphone_notch()
 
+        from kivy.base import EventLoop
+        EventLoop.window.bind(on_keyboard=self.hook_keyboard)
+
+    def hook_keyboard(self, window, key, *args):
+        if key == 27:
+            # Pressed Esc key or Back < button on Android. Don't crash!
+            return
+
     def account_for_iphone_notch(self):
         # Account for the notch in newer iPhones
         from pyobjus import autoclass
